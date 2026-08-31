@@ -1,0 +1,6 @@
+{
+  "name": "Wolf of BIT Mesra - Trading Auction Platform",
+  "description": "Official live trading floor simulation and auctioneer calculation console for Finance Club, BIT Mesra. Handles Normal Rounds, Insider Auctions, P2P Exchange, and Final Portfolio Valuations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
