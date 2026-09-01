@@ -183,7 +183,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
               <button
                 id="btn-reset-game"
                 onClick={() => {
-                  if (confirm('Are you sure you want to reset all team holdings and cash back to starting ₹5,00,000?')) {
+                  if (confirm(`Are you sure you want to reset all team holdings and cash back to starting ${formatINR(config.startingCapital)}?`)) {
                     resetGame();
                   }
                 }}

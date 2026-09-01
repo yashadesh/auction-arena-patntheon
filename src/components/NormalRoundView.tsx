@@ -15,11 +15,15 @@ import {
   Square,
   TrendingUp,
   HelpCircle,
-  Gavel
+  Gavel,
+  SlidersHorizontal,
+  History,
+  Trash2
 } from 'lucide-react';
 import { formatINR, formatPercent } from '../utils/formatters';
 import { soundFX } from '../utils/soundFX';
 import { GavelButton } from './GavelButton';
+import { RectificationModal } from './RectificationModal';
 
 export const NormalRoundView: React.FC = () => {
   const { 
@@ -29,6 +33,9 @@ export const NormalRoundView: React.FC = () => {
     selectedStockId, 
     setSelectedStockId, 
     executeNormalRound,
+    normalTransactions,
+    revertNormalTransaction,
+    rectifyTeamHolding,
     revealedMultipliers,
     toggleRevealMultiplier
   } = useGame();
@@ -36,7 +43,9 @@ export const NormalRoundView: React.FC = () => {
   const [lotSelections, setLotSelections] = useState<Record<string, number>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [autoDeductMoney, setAutoDeductMoney] = useState(false); // Default false since user handles money deduction
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string; lastTxId?: string } | null>(null);
+  const [isRectifyModalOpen, setIsRectifyModalOpen] = useState(false);
+  const [rectifyTeamId, setRectifyTeamId] = useState<string | undefined>(undefined);
 
   // 30-Second Round Timer
   const [timerSeconds, setTimerSeconds] = useState<number>(30);
@@ -99,8 +108,23 @@ export const NormalRoundView: React.FC = () => {
 
     const res = executeNormalRound(selectedStock.id, lotSelections, autoDeductMoney);
     if (res.success) {
-      setStatusMessage({ type: 'success', text: res.message });
+      // Find latest tx
+      const latestTx = normalTransactions[0];
+      setStatusMessage({ 
+        type: 'success', 
+        text: res.message,
+        lastTxId: latestTx?.id
+      });
       setLotSelections({});
+    } else {
+      setStatusMessage({ type: 'error', text: res.message });
+    }
+  };
+
+  const handleQuickUndoLast = (txId: string) => {
+    const res = revertNormalTransaction(txId);
+    if (res.success) {
+      setStatusMessage({ type: 'success', text: `Undone! ${res.message}` });
       setTimeout(() => setStatusMessage(null), 4000);
     } else {
       setStatusMessage({ type: 'error', text: res.message });
@@ -112,9 +136,11 @@ export const NormalRoundView: React.FC = () => {
     s.ticker.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const stockAllotments = normalTransactions.filter(tx => tx.stockId === selectedStock.id);
+
   return (
     <div className="space-y-6">
-      {/* Top Header with 30s Timer */}
+      {/* Top Header with 30s Timer & Rectify Button */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900 border border-slate-800">
         <div>
           <div className="flex items-center gap-2">
@@ -124,9 +150,20 @@ export const NormalRoundView: React.FC = () => {
             <h2 className="text-xl font-bold text-slate-100 font-mono">
               STOCK ALLOTMENT & CALCULATOR
             </h2>
+            <button
+              onClick={() => {
+                setRectifyTeamId(undefined);
+                setIsRectifyModalOpen(true);
+              }}
+              className="ml-2 px-2.5 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-[11px] font-bold flex items-center gap-1.5 transition"
+              title="Fix any mistake in shares or cash without fail"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Rectify Mistake</span>
+            </button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Select stock → Record lots shared with Team A through Team H → Instant portfolio calculation.
+            Select stock → Record lots shared with Team A through Team J → Instant portfolio calculation & Undo support.
           </p>
         </div>
 
@@ -176,13 +213,25 @@ export const NormalRoundView: React.FC = () => {
       </div>
 
       {statusMessage && (
-        <div className={`p-4 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+        <div className={`p-4 rounded-xl text-xs font-semibold flex items-center justify-between gap-3 ${
           statusMessage.type === 'success' 
             ? 'bg-emerald-950/80 border border-emerald-800 text-emerald-300' 
             : 'bg-red-950/80 border border-red-800 text-red-300'
         }`}>
-          {statusMessage.type === 'success' ? <Check className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
-          {statusMessage.text}
+          <div className="flex items-center gap-2">
+            {statusMessage.type === 'success' ? <Check className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+            <span>{statusMessage.text}</span>
+          </div>
+
+          {statusMessage.type === 'success' && normalTransactions[0] && (
+            <button
+              onClick={() => handleQuickUndoLast(normalTransactions[0].id)}
+              className="px-3 py-1.5 rounded-lg bg-red-900/80 hover:bg-red-800 text-red-200 border border-red-700 text-xs font-bold flex items-center gap-1.5 shrink-0 transition"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Undo This Allotment
+            </button>
+          )}
         </div>
       )}
 
@@ -317,6 +366,7 @@ export const NormalRoundView: React.FC = () => {
                     <th className="px-3 py-2.5 text-right">Base Cost</th>
                     <th className="px-3 py-2.5 text-right">Calculated Final Value</th>
                     <th className="px-3 py-2.5 text-right">Current Cash</th>
+                    <th className="px-3 py-2.5 text-center">Fix</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
@@ -381,6 +431,18 @@ export const NormalRoundView: React.FC = () => {
                         <td className="px-3 py-2.5 text-right text-slate-400">
                           {formatINR(team.cash)}
                         </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <button
+                            onClick={() => {
+                              setRectifyTeamId(team.id);
+                              setIsRectifyModalOpen(true);
+                            }}
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-slate-700/60 transition"
+                            title={`Rectify or overwrite holdings for ${team.name}`}
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -414,8 +476,53 @@ export const NormalRoundView: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Recent Allotments for Selected Stock with Instant Undo */}
+          {stockAllotments.length > 0 && (
+            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+                <span className="flex items-center gap-1.5">
+                  <History className="w-3.5 h-3.5 text-amber-400" />
+                  Past Allotments for {selectedStock.name} ({stockAllotments.length})
+                </span>
+                <span className="text-[11px] text-slate-500">Mistakes can be undone with 1-click</span>
+              </div>
+
+              <div className="space-y-2">
+                {stockAllotments.map(tx => (
+                  <div key={tx.id} className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+                    <div className="text-slate-300 text-[11px]">
+                      <span className="text-slate-500 font-mono mr-2">{new Date(tx.timestamp).toLocaleTimeString()}</span>
+                      {tx.teamPurchases.map(p => {
+                        const t = teams.find(tm => tm.id === p.teamId);
+                        return `${t?.name || 'Team'}: ${p.lots} lots`;
+                      }).join(', ')}
+                    </div>
+
+                    <button
+                      onClick={() => handleQuickUndoLast(tx.id)}
+                      className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Undo
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Rectification Modal */}
+      <RectificationModal
+        isOpen={isRectifyModalOpen}
+        onClose={() => setIsRectifyModalOpen(false)}
+        initialTab="lots"
+        initialTeamId={rectifyTeamId}
+        initialStockId={selectedStock.id}
+      />
     </div>
   );
 };
+

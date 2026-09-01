@@ -26,6 +26,7 @@ import { formatINR, formatPercent } from '../utils/formatters';
 import { exportValuationSummaryCSV } from '../utils/exportValuationCSV';
 import { soundFX } from '../utils/soundFX';
 import { GavelButton } from './GavelButton';
+import { RectificationModal } from './RectificationModal';
 
 interface ValuationViewProps {
   onSelectTeam: (teamId: string) => void;
@@ -46,6 +47,7 @@ export const ValuationView: React.FC<ValuationViewProps> = ({ onSelectTeam }) =>
   const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
   const [copiedAnnouncement, setCopiedAnnouncement] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [isRectifyModalOpen, setIsRectifyModalOpen] = useState(false);
 
   const winner = valuations.length > 0 ? valuations[0] : null;
   const runnerUp = valuations.length > 1 ? valuations[1] : null;
@@ -156,6 +158,15 @@ Organized by: ${config.clubName}`;
           >
             {copiedAnnouncement ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-amber-400" />}
             {copiedAnnouncement ? 'Copied Speech!' : 'Copy Script'}
+          </button>
+
+          <button
+            onClick={() => setIsRectifyModalOpen(true)}
+            className="px-3.5 py-2 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-300 text-xs font-bold flex items-center gap-1.5 border border-red-800 transition"
+            title="Rectify selection or counting mistakes in portfolios or undo past rounds"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Rectify Mistake</span>
           </button>
 
           <GavelButton size="sm" label="Final Hammer" />
@@ -526,6 +537,13 @@ Organized by: ${config.clubName}`;
           </div>
         </div>
       </div>
+
+      {/* Rectification Modal */}
+      <RectificationModal
+        isOpen={isRectifyModalOpen}
+        onClose={() => setIsRectifyModalOpen(false)}
+        initialTab="portfolio"
+      />
     </div>
   );
 };

@@ -71,7 +71,7 @@ export interface ExchangeTransaction {
 export interface GameConfig {
   eventName: string;
   clubName: string;
-  startingCash: number; // Rs. 500,000
+  startingCash: number; // Rs. 1,000,000 (10 Lakhs)
   lotSize: number; // 20 shares
   lotBasePrice: number; // Rs. 10,000
   maxLotsPerStock: number; // 8 lots (160 shares = Rs. 80,000)
@@ -164,6 +164,15 @@ export interface GameContextType {
   ) => { success: boolean; message: string };
   executeExchangeTrade: (stockId: string, sellerTeamId: string, buyerTeamId: string, finalPrice: number, sellerReserve?: number) => { success: boolean; message: string };
   
+  // Rectification & Mistake Correction Operations
+  revertNormalTransaction: (txId: string) => { success: boolean; message: string };
+  revertInsiderTransaction: (txId: string) => { success: boolean; message: string };
+  revertInsiderNewsTransaction: (txId: string) => { success: boolean; message: string };
+  revertExchangeTransaction: (txId: string) => { success: boolean; message: string };
+  rectifyTeamHolding: (teamId: string, stockId: string, newLots: number, adjustCash?: boolean, cashDelta?: number) => { success: boolean; message: string };
+  rectifyTeamCash: (teamId: string, newCash: number) => void;
+  rectifyTeamPenaltyAndBonus: (teamId: string, penalties: number, bonus: number) => void;
+
   // Multipliers & Valuation
   toggleRevealMultiplier: (stockId: string) => void;
   revealAllMultipliers: () => void;

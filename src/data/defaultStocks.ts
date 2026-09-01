@@ -452,4 +452,6 @@ export const DEFAULT_TEAMS = [
   { id: 'team-6', name: 'Team F', avatarColor: '#06b6d4' },
   { id: 'team-7', name: 'Team G', avatarColor: '#f97316' },
   { id: 'team-8', name: 'Team H', avatarColor: '#14b8a6' },
+  { id: 'team-9', name: 'Team I', avatarColor: '#6366f1' },
+  { id: 'team-10', name: 'Team J', avatarColor: '#e11d48' },
 ];

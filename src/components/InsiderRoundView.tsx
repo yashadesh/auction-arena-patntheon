@@ -23,11 +23,13 @@ import {
   FileText,
   UserCheck,
   Send,
-  Volume2
+  Volume2,
+  Trash2
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 import { GavelButton } from './GavelButton';
 import { soundFX } from '../utils/soundFX';
+import { RectificationModal } from './RectificationModal';
 
 export const InsiderRoundView: React.FC = () => {
   const { 
@@ -40,13 +42,16 @@ export const InsiderRoundView: React.FC = () => {
     insiderNewsTransactions,
     executeInsiderNewsAuction,
     executeStockAuction5Lots,
-    executeStockAllotment3Lots
+    executeStockAllotment3Lots,
+    revertInsiderTransaction,
+    revertInsiderNewsTransaction
   } = useGame();
 
   const selectedStock = stocks.find(s => s.id === selectedStockId) || stocks[0];
 
   // Active Tab within this round: 'news_bid' | 'lot5_auction' | 'lot3_allotment'
   const [activeSubTab, setActiveSubTab] = useState<'lot5_auction' | 'news_bid' | 'lot3_allotment'>('lot5_auction');
+  const [isRectifyModalOpen, setIsRectifyModalOpen] = useState<boolean>(false);
 
   // --- Form 1: 5-Lot Auction State ---
   const [lot5WinnerId, setLot5WinnerId] = useState<string>('');
@@ -194,6 +199,26 @@ export const InsiderRoundView: React.FC = () => {
     setTimeout(() => setCopiedInsider(false), 3000);
   };
 
+  const handleUndoInsiderTx = (txId: string) => {
+    const res = revertInsiderTransaction(txId);
+    if (res.success) {
+      setStatusMessage({ type: 'success', text: `Undone! ${res.message}` });
+      setTimeout(() => setStatusMessage(null), 4000);
+    } else {
+      setStatusMessage({ type: 'error', text: res.message });
+    }
+  };
+
+  const handleUndoNewsTx = (txId: string) => {
+    const res = revertInsiderNewsTransaction(txId);
+    if (res.success) {
+      setStatusMessage({ type: 'success', text: `Undone! ${res.message}` });
+      setTimeout(() => setStatusMessage(null), 4000);
+    } else {
+      setStatusMessage({ type: 'error', text: res.message });
+    }
+  };
+
   const filteredStocks = stocks.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     s.ticker.toLowerCase().includes(searchTerm.toLowerCase())
@@ -201,16 +226,24 @@ export const InsiderRoundView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with 30s Timer */}
+      {/* Header with 30s Timer & Rectify Button */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900 border border-slate-800">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Gavel className="w-5 h-5" />
             </span>
             <h2 className="text-xl font-bold text-slate-100 font-mono">
               INSIDER AUCTION & ALLOTMENT ARENA
             </h2>
+            <button
+              onClick={() => setIsRectifyModalOpen(true)}
+              className="px-2.5 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-[11px] font-bold flex items-center gap-1.5 transition"
+              title="Fix any mistake in shares or bids without fail"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Rectify Mistake</span>
+            </button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             <strong>Lot 5</strong> decided by highest bidder • <strong>Insider News</strong> bidding deducted from cash • <strong>Lot 3</strong> price deducted by host.
@@ -447,7 +480,14 @@ export const InsiderRoundView: React.FC = () => {
                       5-Lot Auction already recorded: <strong>{teams.find(t => t.id === stock5LotTx.winnerTeamId)?.name || 'Team'}</strong> won for <strong>₹{stock5LotTx.winnerBid.toLocaleString('en-IN')}</strong>
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-400">Can re-auction or update below</span>
+                  <button
+                    onClick={() => handleUndoInsiderTx(stock5LotTx.id)}
+                    className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    title="Undo this 5-lot auction"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Undo 5-Lot
+                  </button>
                 </div>
               )}
 
@@ -635,9 +675,14 @@ export const InsiderRoundView: React.FC = () => {
                       Insider Intel purchased by: <strong>{teams.find(t => t.id === stockNewsTx.winnerTeamId)?.name || 'Team'}</strong> for <strong>₹{stockNewsTx.bidAmount.toLocaleString('en-IN')}</strong>
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-400">
-                    {new Date(stockNewsTx.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  <button
+                    onClick={() => handleUndoNewsTx(stockNewsTx.id)}
+                    className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    title="Undo this intel purchase"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Undo Intel
+                  </button>
                 </div>
               )}
 
@@ -805,7 +850,14 @@ export const InsiderRoundView: React.FC = () => {
                       3-Lot Allotment already recorded: <strong>{teams.find(t => t.id === stock3LotTx.winnerTeamId)?.name || 'Team'}</strong> received {stock3LotTx.winnerLots} lots for <strong>₹{stock3LotTx.winnerBid.toLocaleString('en-IN')}</strong>
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-400">Can allot more or update</span>
+                  <button
+                    onClick={() => handleUndoInsiderTx(stock3LotTx.id)}
+                    className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    title="Undo this 3-lot allotment"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Undo 3-Lot
+                  </button>
                 </div>
               )}
 
@@ -910,9 +962,12 @@ export const InsiderRoundView: React.FC = () => {
 
           {/* Activity Log for Selected Stock */}
           <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Activity History for {selectedStock.name}
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Activity History for {selectedStock.name}
+              </h4>
+              <span className="text-[10px] text-slate-500 font-mono">1-Click Undo Enabled</span>
+            </div>
 
             {(!stock5LotTx && !stock3LotTx && !stockNewsTx) ? (
               <p className="text-xs text-slate-500 italic py-2">
@@ -921,32 +976,53 @@ export const InsiderRoundView: React.FC = () => {
             ) : (
               <div className="space-y-2 text-xs font-mono">
                 {stockNewsTx && (
-                  <div className="p-2.5 rounded-xl bg-purple-950/40 border border-purple-800/40 flex items-center justify-between text-purple-300">
+                  <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-800/40 flex items-center justify-between text-purple-300">
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-bold">INTEL NEWS</span>
                       <span>{teams.find(t => t.id === stockNewsTx.winnerTeamId)?.name || 'Team'}</span>
+                      <span className="text-slate-400 font-normal">({formatINR(stockNewsTx.bidAmount)})</span>
                     </div>
-                    <span className="font-bold text-purple-200">₹{stockNewsTx.bidAmount.toLocaleString('en-IN')} (Deducted)</span>
+                    <button
+                      onClick={() => handleUndoNewsTx(stockNewsTx.id)}
+                      className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Undo Intel
+                    </button>
                   </div>
                 )}
 
                 {stock5LotTx && (
-                  <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/40 flex items-center justify-between text-amber-300">
+                  <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-800/40 flex items-center justify-between text-amber-300">
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">5 LOTS (100 SH)</span>
                       <span>{teams.find(t => t.id === stock5LotTx.winnerTeamId)?.name || 'Team'}</span>
+                      <span className="text-slate-400 font-normal">({formatINR(stock5LotTx.winnerBid)})</span>
                     </div>
-                    <span className="font-bold text-amber-200">₹{stock5LotTx.winnerBid.toLocaleString('en-IN')} (Highest Bid)</span>
+                    <button
+                      onClick={() => handleUndoInsiderTx(stock5LotTx.id)}
+                      className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Undo 5-Lot
+                    </button>
                   </div>
                 )}
 
                 {stock3LotTx && (
-                  <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-800/40 flex items-center justify-between text-blue-300">
+                  <div className="p-3 rounded-xl bg-blue-950/40 border border-blue-800/40 flex items-center justify-between text-blue-300">
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-bold">{stock3LotTx.winnerLots || 3} LOTS ({(stock3LotTx.winnerLots || 3) * 20} SH)</span>
                       <span>{teams.find(t => t.id === stock3LotTx.winnerTeamId)?.name || 'Team'}</span>
+                      <span className="text-slate-400 font-normal">({formatINR(stock3LotTx.winnerBid)})</span>
                     </div>
-                    <span className="font-bold text-blue-200">₹{stock3LotTx.winnerBid.toLocaleString('en-IN')} (Host Deducted)</span>
+                    <button
+                      onClick={() => handleUndoInsiderTx(stock3LotTx.id)}
+                      className="px-2.5 py-1 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 text-[11px] font-bold flex items-center gap-1 transition shrink-0"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Undo 3-Lot
+                    </button>
                   </div>
                 )}
               </div>
@@ -955,6 +1031,14 @@ export const InsiderRoundView: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Rectification Modal */}
+      <RectificationModal
+        isOpen={isRectifyModalOpen}
+        onClose={() => setIsRectifyModalOpen(false)}
+        initialTab="history"
+        initialStockId={selectedStock.id}
+      />
     </div>
   );
 };

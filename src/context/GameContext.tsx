@@ -13,12 +13,12 @@ import {
 import { INITIAL_STOCKS, DEFAULT_TEAMS } from '../data/defaultStocks';
 import { calculateAllTeamsValuation } from '../utils/calculations';
 
-const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V2';
+const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V3';
 
 const DEFAULT_CONFIG: GameConfig = {
   eventName: 'WOLF OF BIT MESRA',
   clubName: 'Finance Club, BIT Mesra',
-  startingCash: 500000,
+  startingCash: 1000000,
   lotSize: 20,
   lotBasePrice: 10000,
   maxLotsPerStock: 8,
@@ -598,6 +598,210 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   };
 
+  // Reversals & Undo Methods (Mistake Rectification)
+  const revertNormalTransaction = (txId: string) => {
+    const tx = normalTransactions.find(t => t.id === txId);
+    if (!tx) return { success: false, message: 'Allotment transaction not found' };
+
+    const stock = stocks.find(s => s.id === tx.stockId);
+    const stockName = stock?.name || 'Stock';
+
+    setTeams(prev =>
+      prev.map(team => {
+        const purchase = tx.teamPurchases.find(p => p.teamId === team.id);
+        if (!purchase) return team;
+
+        const currentLots = team.holdings[tx.stockId] || 0;
+        const newLots = Math.max(0, currentLots - purchase.lots);
+        const updatedHoldings = { ...team.holdings };
+        if (newLots === 0) {
+          delete updatedHoldings[tx.stockId];
+        } else {
+          updatedHoldings[tx.stockId] = newLots;
+        }
+
+        return {
+          ...team,
+          cash: team.cash + purchase.amountPaid,
+          holdings: updatedHoldings
+        };
+      })
+    );
+
+    setNormalTransactions(prev => prev.filter(t => t.id !== txId));
+    return {
+      success: true,
+      message: `Reverted allotment for ${stockName}! Lots removed and ₹${tx.teamPurchases.reduce((a, b) => a + b.amountPaid, 0).toLocaleString('en-IN')} refunded.`
+    };
+  };
+
+  const revertInsiderTransaction = (txId: string) => {
+    const tx = insiderTransactions.find(t => t.id === txId);
+    if (!tx) return { success: false, message: 'Insider transaction not found' };
+
+    const stock = stocks.find(s => s.id === tx.stockId);
+    const stockName = stock?.name || 'Stock';
+
+    setTeams(prev =>
+      prev.map(team => {
+        let updated = { ...team };
+        const updatedHoldings = { ...team.holdings };
+
+        if (team.id === tx.winnerTeamId) {
+          const currentLots = team.holdings[tx.stockId] || 0;
+          const newLots = Math.max(0, currentLots - tx.winnerLots);
+          if (newLots === 0) delete updatedHoldings[tx.stockId];
+          else updatedHoldings[tx.stockId] = newLots;
+
+          updated = {
+            ...updated,
+            cash: tx.deductCash ? updated.cash + tx.winnerBid : updated.cash,
+            holdings: updatedHoldings
+          };
+        }
+
+        if (tx.runnerUpTeamId && team.id === tx.runnerUpTeamId && tx.runnerUpLots) {
+          const rCurrentLots = updated.holdings[tx.stockId] || 0;
+          const rNewLots = Math.max(0, rCurrentLots - tx.runnerUpLots);
+          if (rNewLots === 0) delete updatedHoldings[tx.stockId];
+          else updatedHoldings[tx.stockId] = rNewLots;
+
+          updated = {
+            ...updated,
+            cash: tx.deductCash && tx.runnerUpBid ? updated.cash + tx.runnerUpBid : updated.cash,
+            holdings: updatedHoldings
+          };
+        }
+
+        return updated;
+      })
+    );
+
+    setInsiderTransactions(prev => prev.filter(t => t.id !== txId));
+    return {
+      success: true,
+      message: `Reverted insider transaction for ${stockName}! Lots removed and cash refunded.`
+    };
+  };
+
+  const revertInsiderNewsTransaction = (txId: string) => {
+    const tx = insiderNewsTransactions.find(t => t.id === txId);
+    if (!tx) return { success: false, message: 'News bid transaction not found' };
+
+    const stock = stocks.find(s => s.id === tx.stockId);
+    const stockName = stock?.name || 'Stock';
+
+    if (tx.deductCash && tx.bidAmount > 0) {
+      setTeams(prev =>
+        prev.map(team => (team.id === tx.winnerTeamId ? { ...team, cash: team.cash + tx.bidAmount } : team))
+      );
+    }
+
+    setInsiderNewsTransactions(prev => prev.filter(t => t.id !== txId));
+    return {
+      success: true,
+      message: `Reverted insider news bid for ${stockName}! ₹${tx.bidAmount.toLocaleString('en-IN')} refunded to winner.`
+    };
+  };
+
+  const revertExchangeTransaction = (txId: string) => {
+    const tx = exchangeTransactions.find(t => t.id === txId);
+    if (!tx) return { success: false, message: 'Exchange trade not found' };
+
+    const stock = stocks.find(s => s.id === tx.stockId);
+    const stockName = stock?.name || 'Stock';
+
+    setTeams(prev =>
+      prev.map(team => {
+        if (team.id === tx.sellerTeamId) {
+          const curLots = team.holdings[tx.stockId] || 0;
+          return {
+            ...team,
+            cash: team.cash - tx.finalPrice,
+            holdings: {
+              ...team.holdings,
+              [tx.stockId]: curLots + tx.lots
+            }
+          };
+        }
+        if (team.id === tx.buyerTeamId) {
+          const curLots = team.holdings[tx.stockId] || 0;
+          const newLots = Math.max(0, curLots - tx.lots);
+          const updatedHoldings = { ...team.holdings };
+          if (newLots === 0) delete updatedHoldings[tx.stockId];
+          else updatedHoldings[tx.stockId] = newLots;
+
+          return {
+            ...team,
+            cash: team.cash + tx.finalPrice,
+            holdings: updatedHoldings
+          };
+        }
+        return team;
+      })
+    );
+
+    setExchangeTransactions(prev => prev.filter(t => t.id !== txId));
+    return {
+      success: true,
+      message: `Reversed exchange trade for ${stockName}! ${tx.lots} lot returned to seller and ₹${tx.finalPrice.toLocaleString('en-IN')} refunded to buyer.`
+    };
+  };
+
+  // Direct Portfolio & Counting Rectification
+  const rectifyTeamHolding = (
+    teamId: string,
+    stockId: string,
+    newLots: number,
+    adjustCash: boolean = false,
+    cashDelta?: number
+  ) => {
+    const team = teams.find(t => t.id === teamId);
+    const stock = stocks.find(s => s.id === stockId);
+    if (!team || !stock) return { success: false, message: 'Team or Stock not found' };
+
+    const safeLots = Math.max(0, Math.min(config.maxLotsPerStock, newLots));
+    const currentLots = team.holdings[stockId] || 0;
+    const lotDiff = safeLots - currentLots;
+
+    const calculatedCashAdjustment = cashDelta !== undefined 
+      ? cashDelta 
+      : adjustCash 
+      ? - (lotDiff * config.lotBasePrice) 
+      : 0;
+
+    setTeams(prev =>
+      prev.map(t => {
+        if (t.id !== teamId) return t;
+        const updatedHoldings = { ...t.holdings };
+        if (safeLots === 0) {
+          delete updatedHoldings[stockId];
+        } else {
+          updatedHoldings[stockId] = safeLots;
+        }
+
+        return {
+          ...t,
+          cash: Math.max(0, t.cash + calculatedCashAdjustment),
+          holdings: updatedHoldings
+        };
+      })
+    );
+
+    return {
+      success: true,
+      message: `Rectified ${team.name}'s holdings of ${stock.name}: ${currentLots} → ${safeLots} lots (${safeLots * 20} shares)${calculatedCashAdjustment !== 0 ? ` (Cash adjusted by ${calculatedCashAdjustment > 0 ? '+' : ''}₹${calculatedCashAdjustment.toLocaleString('en-IN')})` : ''}!`
+    };
+  };
+
+  const rectifyTeamCash = (teamId: string, newCash: number) => {
+    setTeams(prev => prev.map(t => (t.id === teamId ? { ...t, cash: Math.max(0, newCash) } : t)));
+  };
+
+  const rectifyTeamPenaltyAndBonus = (teamId: string, penalties: number, bonus: number) => {
+    setTeams(prev => prev.map(t => (t.id === teamId ? { ...t, penalties: Math.max(0, penalties), bonus: Math.max(0, bonus) } : t)));
+  };
+
   // Multiplier reveals
   const toggleRevealMultiplier = (stockId: string) => {
     setRevealedMultipliers(prev => ({
@@ -637,7 +841,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loadDemoGame = () => {
     const demoTeams: Team[] = DEFAULT_TEAMS.map((dt, idx) => {
       const holdings: Record<string, number> = {};
-      let remainingCash = 500000;
+      let remainingCash = config.startingCash;
       
       const stockSubset = stocks.slice(idx * 3, idx * 3 + 5);
       stockSubset.forEach((st, sIdx) => {
@@ -653,7 +857,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: dt.id,
         name: dt.name,
         avatarColor: dt.avatarColor,
-        startingCash: 500000,
+        startingCash: config.startingCash,
         cash: remainingCash,
         holdings,
         penalties: idx === 3 ? 10000 : 0,
@@ -729,6 +933,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         executeStockAuction5Lots,
         executeStockAllotment3Lots,
         executeExchangeTrade,
+        revertNormalTransaction,
+        revertInsiderTransaction,
+        revertInsiderNewsTransaction,
+        revertExchangeTransaction,
+        rectifyTeamHolding,
+        rectifyTeamCash,
+        rectifyTeamPenaltyAndBonus,
         toggleRevealMultiplier,
         revealAllMultipliers,
         hideAllMultipliers,
