@@ -483,11 +483,11 @@ Organized by: ${config.clubName}`;
                                       <tr>
                                         <th className="px-3 py-2">Stock</th>
                                         <th className="px-3 py-2 text-center">Lots (Shares)</th>
-                                        <th className="px-3 py-2 text-right">Base Cost</th>
+                                        <th className="px-3 py-2 text-right">Purchase Price (Base)</th>
                                         <th className="px-3 py-2 text-right">Return %</th>
-                                        <th className="px-3 py-2 text-right">Final Multiplier</th>
-                                        <th className="px-3 py-2 text-right">Market Value</th>
-                                        <th className="px-3 py-2 text-right">Stock P&L</th>
+                                        <th className="px-3 py-2 text-right">Calculated Return</th>
+                                        <th className="px-3 py-2 text-right">Final Portfolio Value</th>
+                                        <th className="px-3 py-2 text-right">Net P&L</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-800/60">
@@ -500,7 +500,7 @@ Organized by: ${config.clubName}`;
                                           <td className="px-3 py-2 text-center font-mono text-slate-300">
                                             {h.lots} lots ({h.shares} sh)
                                           </td>
-                                          <td className="px-3 py-2 text-right font-mono text-slate-400">
+                                          <td className="px-3 py-2 text-right font-mono text-slate-300 font-bold">
                                             {formatINR(h.baseCost)}
                                           </td>
                                           <td className="px-3 py-2 text-right font-mono font-bold">
@@ -508,10 +508,15 @@ Organized by: ${config.clubName}`;
                                               {h.returnPercent >= 0 ? `+${h.returnPercent}%` : `${h.returnPercent}%`}
                                             </span>
                                           </td>
-                                          <td className="px-3 py-2 text-right font-mono text-slate-300">
-                                            {h.finalMultiplier.toFixed(2)}x
+                                          <td className="px-3 py-2 text-right font-mono font-semibold">
+                                            <span className={h.returnAmount >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                                              {h.returnAmount >= 0 ? `+${formatINR(h.returnAmount)}` : formatINR(h.returnAmount)}
+                                            </span>
+                                            <span className="block text-[10px] text-slate-500">
+                                              ({h.returnPercent}% of {formatINR(h.baseCost)})
+                                            </span>
                                           </td>
-                                          <td className="px-3 py-2 text-right font-mono font-bold text-slate-100">
+                                          <td className="px-3 py-2 text-right font-mono font-bold text-amber-300">
                                             {formatINR(h.holdingValue)}
                                           </td>
                                           <td className="px-3 py-2 text-right font-mono font-bold">

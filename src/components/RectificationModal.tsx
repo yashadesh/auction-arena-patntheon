@@ -61,6 +61,7 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
   const [selectedStockId, setSelectedStockId] = useState<string>(initialStockId || stocks[0]?.id || '');
   const [targetLots, setTargetLots] = useState<number>(0);
   const [adjustCashWithLots, setAdjustCashWithLots] = useState<boolean>(true);
+  const [customInvested, setCustomInvested] = useState<number>(0);
 
   // Cash & Penalties Rectification Form State
   const [cashTeamId, setCashTeamId] = useState<string>(initialTeamId || teams[0]?.id || '');
@@ -84,9 +85,12 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
 
   React.useEffect(() => {
     if (currentTeam && currentStock) {
-      setTargetLots(currentTeam.holdings[currentStock.id] || 0);
+      const lots = currentTeam.holdings[currentStock.id] || 0;
+      setTargetLots(lots);
+      const invested = currentTeam.holdingInvested?.[currentStock.id] ?? (lots * config.lotBasePrice);
+      setCustomInvested(invested);
     }
-  }, [selectedTeamId, selectedStockId, currentTeam, currentStock]);
+  }, [selectedTeamId, selectedStockId, currentTeam, currentStock, config.lotBasePrice]);
 
   // Sync state when team changes in Cash tab
   const currentCashTeam = teams.find(t => t.id === cashTeamId) || teams[0];
@@ -148,7 +152,7 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
   // Handler for Direct Lots Rectification
   const handleApplyLotsRectification = () => {
     if (!selectedTeamId || !selectedStockId) return;
-    const res = rectifyTeamHolding(selectedTeamId, selectedStockId, targetLots, adjustCashWithLots);
+    const res = rectifyTeamHolding(selectedTeamId, selectedStockId, targetLots, adjustCashWithLots, undefined, customInvested);
     if (res.success) {
       setStatusMessage({ type: 'success', text: res.message });
       setTimeout(() => setStatusMessage(null), 4000);
@@ -557,10 +561,89 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
                     ))}
                   </div>
 
-                  <p className="text-[11px] text-slate-400 font-mono mt-1">
-                    New Allotment: <span className="font-bold text-slate-100">{targetLots} lots</span> ({targetLots * 20} shares)
-                  </p>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-[11px] text-slate-400 font-mono">
+                      New Allotment: <span className="font-bold text-slate-100">{targetLots} lots</span> ({targetLots * 20} shares)
+                    </p>
+                    {targetLots > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setCustomInvested(targetLots * config.lotBasePrice)}
+                        className="text-[10px] text-amber-400 hover:underline font-mono"
+                      >
+                        Reset to default (₹{(targetLots * config.lotBasePrice).toLocaleString('en-IN')})
+                      </button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Actual Purchase Price / Invested Cost */}
+                {targetLots > 0 && (
+                  <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-200 block uppercase">
+                        Actual Purchase / Investment Price (Base Cost):
+                      </label>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        Affects final return % calculation
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-mono font-bold">₹</span>
+                        <input
+                          type="number"
+                          step={1000}
+                          min={0}
+                          value={customInvested}
+                          onChange={(e) => setCustomInvested(Math.max(0, parseInt(e.target.value) || 0))}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-7 pr-3 py-2 text-xs font-mono font-bold text-amber-400 focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setCustomInvested(40000)}
+                          className="px-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] font-semibold transition"
+                          title="Set to ₹40,000 (e.g. Reliance 5 lots won in 40k)"
+                        >
+                          ₹40k
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCustomInvested(targetLots * config.lotBasePrice)}
+                          className="px-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] font-semibold transition"
+                          title="Set to default ₹10,000/lot"
+                        >
+                          ₹{targetLots * 10}k
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Live Calculation Preview */}
+                    {currentStock && (
+                      <div className="p-2.5 rounded-lg bg-slate-900 border border-amber-500/20 text-[11px] font-mono text-slate-300 space-y-1">
+                        <div className="flex items-center justify-between text-amber-400 font-bold text-[11px]">
+                          <span>Return Calculation for {currentStock.name}:</span>
+                          <span>Return Rate: {currentStock.returnPercent >= 0 ? `+${currentStock.returnPercent}%` : `${currentStock.returnPercent}%`}</span>
+                        </div>
+                        <div className="text-slate-400 text-[10px] pt-1 border-t border-slate-800 flex justify-between">
+                          <span>Return Generated ({currentStock.returnPercent}% of {formatINR(customInvested)}):</span>
+                          <span className={currentStock.returnPercent >= 0 ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
+                            {currentStock.returnPercent >= 0 ? '+' : ''}{formatINR((customInvested * currentStock.returnPercent) / 100)}
+                          </span>
+                        </div>
+                        <div className="text-slate-200 text-[11px] font-bold flex justify-between">
+                          <span>Final Amount Added to Portfolio:</span>
+                          <span className="text-amber-300">
+                            {formatINR(customInvested + (customInvested * currentStock.returnPercent) / 100)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Cash Adjustment Toggle */}
                 <div className="pt-2 border-t border-slate-800 flex items-start gap-2">

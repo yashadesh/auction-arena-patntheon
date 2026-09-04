@@ -13,18 +13,24 @@ import {
   TrendingUp, 
   TrendingDown, 
   Lock,
-  Tag
+  Tag,
+  RefreshCw,
+  Coins,
+  Gavel,
+  CheckCircle2
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 
 export const StockMasterView: React.FC = () => {
-  const { stocks, updateStock, addStock, config, setSelectedStockId, setActiveTab } = useGame();
+  const { stocks, updateStock, addStock, syncOfficialStocks, config, setSelectedStockId, setActiveTab } = useGame();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [returnFilter, setReturnFilter] = useState<'all' | 'positive' | 'negative'>('all');
   const [editingStockId, setEditingStockId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Stock>>({});
   const [showAddModal, setShowAddModal] = useState(false);
+  const [syncedFeedback, setSyncedFeedback] = useState(false);
   const [newStock, setNewStock] = useState<Omit<Stock, 'id'>>({
     name: '',
     ticker: '',
@@ -42,7 +48,12 @@ export const StockMasterView: React.FC = () => {
                           s.ticker.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           s.displayNews.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCat = selectedCategory === 'All' || s.category === selectedCategory;
-    return matchesSearch && matchesCat;
+    const matchesReturn = returnFilter === 'all' 
+      ? true 
+      : returnFilter === 'positive' 
+      ? s.returnPercent >= 0 
+      : s.returnPercent < 0;
+    return matchesSearch && matchesCat && matchesReturn;
   });
 
   const handleStartEdit = (stock: Stock) => {
@@ -53,6 +64,12 @@ export const StockMasterView: React.FC = () => {
   const handleSaveEdit = (stockId: string) => {
     updateStock(stockId, editForm);
     setEditingStockId(null);
+  };
+
+  const handleSyncOfficial = () => {
+    syncOfficialStocks();
+    setSyncedFeedback(true);
+    setTimeout(() => setSyncedFeedback(false), 2500);
   };
 
   const handleCreateStock = (e: React.FormEvent) => {
@@ -74,7 +91,7 @@ export const StockMasterView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Banner */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -89,30 +106,69 @@ export const StockMasterView: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-amber-500/20"
-        >
-          <Plus className="w-4 h-4" />
-          Add Custom Stock
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSyncOfficial}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border ${
+              syncedFeedback
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                : 'bg-slate-950 hover:bg-slate-800 text-slate-200 border-slate-700/80'
+            }`}
+            title="Reload official rulebook values (opening bid prices and return percentages) from PDF Table 1"
+          >
+            {syncedFeedback ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <RefreshCw className="w-4 h-4 text-amber-400" />}
+            <span>{syncedFeedback ? 'Synced to Official Sheet!' : 'Sync with Official Sheet'}</span>
+          </button>
+
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition shadow-lg shadow-amber-500/20"
+          >
+            <Plus className="w-4 h-4" />
+            Add Custom Stock
+          </button>
+        </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800">
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
-          <input
-            type="text"
-            placeholder="Search stock, ticker, or news keywords..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-          />
+      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800">
+        <div className="flex items-center gap-3">
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+            <input
+              type="text"
+              placeholder="Search stock, ticker, or news keywords..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            />
+          </div>
+
+          {/* Quick Return filter */}
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+            <button
+              onClick={() => setReturnFilter('all')}
+              className={`px-2.5 py-1 rounded-lg transition ${returnFilter === 'all' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'}`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setReturnFilter('positive')}
+              className={`px-2.5 py-1 rounded-lg transition ${returnFilter === 'positive' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-400 hover:text-emerald-400'}`}
+            >
+              Gainers (+)
+            </button>
+            <button
+              onClick={() => setReturnFilter('negative')}
+              className={`px-2.5 py-1 rounded-lg transition ${returnFilter === 'negative' ? 'bg-red-500/20 text-red-300 font-bold border border-red-500/40' : 'text-slate-400 hover:text-red-400'}`}
+            >
+              Losers (-)
+            </button>
+          </div>
         </div>
 
         {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full lg:w-auto scrollbar-none py-1">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -156,21 +212,35 @@ export const StockMasterView: React.FC = () => {
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => {
                         setSelectedStockId(stock.id);
                         setActiveTab('normal');
                       }}
-                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-amber-400"
+                      className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-slate-200 hover:text-white flex items-center gap-1 transition"
+                      title="Allot in Round 1"
                     >
-                      Trade →
+                      <Coins className="w-3 h-3 text-amber-400" />
+                      <span>R1</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedStockId(stock.id);
+                        setActiveTab('insider');
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-[11px] font-semibold text-amber-400 border border-amber-500/30 flex items-center gap-1 transition"
+                      title="Auction in Round 2"
+                    >
+                      <Gavel className="w-3 h-3" />
+                      <span>R2 Auction</span>
                     </button>
                     <button
                       onClick={() => isEditing ? handleSaveEdit(stock.id) : handleStartEdit(stock)}
-                      className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200"
+                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition"
+                      title={isEditing ? 'Save edits' : 'Edit values'}
                     >
-                      {isEditing ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Edit3 className="w-3.5 h-3.5" />}
+                      {isEditing ? <Check className="w-4 h-4 text-emerald-400" /> : <Edit3 className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
@@ -187,7 +257,7 @@ export const StockMasterView: React.FC = () => {
                         className="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-xs text-amber-400 font-bold"
                       />
                     ) : (
-                      <span className={`font-bold ${stock.returnPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <span className={`font-bold text-sm ${stock.returnPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {stock.returnPercent >= 0 ? `+${stock.returnPercent}%` : `${stock.returnPercent}%`}
                       </span>
                     )}
@@ -195,7 +265,7 @@ export const StockMasterView: React.FC = () => {
 
                   <div className="p-2 rounded-lg bg-slate-950 border border-slate-800/80">
                     <span className="text-slate-500 block text-[10px] uppercase">Multiplier</span>
-                    <span className="font-bold text-slate-200">
+                    <span className="font-bold text-sm text-slate-200">
                       {multiplier.toFixed(2)}x
                     </span>
                   </div>
@@ -210,8 +280,8 @@ export const StockMasterView: React.FC = () => {
                         className="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-xs text-slate-200 font-bold"
                       />
                     ) : (
-                      <span className="font-bold text-amber-400">
-                        ₹{(stock.openingBidPrice / 1000)}k
+                      <span className="font-bold text-sm text-amber-400">
+                        ₹{stock.openingBidPrice.toLocaleString('en-IN')}
                       </span>
                     )}
                   </div>
@@ -224,9 +294,18 @@ export const StockMasterView: React.FC = () => {
                       <Tag className="w-3 h-3 text-blue-400" />
                       Display News (Public Clue)
                     </span>
-                    <p className="text-slate-300 text-[11px] leading-relaxed">
-                      {stock.displayNews}
-                    </p>
+                    {isEditing ? (
+                      <textarea
+                        value={editForm.displayNews ?? stock.displayNews}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, displayNews: e.target.value }))}
+                        rows={2}
+                        className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs text-slate-200"
+                      />
+                    ) : (
+                      <p className="text-slate-300 text-[11px] leading-relaxed">
+                        {stock.displayNews}
+                      </p>
+                    )}
                   </div>
 
                   <div className="p-3 rounded-xl bg-slate-950 border border-amber-500/20 space-y-1">
@@ -234,12 +313,38 @@ export const StockMasterView: React.FC = () => {
                       <Lock className="w-3 h-3 text-amber-400" />
                       Insider Confidential Intelligence
                     </span>
-                    <p className="text-amber-200/90 text-[11px] leading-relaxed italic">
-                      {stock.insiderNews}
-                    </p>
+                    {isEditing ? (
+                      <textarea
+                        value={editForm.insiderNews ?? stock.insiderNews}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, insiderNews: e.target.value }))}
+                        rows={2}
+                        className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs text-amber-200"
+                      />
+                    ) : (
+                      <p className="text-amber-200/90 text-[11px] leading-relaxed italic">
+                        {stock.insiderNews}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
+
+              {isEditing && (
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+                  <button
+                    onClick={() => setEditingStockId(null)}
+                    className="px-3 py-1 rounded-lg bg-slate-800 text-xs text-slate-400 hover:text-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleSaveEdit(stock.id)}
+                    className="px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -247,98 +352,100 @@ export const StockMasterView: React.FC = () => {
 
       {/* Add Stock Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-100 font-mono flex items-center gap-2">
               <Plus className="w-5 h-5 text-amber-400" />
-              Add New Stock to Trading Pool
+              Add Custom Stock
             </h3>
 
             <form onSubmit={handleCreateStock} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-slate-400 mb-1">Company Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Adani Green Energy"
-                  value={newStock.name}
-                  onChange={(e) => setNewStock(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1">Ticker</label>
+                  <label className="text-slate-400 block mb-1">Company Name</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. ADANIGREEN"
-                    value={newStock.ticker}
-                    onChange={(e) => setNewStock(prev => ({ ...prev, ticker: e.target.value.toUpperCase() }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+                    value={newStock.name}
+                    onChange={(e) => setNewStock(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g. Acme Corp"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Category</label>
+                  <label className="text-slate-400 block mb-1">Ticker</label>
+                  <input
+                    type="text"
+                    required
+                    value={newStock.ticker}
+                    onChange={(e) => setNewStock(prev => ({ ...prev, ticker: e.target.value.toUpperCase() }))}
+                    placeholder="e.g. ACME"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-slate-400 block mb-1">Category</label>
                   <select
                     value={newStock.category}
-                    onChange={(e) => setNewStock(prev => ({ ...prev, category: e.target.value as any }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                    onChange={(e) => setNewStock(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-slate-100"
                   >
                     {categories.filter(c => c !== 'All').map(c => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1">Return %</label>
+                  <label className="text-slate-400 block mb-1">Return %</label>
                   <input
                     type="number"
                     value={newStock.returnPercent}
                     onChange={(e) => setNewStock(prev => ({ ...prev, returnPercent: parseInt(e.target.value) || 0 }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Opening Bid (₹)</label>
+                  <label className="text-slate-400 block mb-1">Opening Bid (₹)</label>
                   <input
                     type="number"
+                    step={1000}
                     value={newStock.openingBidPrice}
                     onChange={(e) => setNewStock(prev => ({ ...prev, openingBidPrice: parseInt(e.target.value) || 0 }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">Display News (Public Clue)</label>
+                <label className="text-slate-400 block mb-1">Public Display News</label>
                 <textarea
                   rows={2}
                   value={newStock.displayNews}
                   onChange={(e) => setNewStock(prev => ({ ...prev, displayNews: e.target.value }))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200"
+                  placeholder="Public hint visible during the rounds..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">Insider Confidential News</label>
+                <label className="text-slate-400 block mb-1">Insider Confidential Intelligence</label>
                 <textarea
                   rows={2}
                   value={newStock.insiderNews}
                   onChange={(e) => setNewStock(prev => ({ ...prev, insiderNews: e.target.value }))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200"
+                  placeholder="Sealed clue revealed only to the winning bidder..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-amber-200"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
                 >
                   Cancel
                 </button>

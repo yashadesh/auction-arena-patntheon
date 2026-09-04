@@ -109,12 +109,11 @@ export const TeamDetailModal: React.FC<TeamDetailModalProps> = ({ teamId, onClos
                   <thead className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
                     <tr>
                       <th className="px-4 py-2.5">Stock</th>
-                      <th className="px-4 py-2.5 text-center">Lots</th>
-                      <th className="px-4 py-2.5 text-center">Shares</th>
-                      <th className="px-4 py-2.5 text-right">Base Cost</th>
+                      <th className="px-4 py-2.5 text-center">Lots (Shares)</th>
+                      <th className="px-4 py-2.5 text-right">Purchase Price (Base)</th>
                       <th className="px-4 py-2.5 text-right">Return %</th>
-                      <th className="px-4 py-2.5 text-right">Multiplier</th>
-                      <th className="px-4 py-2.5 text-right">Holding Value</th>
+                      <th className="px-4 py-2.5 text-right">Calculated Return</th>
+                      <th className="px-4 py-2.5 text-right">Final Portfolio Value</th>
                       <th className="px-4 py-2.5 text-right">Net P&L</th>
                     </tr>
                   </thead>
@@ -126,12 +125,9 @@ export const TeamDetailModal: React.FC<TeamDetailModalProps> = ({ teamId, onClos
                           <span className="text-[10px] text-slate-500 font-mono">{item.stock.ticker} • {item.stock.category}</span>
                         </td>
                         <td className="px-4 py-2.5 text-center font-mono font-bold text-slate-300">
-                          {item.lots}
+                          {item.lots} lots ({item.shares} sh)
                         </td>
-                        <td className="px-4 py-2.5 text-center font-mono text-slate-400">
-                          {item.shares}
-                        </td>
-                        <td className="px-4 py-2.5 text-right font-mono text-slate-400">
+                        <td className="px-4 py-2.5 text-right font-mono text-slate-300 font-bold">
                           {formatINR(item.baseCost)}
                         </td>
                         <td className="px-4 py-2.5 text-right font-mono font-bold">
@@ -139,10 +135,15 @@ export const TeamDetailModal: React.FC<TeamDetailModalProps> = ({ teamId, onClos
                             {item.returnPercent >= 0 ? `+${item.returnPercent}%` : `${item.returnPercent}%`}
                           </span>
                         </td>
-                        <td className="px-4 py-2.5 text-right font-mono text-slate-300">
-                          {item.finalMultiplier.toFixed(2)}x
+                        <td className="px-4 py-2.5 text-right font-mono font-semibold">
+                          <span className={item.returnAmount >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                            {item.returnAmount >= 0 ? `+${formatINR(item.returnAmount)}` : formatINR(item.returnAmount)}
+                          </span>
+                          <span className="block text-[10px] text-slate-500 font-mono">
+                            ({item.returnPercent}% of {formatINR(item.baseCost)})
+                          </span>
                         </td>
-                        <td className="px-4 py-2.5 text-right font-mono font-bold text-slate-100">
+                        <td className="px-4 py-2.5 text-right font-mono font-bold text-amber-300">
                           {formatINR(item.holdingValue)}
                         </td>
                         <td className="px-4 py-2.5 text-right font-mono font-bold">

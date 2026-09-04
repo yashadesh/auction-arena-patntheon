@@ -15,7 +15,9 @@ import {
   Download,
   Upload,
   Coins,
-  CheckCircle2
+  CheckCircle2,
+  HelpCircle,
+  Sparkles
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 import { exportValuationSummaryCSV } from '../utils/exportValuationCSV';
@@ -41,6 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
   } = useGame();
 
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [importJsonText, setImportJsonText] = useState('');
   const [copied, setCopied] = useState(false);
   const [csvDownloaded, setCsvDownloaded] = useState(false);
@@ -181,9 +184,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
               </button>
 
               <button
+                id="btn-quick-guide"
+                onClick={() => setShowHelpModal(true)}
+                className="p-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition flex items-center gap-1.5 text-xs font-semibold"
+                title="Quick Event Rules & Valuation Guide"
+              >
+                <HelpCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Guide</span>
+              </button>
+
+              <button
                 id="btn-reset-game"
                 onClick={() => {
-                  if (confirm(`Are you sure you want to reset all team holdings and cash back to starting ${formatINR(config.startingCapital)}?`)) {
+                  if (confirm(`Are you sure you want to reset all team holdings and cash back to starting ${formatINR(config.startingCash)}?`)) {
                     resetGame();
                   }
                 }}
@@ -293,6 +306,107 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
                   Restore Game State
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Guide & Rules Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl space-y-4 scrollbar-none">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  <Sparkles className="w-5 h-5" />
+                </span>
+                <h3 className="text-base font-bold text-slate-100 font-mono">
+                  WOLF OF BIT MESRA — QUICK REFERENCE GUIDE
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-slate-400 hover:text-slate-200 text-sm font-bold px-2 py-1 rounded bg-slate-800"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Core Valuation Rule Highlight */}
+            <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-amber-600/5 border border-amber-500/30 space-y-2">
+              <span className="text-[11px] uppercase font-bold text-amber-400 font-mono tracking-wider flex items-center gap-1.5">
+                <Coins className="w-3.5 h-3.5" />
+                Actual Purchase Price Rule (Rulebook Core)
+              </span>
+              <p className="text-xs text-slate-200 leading-relaxed">
+                If <strong className="text-amber-300">Team A</strong> buys 5 lots of Reliance for <strong className="text-emerald-400">₹40,000</strong>:
+              </p>
+              <div className="p-3 rounded-lg bg-slate-950 font-mono text-xs text-slate-300 space-y-1 border border-slate-800">
+                <div className="text-slate-400">Stock Return: <span className="text-emerald-400 font-bold">+20%</span></div>
+                <div>Profit Earned = 20% × ₹40,000 = <span className="text-emerald-400 font-bold">+₹8,000</span></div>
+                <div className="text-amber-400 font-bold pt-1 border-t border-slate-800">
+                  Total Holding Value = ₹40,000 + ₹8,000 = ₹48,000 (1.20x)
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 italic">
+                The platform automatically records the exact winning bid in <code className="text-amber-300">holdingInvested</code> so returns are calculated on actual bid amounts.
+              </p>
+            </div>
+
+            {/* Step-by-Step Round Flow */}
+            <div className="space-y-3 pt-2 text-xs">
+              <h4 className="font-bold text-slate-200 uppercase font-mono text-[11px] tracking-wider text-slate-400">
+                Standard Event Execution Flow:
+              </h4>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-400 font-mono">1. Round 1: Allot & Calculate</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">1 Lot = ₹10k Base</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Select a team and stock, choose lot count (1, 2, or custom), click <strong>Allot Lots</strong>. Cash is deducted, lots added.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-400 font-mono">2. Round 2: Insider Auction (5L / 3L)</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px] font-mono border border-amber-500/20">Sealed Intelligence</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Auction 5 lots to the highest bidder starting from the stock's official Opening Bid. Quick preset buttons (₹30k, ₹40k, ₹50k) allow instant entry. Winner receives confidential insider news and lots.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-400 font-mono">3. Round 3: Peer-to-Peer Trading Floor</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">Negotiation</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Teams negotiate and trade stock lots directly at agreed cash prices with zero transfer fees.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-400 font-mono">4. Finale: Leaderboard & P&L</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">Final Reveal</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Click <strong>Reveal All Outcomes</strong> to show final returns for every stock. The system computes final Net Worth (Holdings Value + Cash) and crowns the Wolf of BIT Mesra!
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-3 border-t border-slate-800">
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition"
+              >
+                Got It, Let's Trade!
+              </button>
             </div>
           </div>
         </div>

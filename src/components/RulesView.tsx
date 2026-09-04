@@ -171,17 +171,28 @@ export const RulesView: React.FC = () => {
 
         <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 pt-3">
           <Award className="w-4 h-4 text-emerald-400" />
-          6. Final Valuation Formula
+          6. Final Valuation Formula & Portfolio Return Calculation
         </h3>
-        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
           <p className="font-mono text-amber-400 text-sm font-bold">
-            Final Net Worth = Cash in Hand + Market Value of Holdings
+            Final Net Worth = Cash in Hand + Total Portfolio Value - Penalties + Bonus
           </p>
-          <p className="font-mono text-slate-300">
-            Holding value for a stock = Lots Held × ₹10,000 × Final Price Multiplier
+          <p className="font-mono text-slate-200 text-xs">
+            Stock Holding Value = Actual Purchase Cost + (Decided Return % × Actual Purchase Cost)
           </p>
+          <div className="p-3 bg-slate-900 rounded-lg border border-amber-500/20 text-[11px] font-mono space-y-1">
+            <span className="text-amber-400 font-bold block">
+              Rule Example (e.g. Team A bought 5 lots of Reliance in ₹40,000):
+            </span>
+            <div className="text-slate-300 space-y-0.5">
+              <div>• Base Purchase Price = <span className="font-bold text-slate-100">₹40,000</span></div>
+              <div>• Stock Return % = <span className="font-bold text-emerald-400">+20%</span></div>
+              <div>• Calculated Return = 20% of ₹40,000 = <span className="font-bold text-emerald-400">+₹8,000</span></div>
+              <div>• <strong className="text-amber-300">Final Amount Added to Portfolio:</strong> ₹40,000 + ₹8,000 = <strong className="text-amber-300">₹48,000</strong></div>
+            </div>
+          </div>
           <p className="text-slate-400 text-[11px]">
-            Final Price Multiplier = 1 + (Decided Return % / 100). (e.g. +20% → 1.20x, -30% → 0.70x, +40% → 1.40x).
+            If a standard allotment was purchased at default lot base price (₹10,000/lot), base cost equals (Lots × ₹10,000). For custom bid auctions (such as 5 lots won at ₹40,000), the return % is calculated directly on the actual purchase amount.
           </p>
         </div>
 

@@ -591,44 +591,97 @@ export const InsiderRoundView: React.FC = () => {
                     />
                   </div>
 
-                  {/* Quick Bid Increment Buttons */}
-                  <div className="flex items-center gap-1.5 pt-1">
-                    <button
-                      onClick={() => {
-                        soundFX.playBid();
-                        setLot5Bid(prev => prev + 5000);
-                      }}
-                      className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
-                    >
-                      +₹5,000
-                    </button>
-                    <button
-                      onClick={() => {
-                        soundFX.playBid();
-                        setLot5Bid(prev => prev + 10000);
-                      }}
-                      className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
-                    >
-                      +₹10,000
-                    </button>
-                    <button
-                      onClick={() => {
-                        soundFX.playBid();
-                        setLot5Bid(prev => prev + 25000);
-                      }}
-                      className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
-                    >
-                      +₹25,000
-                    </button>
-                    <button
-                      onClick={() => {
-                        soundFX.playBid();
-                        setLot5Bid(selectedStock.openingBidPrice || 12000);
-                      }}
-                      className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-amber-400 ml-auto transition"
-                    >
-                      Reset Base
-                    </button>
+                  {/* Quick Bid Increment & Preset Buttons */}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] text-slate-500 uppercase font-mono">Increment:</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(prev => prev + 5000);
+                        }}
+                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
+                      >
+                        +₹5,000
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(prev => prev + 10000);
+                        }}
+                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
+                      >
+                        +₹10,000
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(prev => prev + 25000);
+                        }}
+                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
+                      >
+                        +₹25,000
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] text-slate-500 uppercase font-mono">Presets:</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(selectedStock.openingBidPrice || 12000);
+                        }}
+                        className="px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 text-[10px] font-mono font-bold text-amber-400 border border-amber-500/30 transition"
+                        title="Reset to official opening price"
+                      >
+                        Opening (₹{(selectedStock.openingBidPrice || 12000).toLocaleString('en-IN')})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(30000);
+                        }}
+                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
+                      >
+                        ₹30k
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(40000);
+                        }}
+                        className="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-[10px] font-mono font-bold text-amber-300 border border-amber-500/40 transition"
+                        title="e.g. Reliance 5 lots @ 40k"
+                      >
+                        ₹40k
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(50000);
+                        }}
+                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
+                      >
+                        ₹50k
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playBid();
+                          setLot5Bid(60000);
+                        }}
+                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 transition"
+                      >
+                        ₹60k
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

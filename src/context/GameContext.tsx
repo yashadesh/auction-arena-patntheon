@@ -13,7 +13,7 @@ import {
 import { INITIAL_STOCKS, DEFAULT_TEAMS } from '../data/defaultStocks';
 import { calculateAllTeamsValuation } from '../utils/calculations';
 
-const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V4';
+const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V5';
 
 const DEFAULT_CONFIG: GameConfig = {
   eventName: 'WOLF OF BIT MESRA',
@@ -29,20 +29,42 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [stocks, setStocks] = useState<Stock[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_STOCKS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_STOCKS');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_STOCKS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_STOCKS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_STOCKS');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const map = new Map<string, Stock>(INITIAL_STOCKS.map(s => [s.id, s]));
-          parsed.forEach((s: Stock) => {
-            if (map.has(s.id)) {
-              map.set(s.id, { ...map.get(s.id)!, ...s });
+          const initMap = new Map<string, Stock>(INITIAL_STOCKS.map(s => [s.id, s]));
+          const result: Stock[] = [];
+          const seen = new Set<string>();
+          
+          // Official stocks get updated opening prices and return percentages from latest INITIAL_STOCKS
+          INITIAL_STOCKS.forEach(initStock => {
+            const savedStock = parsed.find((p: Stock) => p.id === initStock.id);
+            if (savedStock) {
+              result.push({
+                ...savedStock,
+                openingBidPrice: initStock.openingBidPrice,
+                returnPercent: initStock.returnPercent,
+                displayNews: initStock.displayNews,
+                insiderNews: initStock.insiderNews,
+                name: initStock.name,
+                ticker: initStock.ticker,
+                category: initStock.category
+              });
             } else {
-              map.set(s.id, s);
+              result.push(initStock);
+            }
+            seen.add(initStock.id);
+          });
+          
+          // Also preserve any custom stocks created by the user
+          parsed.forEach((s: Stock) => {
+            if (!seen.has(s.id)) {
+              result.push(s);
             }
           });
-          return Array.from(map.values());
+          return result;
         }
       } catch (e) {}
     }
@@ -50,7 +72,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [config, setConfig] = useState<GameConfig>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_CONFIG`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_CONFIG');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_CONFIG`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_CONFIG');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -61,7 +83,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [teams, setTeams] = useState<Team[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_TEAMS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_TEAMS');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_TEAMS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_TEAMS');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -75,6 +97,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       startingCash: DEFAULT_CONFIG.startingCash,
       cash: DEFAULT_CONFIG.startingCash,
       holdings: {},
+      holdingInvested: {},
       penalties: 0,
       bonus: 0
     }));
@@ -83,7 +106,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [selectedStockId, setSelectedStockId] = useState<string>(INITIAL_STOCKS[0].id);
   const [revealedMultipliers, setRevealedMultipliers] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_REVEALED`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_REVEALED');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_REVEALED`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_REVEALED');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -91,7 +114,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [normalTransactions, setNormalTransactions] = useState<NormalRoundTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_NORMAL_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_NORMAL_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_NORMAL_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_NORMAL_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -99,7 +122,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [insiderTransactions, setInsiderTransactions] = useState<InsiderRoundTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -107,7 +130,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [insiderNewsTransactions, setInsiderNewsTransactions] = useState<InsiderNewsTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_NEWS_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_NEWS_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_NEWS_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_NEWS_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -115,7 +138,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [exchangeTransactions, setExchangeTransactions] = useState<ExchangeTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_EXCHANGE_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_EXCHANGE_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_EXCHANGE_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_EXCHANGE_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -155,6 +178,45 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem(`${STORAGE_KEY}_EXCHANGE_TX`, JSON.stringify(exchangeTransactions));
   }, [exchangeTransactions]);
 
+  // Ensure team.holdingInvested is always initialized and synced with transaction history
+  useEffect(() => {
+    setTeams(prevTeams => {
+      let hasChanges = false;
+      const updatedTeams = prevTeams.map(team => {
+        let teamChanged = false;
+        const currentInvested = { ...(team.holdingInvested || {}) };
+
+        Object.entries(team.holdings).forEach(([stockId, lots]) => {
+          const lotCount = Number(lots) || 0;
+          if (lotCount > 0) {
+            // Check if there is an insider transaction for this team and stock
+            const insiderTx = insiderTransactions.find(
+              tx => tx.stockId === stockId && tx.winnerTeamId === team.id && (tx.pass === 1 || tx.winnerLots === 5 || tx.type === '5_lots_bid')
+            );
+            if (insiderTx && insiderTx.winnerBid > 0 && currentInvested[stockId] !== insiderTx.winnerBid) {
+              currentInvested[stockId] = insiderTx.winnerBid;
+              teamChanged = true;
+            } else if (currentInvested[stockId] === undefined || currentInvested[stockId] <= 0) {
+              currentInvested[stockId] = lotCount * config.lotBasePrice;
+              teamChanged = true;
+            }
+          } else if (currentInvested[stockId] !== undefined) {
+            delete currentInvested[stockId];
+            teamChanged = true;
+          }
+        });
+
+        if (teamChanged) {
+          hasChanges = true;
+          return { ...team, holdingInvested: currentInvested };
+        }
+        return team;
+      });
+
+      return hasChanges ? updatedTeams : prevTeams;
+    });
+  }, [insiderTransactions, config.lotBasePrice]);
+
   const addTeam = (name: string) => {
     const newId = `team-${Date.now()}`;
     const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
@@ -193,12 +255,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTeams(prev => prev.map(t => {
       if (t.id !== teamId) return t;
       const updatedHoldings = { ...t.holdings };
+      const updatedInvested = { ...(t.holdingInvested || {}) };
       if (safeLots === 0) {
         delete updatedHoldings[stockId];
+        delete updatedInvested[stockId];
       } else {
+        const curLots = t.holdings[stockId] || 0;
         updatedHoldings[stockId] = safeLots;
+        if (updatedInvested[stockId] === undefined) {
+          updatedInvested[stockId] = safeLots * config.lotBasePrice;
+        } else if (curLots > 0) {
+          updatedInvested[stockId] = Math.round((updatedInvested[stockId] / curLots) * safeLots);
+        }
       }
-      return { ...t, holdings: updatedHoldings };
+      return { ...t, holdings: updatedHoldings, holdingInvested: updatedInvested };
     }));
   };
 
@@ -213,6 +283,42 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addStock = (stockData: Omit<Stock, 'id'>) => {
     const newId = `stock-${Date.now()}`;
     setStocks(prev => [...prev, { ...stockData, id: newId }]);
+  };
+
+  const syncOfficialStocks = () => {
+    setStocks(prev => {
+      const initMap = new Map<string, Stock>(INITIAL_STOCKS.map(s => [s.id, s]));
+      const result: Stock[] = [];
+      const seen = new Set<string>();
+
+      INITIAL_STOCKS.forEach(initStock => {
+        const currentStock = prev.find(p => p.id === initStock.id);
+        if (currentStock) {
+          result.push({
+            ...currentStock,
+            openingBidPrice: initStock.openingBidPrice,
+            returnPercent: initStock.returnPercent,
+            displayNews: initStock.displayNews,
+            insiderNews: initStock.insiderNews,
+            name: initStock.name,
+            ticker: initStock.ticker,
+            category: initStock.category
+          });
+        } else {
+          result.push(initStock);
+        }
+        seen.add(initStock.id);
+      });
+
+      // Keep custom user stocks
+      prev.forEach(s => {
+        if (!seen.has(s.id)) {
+          result.push(s);
+        }
+      });
+
+      return result;
+    });
   };
 
   const updateConfig = (updates: Partial<GameConfig>) => {
@@ -262,6 +368,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const totalCost = additionalLots * config.lotBasePrice;
         const currentLots = team.holdings[stockId] || 0;
+        const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
 
         recordedPurchases.push({
           teamId: team.id,
@@ -275,6 +382,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           holdings: {
             ...team.holdings,
             [stockId]: currentLots + additionalLots
+          },
+          holdingInvested: {
+            ...(team.holdingInvested || {}),
+            [stockId]: currentInvested + totalCost
           }
         };
       })
@@ -400,23 +511,33 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       prev.map(team => {
         if (team.id === winnerTeamId) {
           const currentLots = team.holdings[stockId] || 0;
+          const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
           return {
             ...team,
             cash: deductCash ? team.cash - winnerBid : team.cash,
             holdings: {
               ...team.holdings,
               [stockId]: currentLots + 5
+            },
+            holdingInvested: {
+              ...(team.holdingInvested || {}),
+              [stockId]: currentInvested + winnerBid
             }
           };
         }
         if (runnerUp && team.id === runnerUp.id && runnerUpBid && runnerUpLots > 0) {
           const currentLots = team.holdings[stockId] || 0;
+          const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
           return {
             ...team,
             cash: deductCash ? team.cash - runnerUpBid : team.cash,
             holdings: {
               ...team.holdings,
               [stockId]: currentLots + runnerUpLots
+            },
+            holdingInvested: {
+              ...(team.holdingInvested || {}),
+              [stockId]: currentInvested + runnerUpBid
             }
           };
         }
@@ -481,12 +602,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTeams(prev =>
       prev.map(t => {
         if (t.id === teamId) {
+          const currentLots = t.holdings[stockId] || 0;
+          const currentInvested = t.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
           return {
             ...t,
             cash: deductCash ? t.cash - priceDeducted : t.cash,
             holdings: {
               ...t.holdings,
               [stockId]: currentLots + lots
+            },
+            holdingInvested: {
+              ...(t.holdingInvested || {}),
+              [stockId]: currentInvested + priceDeducted
             }
           };
         }
@@ -570,23 +697,38 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       prev.map(team => {
         if (team.id === sellerTeamId) {
           const currentLots = team.holdings[stockId] || 0;
+          const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
+          const costPerLot = currentLots > 0 ? currentInvested / currentLots : config.lotBasePrice;
+          const updatedInvested = { ...(team.holdingInvested || {}) };
+          if (currentLots <= 1) {
+            delete updatedInvested[stockId];
+          } else {
+            updatedInvested[stockId] = Math.max(0, currentInvested - costPerLot);
+          }
+
           return {
             ...team,
             cash: team.cash + finalPrice,
             holdings: {
               ...team.holdings,
               [stockId]: Math.max(0, currentLots - 1)
-            }
+            },
+            holdingInvested: updatedInvested
           };
         }
         if (team.id === buyerTeamId) {
           const currentLots = team.holdings[stockId] || 0;
+          const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
           return {
             ...team,
             cash: team.cash - finalPrice,
             holdings: {
               ...team.holdings,
               [stockId]: currentLots + 1
+            },
+            holdingInvested: {
+              ...(team.holdingInvested || {}),
+              [stockId]: currentInvested + finalPrice
             }
           };
         }
@@ -630,16 +772,25 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentLots = team.holdings[tx.stockId] || 0;
         const newLots = Math.max(0, currentLots - purchase.lots);
         const updatedHoldings = { ...team.holdings };
+        const updatedInvested = { ...(team.holdingInvested || {}) };
+        
+        const costToDeduct = purchase.amountPaid > 0 ? purchase.amountPaid : (purchase.lots * config.lotBasePrice);
+        const currentInvested = updatedInvested[tx.stockId] ?? (currentLots * config.lotBasePrice);
+        const newInvested = Math.max(0, currentInvested - costToDeduct);
+
         if (newLots === 0) {
           delete updatedHoldings[tx.stockId];
+          delete updatedInvested[tx.stockId];
         } else {
           updatedHoldings[tx.stockId] = newLots;
+          updatedInvested[tx.stockId] = newInvested;
         }
 
         return {
           ...team,
           cash: team.cash + purchase.amountPaid,
-          holdings: updatedHoldings
+          holdings: updatedHoldings,
+          holdingInvested: updatedInvested
         };
       })
     );
@@ -662,30 +813,49 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       prev.map(team => {
         let updated = { ...team };
         const updatedHoldings = { ...team.holdings };
+        const updatedInvested = { ...(team.holdingInvested || {}) };
 
         if (team.id === tx.winnerTeamId) {
           const currentLots = team.holdings[tx.stockId] || 0;
           const newLots = Math.max(0, currentLots - tx.winnerLots);
-          if (newLots === 0) delete updatedHoldings[tx.stockId];
-          else updatedHoldings[tx.stockId] = newLots;
+          const currentInvested = updatedInvested[tx.stockId] ?? (currentLots * config.lotBasePrice);
+          const newInvested = Math.max(0, currentInvested - tx.winnerBid);
+
+          if (newLots === 0) {
+            delete updatedHoldings[tx.stockId];
+            delete updatedInvested[tx.stockId];
+          } else {
+            updatedHoldings[tx.stockId] = newLots;
+            updatedInvested[tx.stockId] = newInvested;
+          }
 
           updated = {
             ...updated,
             cash: tx.deductCash ? updated.cash + tx.winnerBid : updated.cash,
-            holdings: updatedHoldings
+            holdings: updatedHoldings,
+            holdingInvested: updatedInvested
           };
         }
 
         if (tx.runnerUpTeamId && team.id === tx.runnerUpTeamId && tx.runnerUpLots) {
           const rCurrentLots = updated.holdings[tx.stockId] || 0;
           const rNewLots = Math.max(0, rCurrentLots - tx.runnerUpLots);
-          if (rNewLots === 0) delete updatedHoldings[tx.stockId];
-          else updatedHoldings[tx.stockId] = rNewLots;
+          const rCurrentInvested = updatedInvested[tx.stockId] ?? (rCurrentLots * config.lotBasePrice);
+          const rNewInvested = Math.max(0, rCurrentInvested - (tx.runnerUpBid || (tx.runnerUpLots * config.lotBasePrice)));
+
+          if (rNewLots === 0) {
+            delete updatedHoldings[tx.stockId];
+            delete updatedInvested[tx.stockId];
+          } else {
+            updatedHoldings[tx.stockId] = rNewLots;
+            updatedInvested[tx.stockId] = rNewInvested;
+          }
 
           updated = {
             ...updated,
             cash: tx.deductCash && tx.runnerUpBid ? updated.cash + tx.runnerUpBid : updated.cash,
-            holdings: updatedHoldings
+            holdings: updatedHoldings,
+            holdingInvested: updatedInvested
           };
         }
 
@@ -731,12 +901,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       prev.map(team => {
         if (team.id === tx.sellerTeamId) {
           const curLots = team.holdings[tx.stockId] || 0;
+          const updatedInvested = { ...(team.holdingInvested || {}) };
+          const curInvested = updatedInvested[tx.stockId] ?? (curLots * config.lotBasePrice);
+
           return {
             ...team,
             cash: team.cash - tx.finalPrice,
             holdings: {
               ...team.holdings,
               [tx.stockId]: curLots + tx.lots
+            },
+            holdingInvested: {
+              ...updatedInvested,
+              [tx.stockId]: curInvested + tx.finalPrice
             }
           };
         }
@@ -744,13 +921,23 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const curLots = team.holdings[tx.stockId] || 0;
           const newLots = Math.max(0, curLots - tx.lots);
           const updatedHoldings = { ...team.holdings };
-          if (newLots === 0) delete updatedHoldings[tx.stockId];
-          else updatedHoldings[tx.stockId] = newLots;
+          const updatedInvested = { ...(team.holdingInvested || {}) };
+          const curInvested = updatedInvested[tx.stockId] ?? (curLots * config.lotBasePrice);
+          const newInvested = Math.max(0, curInvested - tx.finalPrice);
+
+          if (newLots === 0) {
+            delete updatedHoldings[tx.stockId];
+            delete updatedInvested[tx.stockId];
+          } else {
+            updatedHoldings[tx.stockId] = newLots;
+            updatedInvested[tx.stockId] = newInvested;
+          }
 
           return {
             ...team,
             cash: team.cash + tx.finalPrice,
-            holdings: updatedHoldings
+            holdings: updatedHoldings,
+            holdingInvested: updatedInvested
           };
         }
         return team;
@@ -770,7 +957,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     stockId: string,
     newLots: number,
     adjustCash: boolean = false,
-    cashDelta?: number
+    cashDelta?: number,
+    customInvested?: number
   ) => {
     const team = teams.find(t => t.id === teamId);
     const stock = stocks.find(s => s.id === stockId);
@@ -790,16 +978,27 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       prev.map(t => {
         if (t.id !== teamId) return t;
         const updatedHoldings = { ...t.holdings };
+        const updatedInvested = { ...(t.holdingInvested || {}) };
+
         if (safeLots === 0) {
           delete updatedHoldings[stockId];
+          delete updatedInvested[stockId];
         } else {
           updatedHoldings[stockId] = safeLots;
+          if (customInvested !== undefined && customInvested >= 0) {
+            updatedInvested[stockId] = customInvested;
+          } else if (updatedInvested[stockId] === undefined) {
+            updatedInvested[stockId] = safeLots * config.lotBasePrice;
+          } else if (currentLots > 0) {
+            updatedInvested[stockId] = Math.round((updatedInvested[stockId] / currentLots) * safeLots);
+          }
         }
 
         return {
           ...t,
           cash: Math.max(0, t.cash + calculatedCashAdjustment),
-          holdings: updatedHoldings
+          holdings: updatedHoldings,
+          holdingInvested: updatedInvested
         };
       })
     );
@@ -844,6 +1043,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       startingCash: config.startingCash,
       cash: config.startingCash,
       holdings: {},
+      holdingInvested: {},
       penalties: 0,
       bonus: 0
     })));
@@ -857,14 +1057,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loadDemoGame = () => {
     const demoTeams: Team[] = DEFAULT_TEAMS.map((dt, idx) => {
       const holdings: Record<string, number> = {};
+      const holdingInvested: Record<string, number> = {};
       let remainingCash = config.startingCash;
       
+      // User's specific showcase scenario: Team A bought 5 lots of Reliance in 40k!
+      if (idx === 0) {
+        holdings['reliance'] = 5;
+        holdingInvested['reliance'] = 40000;
+        remainingCash -= 40000;
+      }
+
       const stockSubset = stocks.slice(idx * 3, idx * 3 + 5);
       stockSubset.forEach((st, sIdx) => {
+        if (idx === 0 && st.id === 'reliance') return;
         const lots = ((idx + sIdx) % 4) + 1;
         const cost = lots * 10000;
         if (remainingCash >= cost) {
           holdings[st.id] = lots;
+          holdingInvested[st.id] = cost;
           remainingCash -= cost;
         }
       });
@@ -876,6 +1086,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         startingCash: config.startingCash,
         cash: remainingCash,
         holdings,
+        holdingInvested,
         penalties: idx === 3 ? 10000 : 0,
         bonus: idx === 1 ? 5000 : 0
       };
@@ -942,6 +1153,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         removeTeam,
         updateStock,
         addStock,
+        syncOfficialStocks,
         updateConfig,
         executeNormalRound,
         executeInsiderRound,

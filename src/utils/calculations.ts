@@ -27,10 +27,24 @@ export function calculateTeamValuation(
       };
 
       const shares = lots * config.lotSize;
-      const baseCost = lots * config.lotBasePrice;
-      const finalMultiplier = 1 + (stock.returnPercent / 100);
-      const holdingValue = lots * config.lotBasePrice * finalMultiplier;
-      const pnl = holdingValue - baseCost;
+      
+      // Actual purchase / invested cost paid for this holding
+      // e.g. Team A bought 5 lots of Reliance in 40k -> baseCost = ₹40,000
+      const baseCost = (team.holdingInvested && team.holdingInvested[stockId] !== undefined && team.holdingInvested[stockId] > 0)
+        ? team.holdingInvested[stockId]
+        : lots * config.lotBasePrice;
+
+      const returnPercent = stock.returnPercent; // e.g. +20 for 20%
+      const finalMultiplier = 1 + (returnPercent / 100); // e.g. 1.20
+      
+      // Calculate return on actual invested price:
+      // e.g. 20% of 40,000 = (40,000 * 20) / 100 = +8,000
+      const returnAmount = (baseCost * returnPercent) / 100;
+      
+      // Final amount calculated and added to the portfolio:
+      // Market value = baseCost (40,000) + returnAmount (8,000) = 48,000
+      const holdingValue = baseCost + returnAmount;
+      const pnl = returnAmount;
 
       totalPortfolioValue += holdingValue;
       totalBaseInvested += baseCost;
@@ -45,6 +59,7 @@ export function calculateTeamValuation(
         finalMultiplier,
         holdingValue,
         pnl,
+        returnAmount,
         returnPercent: stock.returnPercent
       };
     });

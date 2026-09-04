@@ -455,7 +455,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Bharti Airtel',
     ticker: 'BHARTIARTL',
     category: 'Tech',
-    returnPercent: -20,
+    returnPercent: -25,
     openingBidPrice: 12000,
     displayNews: "Airtel saw choppy trading — one report says its Africa business posted record growth, another claims spectrum payment obligations are straining near-term cash flow. A brokerage likes \"diversified geography,\" another flags \"debt servicing risk.\" No official statement. Volumes above average, sentiment split.",
     insiderNews: "The Africa growth figure is accurate but small relative to the spectrum obligation, which is larger than disclosed and due sooner than modeled. Expect a negative consolidation irrespective of volume average."
@@ -475,7 +475,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Reliance Jio',
     ticker: 'JIO',
     category: 'Tech',
-    returnPercent: 20,
+    returnPercent: 25,
     openingBidPrice: 14000,
     displayNews: "Reliance Jio traded erratically this week amid conflicting reports on its 5G rollout. One outlet claims subscriber additions hit a record high, another says tariff hikes are pushing users to cheaper rivals. A brokerage cites \"market leadership,\" another flags \"ARPU pressure.\" No official comment. Volumes ran above average, sentiment split evenly.",
     insiderNews: "The tariff-hike churn is smaller than reported — most switching users are low-value accounts. Subscriber growth in the high-ARPU segment is genuinely strong and understated. Expect a positive surprise."
@@ -495,7 +495,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Tech Mahindra',
     ticker: 'TECHM',
     category: 'Tech',
-    returnPercent: 20,
+    returnPercent: 15,
     openingBidPrice: 12000,
     displayNews: "Tech Mahindra traded erratically — one report says a telecom-vertical deal win is imminent, another claims margin pressure from wage hikes is mounting. A brokerage cites \"5G vertical strength,\" another flags \"cost inflation.\" No comment. Sentiment split evenly on the floor.",
     insiderNews: "The wage-hike impact is smaller than modeled due to an internal automation push. The telecom deal is bigger and closer to signing than reported. Expect a positive surprise."
@@ -517,7 +517,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Dabur India',
     ticker: 'DABUR',
     category: 'Consumer & Retail',
-    returnPercent: 20,
+    returnPercent: 15,
     openingBidPrice: 10000,
     displayNews: "Dabur traded erratically — one report says rural demand for its health portfolio is rebounding, another claims urban volumes are softening amid competitive discounting. A brokerage cites \"ayurveda portfolio strength,\" another flags \"volume slowdown.\" No comment.",
     insiderNews: "The rural rebound is real and broader than reported; urban softness is smaller and temporary. Expect a positive surprise."
@@ -537,7 +537,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Avenue Supermarts (DMart)',
     ticker: 'DMART',
     category: 'Consumer & Retail',
-    returnPercent: 20,
+    returnPercent: 30,
     openingBidPrice: 15000,
     displayNews: "DMart traded erratically — one report says same-store sales growth beat expectations, another claims new store openings are slower than guided due to real estate delays. A brokerage cites \"cost discipline,\" another flags \"expansion slowdown.\" No comment.",
     insiderNews: "The store-opening delay is smaller than reported — three new stores are opening ahead of schedule, undisclosed. Expect a positive surprise."
@@ -557,7 +557,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: "Divi's Laboratories",
     ticker: 'DIVISLAB',
     category: 'Pharma & Healthcare',
-    returnPercent: 20,
+    returnPercent: 15,
     openingBidPrice: 14000,
     displayNews: "Divi's Labs traded erratically — one report says a large API export order was won, another claims a key customer is delaying orders amid inventory destocking. A brokerage cites \"specialty API strength,\" another flags \"destocking risk.\" No comment.",
     insiderNews: "The destocking concern is nearly resolved — the customer's order delay was temporary and orders have already resumed, undisclosed. Expect a positive surprise."
@@ -577,7 +577,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Bata India',
     ticker: 'BATAINDIA',
     category: 'Consumer & Retail',
-    returnPercent: 20,
+    returnPercent: 25,
     openingBidPrice: 10000,
     displayNews: "Bata traded erratically — one report says festive footwear sales hit a multi-year high, another claims rising leather costs are pressuring margins. A brokerage cites \"brand recall,\" another flags \"input cost risk.\" No comment from the company.",
     insiderNews: "Leather costs are locked in below current spot prices via an undisclosed supplier contract. Festive sales strength is real and continuing. Expect a positive surprise."
@@ -639,7 +639,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'UltraTech Cement',
     ticker: 'ULTRACEMCO',
     category: 'Defense & Infra',
-    returnPercent: 20,
+    returnPercent: 30,
     openingBidPrice: 14000,
     displayNews: "UltraTech traded erratically — one report says cement demand is picking up on infrastructure spending, another claims fuel and freight costs are rising sharply. A brokerage cites \"pricing power,\" another flags \"cost inflation.\" No comment.",
     insiderNews: "Fuel costs are hedged below current spot levels via an undisclosed contract. Demand pickup is real and stronger than reported. Expect a positive surprise."
@@ -649,7 +649,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Bajaj Auto',
     ticker: 'BAJAJ-AUTO',
     category: 'Auto & EV',
-    returnPercent: -20,
+    returnPercent: -15,
     openingBidPrice: 15000,
     displayNews: "Bajaj Auto saw choppy trading — one report highlights strong three-wheeler export orders, another claims domestic two-wheeler sales are declining amid rural demand weakness. A brokerage likes \"export diversification,\" another flags \"domestic slowdown.\" No official statement.",
     insiderNews: "Domestic weakness is worse than reported and export orders are smaller in near-term revenue impact than headlined. Expect a negative correction."
@@ -659,7 +659,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Hero MotoCorp',
     ticker: 'HEROMOTOCO',
     category: 'Auto & EV',
-    returnPercent: 20,
+    returnPercent: 30,
     openingBidPrice: 12000,
     displayNews: "Hero MotoCorp traded erratically — one report says festive two-wheeler sales beat expectations, another claims rising commodity costs are squeezing margins. A brokerage cites \"rural demand recovery,\" another flags \"cost pressure.\" No comment from the company.",
     insiderNews: "Commodity costs are smaller than modeled due to an undisclosed hedging position. Festive sales strength is continuing into the current month. Expect a positive surprise."
@@ -669,7 +669,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Eicher Motors',
     ticker: 'EICHERMOT',
     category: 'Auto & EV',
-    returnPercent: -20,
+    returnPercent: -10,
     openingBidPrice: 14000,
     displayNews: "Eicher Motors saw choppy trading — one report cites strong Royal Enfield export demand, another claims domestic waiting periods are shrinking as demand cools. A brokerage likes \"premium positioning,\" another flags \"domestic demand softening.\" No official statement.",
     insiderNews: "Domestic demand softening is worse than reported and export demand isn't large enough yet to offset it. Expect a negative correction."
@@ -679,7 +679,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Tesla Inc.',
     ticker: 'TSLA',
     category: 'Auto & EV',
-    returnPercent: 20,
+    returnPercent: 35,
     openingBidPrice: 18000,
     displayNews: "Tesla traded erratically — one report says a new affordable model is nearing production, another claims delivery numbers missed internal targets this quarter. A brokerage cites \"energy storage growth,\" another flags \"delivery miss.\" No official comment.",
     insiderNews: "The delivery miss is smaller than reported once a logistics delay is accounted for. The affordable model timeline is ahead of what's public. Expect a positive surprise."
@@ -699,7 +699,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'Amazon.com',
     ticker: 'AMZN',
     category: 'Tech',
-    returnPercent: 20,
+    returnPercent: 30,
     openingBidPrice: 20000,
     displayNews: "Amazon traded erratically — one report says AWS cloud growth is reaccelerating, another claims retail margins are under pressure from rising fulfillment costs. A brokerage cites \"cloud dominance,\" another flags \"retail margin risk.\" No comment.",
     insiderNews: "Fulfillment cost pressure is smaller than modeled due to an undisclosed automation rollout. AWS growth is stronger than the bullish note suggests. Expect a positive surprise."

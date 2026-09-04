@@ -17,6 +17,8 @@ export interface Team {
   cash: number;
   // Map of stockId -> number of lots held (0 to 8)
   holdings: Record<string, number>;
+  // Map of stockId -> actual purchase amount paid/invested (e.g. 40,000 for 5 lots of Reliance)
+  holdingInvested?: Record<string, number>;
   penalties: number;
   bonus: number;
   notes?: string;
@@ -85,10 +87,11 @@ export interface TeamValuation {
     stock: Stock;
     lots: number;
     shares: number;
-    baseCost: number; // lots * 10,000
+    baseCost: number; // Actual amount paid/invested (e.g. 40,000 for 5 lots of Reliance)
     finalMultiplier: number; // 1 + return% / 100
-    holdingValue: number; // lots * 10,000 * multiplier
-    pnl: number; // holdingValue - baseCost
+    holdingValue: number; // baseCost + (baseCost * return% / 100)
+    pnl: number; // return% of baseCost (e.g. 20% of 40k = +8,000)
+    returnAmount: number; // explicit return amount added to portfolio
     returnPercent: number;
   }>;
   totalPortfolioValue: number;
@@ -125,6 +128,7 @@ export interface GameContextType {
   removeTeam: (id: string) => void;
   updateStock: (id: string, updates: Partial<Stock>) => void;
   addStock: (stock: Omit<Stock, 'id'>) => void;
+  syncOfficialStocks: () => void;
   updateConfig: (updates: Partial<GameConfig>) => void;
   
   // Round Operations
@@ -169,7 +173,7 @@ export interface GameContextType {
   revertInsiderTransaction: (txId: string) => { success: boolean; message: string };
   revertInsiderNewsTransaction: (txId: string) => { success: boolean; message: string };
   revertExchangeTransaction: (txId: string) => { success: boolean; message: string };
-  rectifyTeamHolding: (teamId: string, stockId: string, newLots: number, adjustCash?: boolean, cashDelta?: number) => { success: boolean; message: string };
+  rectifyTeamHolding: (teamId: string, stockId: string, newLots: number, adjustCash?: boolean, cashDelta?: number, customInvested?: number) => { success: boolean; message: string };
   rectifyTeamCash: (teamId: string, newCash: number) => void;
   rectifyTeamPenaltyAndBonus: (teamId: string, penalties: number, bonus: number) => void;
 
