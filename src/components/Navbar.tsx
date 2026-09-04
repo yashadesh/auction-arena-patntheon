@@ -60,7 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
     { id: 'exchange', label: '3. P2P Exchange', icon: ArrowLeftRight, badge: 'R3' },
     { id: 'valuation', label: '4. Leaderboard & P&L', icon: Award, badge: 'Win' },
     { id: 'projector', label: '30s Arena Timer', icon: Tv, badge: '30s' },
-    { id: 'stocks-master', label: 'Stocks & Multipliers', icon: FileSpreadsheet, badge: '44' },
+    { id: 'stocks-master', label: 'Stocks & Multipliers', icon: FileSpreadsheet, badge: `${stocks.length}` },
     { id: 'rules', label: 'Rules', icon: BookOpen, badge: null },
   ];
 

@@ -24,11 +24,25 @@ export const ProjectorView: React.FC = () => {
     config, 
     stocks, 
     selectedStockId, 
+    setSelectedStockId,
     valuations, 
     activeTab 
   } = useGame();
 
   const selectedStock = stocks.find(s => s.id === selectedStockId) || stocks[0];
+  const currentIndex = stocks.findIndex(s => s.id === selectedStock.id);
+
+  const handlePrevStock = () => {
+    if (currentIndex > 0) {
+      setSelectedStockId(stocks[currentIndex - 1].id);
+    }
+  };
+
+  const handleNextStock = () => {
+    if (currentIndex < stocks.length - 1) {
+      setSelectedStockId(stocks[currentIndex + 1].id);
+    }
+  };
 
   // Live Auction Buzzer Timer (Default 30 seconds)
   const [timerSeconds, setTimerSeconds] = useState<number>(30);
@@ -137,13 +151,46 @@ export const ProjectorView: React.FC = () => {
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
           <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             <div>
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider font-mono">
-                  {selectedStock.category} • {selectedStock.ticker}
-                </span>
-                <span className="text-xs text-slate-400 font-mono">
-                  Lot: 20 Shares @ ₹{config.lotBasePrice.toLocaleString('en-IN')}
-                </span>
+              <div className="flex items-center justify-between pb-4 border-b border-slate-800 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider font-mono">
+                    {selectedStock.category} • {selectedStock.ticker}
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">
+                    Stock #{currentIndex + 1} of {stocks.length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={selectedStock.id}
+                    onChange={(e) => setSelectedStockId(e.target.value)}
+                    className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 font-mono focus:border-amber-500 focus:outline-none max-w-[220px] truncate"
+                  >
+                    {stocks.map((st, i) => (
+                      <option key={st.id} value={st.id}>
+                        #{i + 1} {st.ticker} - {st.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={handlePrevStock}
+                      disabled={currentIndex <= 0}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-xs font-bold text-slate-200"
+                      title="Previous stock"
+                    >
+                      ←
+                    </button>
+                    <button
+                      onClick={handleNextStock}
+                      disabled={currentIndex >= stocks.length - 1}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-xs font-bold text-slate-200"
+                      title="Next stock"
+                    >
+                      →
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="mt-4">

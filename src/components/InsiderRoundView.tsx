@@ -78,9 +78,12 @@ export const InsiderRoundView: React.FC = () => {
 
   // General & Timer State
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [timerSeconds, setTimerSeconds] = useState<number>(30);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+
+  const categories = ['All', 'Tech', 'Banking & NBFC', 'Energy & Commodities', 'Auto & EV', 'Defense & Infra', 'Pharma & Healthcare', 'Consumer & Retail', 'Fintech & Exchanges'];
 
   React.useEffect(() => {
     let interval: any = null;
@@ -219,10 +222,24 @@ export const InsiderRoundView: React.FC = () => {
     }
   };
 
-  const filteredStocks = stocks.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    s.ticker.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStocks = stocks.filter(s => {
+    const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          s.ticker.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCat = selectedCategory === 'All' || s.category === selectedCategory;
+    return matchesSearch && matchesCat;
+  });
+
+  const currentIndex = stocks.findIndex(s => s.id === selectedStock.id);
+  const handlePrevStock = () => {
+    if (currentIndex > 0) {
+      handleSelectStock(stocks[currentIndex - 1].id);
+    }
+  };
+  const handleNextStock = () => {
+    if (currentIndex < stocks.length - 1) {
+      handleSelectStock(stocks[currentIndex + 1].id);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -328,7 +345,24 @@ export const InsiderRoundView: React.FC = () => {
             />
           </div>
 
-          <div className="max-h-[560px] overflow-y-auto space-y-1.5 pr-1">
+          {/* Quick Category Filter Pills */}
+          <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-2 py-1 rounded-lg shrink-0 font-medium transition ${
+                  selectedCategory === cat
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                }`}
+              >
+                {cat === 'All' ? 'All' : cat.split(' ')[0]}
+              </button>
+            ))}
+          </div>
+
+          <div className="max-h-[500px] overflow-y-auto space-y-1.5 pr-1">
             {filteredStocks.map((st) => {
               const isSelected = st.id === selectedStock.id;
               const has5L = insiderTransactions.some(tx => tx.stockId === st.id && (tx.pass === 1 || tx.winnerLots === 5 || tx.type === '5_lots_bid'));
@@ -375,15 +409,40 @@ export const InsiderRoundView: React.FC = () => {
           <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
               <div>
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
-                  {selectedStock.category} • {selectedStock.ticker}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
+                    {selectedStock.category} • {selectedStock.ticker}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    Stock #{currentIndex + 1} of {stocks.length}
+                  </span>
+                </div>
                 <h3 className="text-2xl font-black text-slate-100 mt-1 font-mono">
                   {selectedStock.name}
                 </h3>
               </div>
 
               <div className="flex items-center gap-3">
+                {/* Prev & Next Stock Fast Navigation */}
+                <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                  <button
+                    onClick={handlePrevStock}
+                    disabled={currentIndex <= 0}
+                    className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-30 text-xs font-bold text-slate-200 transition"
+                    title="Previous stock"
+                  >
+                    ← Prev
+                  </button>
+                  <button
+                    onClick={handleNextStock}
+                    disabled={currentIndex >= stocks.length - 1}
+                    className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-30 text-xs font-bold text-slate-200 transition"
+                    title="Next stock"
+                  >
+                    Next →
+                  </button>
+                </div>
+
                 <div className="text-right">
                   <span className="text-[10px] text-slate-500 block">Opening Bid</span>
                   <span className="text-sm font-bold font-mono text-amber-400">

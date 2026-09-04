@@ -1,14 +1,15 @@
 import { Stock } from '../types';
 
 export const INITIAL_STOCKS: Stock[] = [
+  // Page 1
   {
     id: 'reliance',
     name: 'Reliance Industries',
     ticker: 'RELIANCE',
-    category: 'Conglomerate' as any,
+    category: 'Energy & Commodities',
     returnPercent: 20,
     openingBidPrice: 12000,
-    displayNews: 'Reliance is planning a big restructuring. One report says a part of the company might be sold off — a big win for investors. Another report says the company is short on cash right now. No one knows which one is true yet.',
+    displayNews: 'Realince is planning a big restructuring. One report says a part of the company might be sold off — a big win for investors. Another report says the company is short on cash right now. No one knows which one is true yet.',
     insiderNews: "The sell-off is happening, and it's their most profitable part going to a new company. This stock is set to close strong this round."
   },
   {
@@ -26,7 +27,7 @@ export const INITIAL_STOCKS: Stock[] = [
     name: 'HDFC Bank',
     ticker: 'HDFCBANK',
     category: 'Banking & NBFC',
-    returnPercent: 30,
+    returnPercent: -30,
     openingBidPrice: 15000,
     displayNews: 'HDFC Bank reports record profits this quarter — but regulators are reportedly "reviewing" some of its lending practices. Some analysts call it the safest stock in the game right now. Others say a regulatory action could hit any day. The bank has made no official statement.',
     insiderNews: "The regulatory review is more serious than public reports suggest — a penalty is expected before this round closes. The record profit numbers won't be enough to offset it. This stock is set to close weak."
@@ -88,9 +89,11 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Pharma & Healthcare',
     returnPercent: 20,
     openingBidPrice: 8000,
-    displayNews: "Sun Pharmaceutical Industries saw choppy trading this week after conflicting reports emerged. A leading business daily cited \"sources close to the matter\" suggesting the company's flagship generic drug may face renewed USFDA scrutiny at its Halol facility — while a separate report claims the plant recently cleared a surprise inspection with zero observations. Adding to the noise, a mid-tier brokerage downgraded the stock citing \"pricing pressure in the US generics market,\" even as another analyst house issued a bullish note flagging Sun Pharma's specialty portfolio as \"undervalued relative to peers.\" Management has not issued any official statement. Trading volumes spiked 40% above average, with no clear directional consensus among floor traders.",
-    insiderNews: "Sun Pharma Insider Brief: The USFDA scrutiny rumor is stale — that inspection cycle closed months ago with no adverse findings, and the Halol facility received an unblemished re-clearance that hasn't been formally announced yet. The brokerage downgrade was based on outdated Q-on-Q pricing data; internally, specialty drug margins for the current quarter are tracking well ahead of street estimates. Expect a positive surprise when Sun Pharma re-enters the public board."
+    displayNews: "Sun Pharma faces an FDA \"Observation Letter\" on a plant, and its top-selling drug nears a patent cliff — both sound alarming. But a brokerage also notes two new specialty drugs launching soon, and unusually heavy buying alongside the selling. Analysts are split: some call it a falling knife, others a hidden opportunity.",
+    insiderNews: "The FDA letter is a routine Form 483 note, not a warning — no import ban, remediation already approved. The patent-cliff drug is being replaced by two new specialty launches that more than cover the revenue gap. The heavy volume is a big institutional investor quietly building a position. Stock closes strong, up 20%."
   },
+
+  // Page 2
   {
     id: 'adani-enterprises',
     name: 'Adani Enterprises',
@@ -98,7 +101,7 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Defense & Infra',
     returnPercent: -20,
     openingBidPrice: 12000,
-    displayNews: "Adani Enterprises Ltd. traded erratically this week as contradictory headlines hit the wires. One report claimed the group's new green hydrogen facility had secured a major offtake agreement with a European buyer, while a rival outlet cited \"unnamed officials\" suggesting the deal was still \"in early-stage talks\" and far from binding. Separately, a foreign brokerage raised its target price citing \"aggressive infrastructure expansion,\" even as a domestic ratings agency flagged \"elevated leverage across group entities\" in a routine sector note. No official confirmation has come from Adani Enterprises. Floor chatter was split roughly evenly between bulls and bears, with volumes running well above the week's average.",
+    displayNews: "Adani Enterprises unveiled a massive green energy investment plan, and a foreign fund just bought a fresh stake — both seen as strong confidence signals. But rating agencies are \"reviewing\" the group's debt levels, and a foreign media report questions its accounting practices, calling both \"baseless\" by the company.",
     insiderNews: "The hydrogen offtake story is being overstated — the counterparty has quietly paused negotiations pending a compliance review, and no binding agreement is close. Meanwhile, the leverage flag from the ratings note is more serious than the public write-up let on: a formal review of group debt levels is underway internally, and refinancing terms are expected to tighten. Expect a negative correction when Adani Enterprises re-enters the public board."
   },
   {
@@ -108,7 +111,7 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Defense & Infra',
     returnPercent: 15,
     openingBidPrice: 14000,
-    displayNews: "Adani Ports reports record cargo volumes this quarter, and the company announces plans to acquire a stake in a major international port. But this comes right after news that Adani Enterprises (a group company) is facing a rating agency review — and some analysts worry the group's debt troubles could \"spill over\" into Adani Ports too. A few brokerages have reaffirmed a \"buy\" rating, while others are advising caution \"given group-level risk.\" No clarity yet on how connected the two companies' finances really are.",
+    displayNews: "Adani Ports posted record cargo volumes and is close to acquiring a stake in a major international port — clear positives. But Adani Enterprises' group-level debt review has some analysts fearing \"spill-over\" risk into Ports too, while other brokerages reaffirm their buy ratings.",
     insiderNews: "Adani Ports runs on a separate balance sheet with strong independent cash flows — the group-level debt worries don't actually touch this company's numbers. The international port acquisition is close to finalizing and will be announced as a done deal soon. The record cargo volumes are genuine and expected to keep climbing next quarter. This stock is set to close strong."
   },
   {
@@ -118,78 +121,80 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Banking & NBFC',
     returnPercent: -10,
     openingBidPrice: 10000,
-    displayNews: "Bajaj Finance Ltd. saw volatile trading this week amid dueling narratives. One report highlighted the NBFC's \"record disbursal growth\" in its consumer lending arm, while a separate piece cited \"internal sources\" flagging a rise in early-stage delinquencies within its unsecured personal loan book. A domestic brokerage reiterated a buy rating on \"strong AUM momentum,\" even as another analyst house warned of \"asset quality pressure amid tightening RBI norms on unsecured lending.\" The company has issued no official comment. Trading volumes ran well above average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The disbursal-growth story is old news already priced in. What isn't public: early-stage delinquencies in the unsecured personal loan book have been quietly worsening for two straight quarters, and an internal provisioning review is underway that's expected to push credit costs meaningfully higher than street estimates. The RBI's tightening stance on unsecured lending is also expected to hit growth guidance harder than analysts currently assume. Expect a negative correction when Bajaj Finance re-enters the public board."
+    displayNews: "Bajaj Finance posted its highest-ever quarterly loan disbursement, smashing estimates, and announced a digital lending tie-up expected to double its customer base. Shares rallied and brokerages raised targets. Still, some analysts privately question how much of that disbursement growth is sustainable.",
+    insiderNews: "A large chunk of that record disbursement is low-quality, high-risk loans pushed out just to hit the headline number — early defaults are already rising internally. The digital partnership is still in pilot phase, years from doubling anything. The rally is short-term hype. Stock closes weak."
   },
   {
     id: 'axis-bank',
     name: 'Axis Bank',
     ticker: 'AXISBANK',
     category: 'Banking & NBFC',
-    returnPercent: 10,
+    returnPercent: -10,
     openingBidPrice: 15000,
-    displayNews: "Axis Bank Ltd. traded erratically this week following contradictory coverage. One report cited \"sources familiar with the matter\" suggesting the bank's corporate loan book was seeing a fresh uptick in stressed assets, while a separate outlet claimed the bank had actually seen its best quarter for recoveries in over a year. A foreign brokerage raised its target price on \"improving net interest margins,\" even as a domestic research desk cut its rating citing \"elevated provisioning risk amid slowing credit growth.\" No official statement has come from Axis Bank. Trading volumes ran well above the week's average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The stressed-assets rumor is overstated — that pocket of corporate exposure has already been substantially recovered, and the \"best quarter for recoveries\" report is the accurate one, just not yet reflected in public commentary. Internally, net interest margins are tracking stronger than the brokerage's already-positive note suggests, and provisioning is expected to come in well below the bearish desk's estimate. Expect a positive surprise when Axis Bank re-enters the public board."
+    displayNews: "Axis Bank posted its highest-ever quarterly profit, beating every estimate, and announced a rural digital banking expansion calling it a \"game-changer.\" Brokerages upgraded their outlook — though one analyst quietly flagged that a chunk of the profit looks one-time in nature.",
+    insiderNews: "A large chunk of that record profit came from a one-time asset sale, not core banking — underlying business actually grew slower than last quarter. The rural partnership is still in early testing with no real revenue. Strip out the one-time gain and the \"best quarter\" story collapses."
   },
   {
     id: 'apple',
-    name: 'Apple Inc.',
+    name: 'Apple',
     ticker: 'AAPL',
     category: 'Tech',
     returnPercent: -30,
     openingBidPrice: 20000,
-    displayNews: "Apple Inc. saw volatile trading this week after dueling reports emerged from supply chain trackers. One outlet claimed the company's upcoming flagship device was seeing \"record pre-order demand\" from key markets, while a separate report cited \"assembly partners\" suggesting production targets had quietly been trimmed due to a component shortage. A leading brokerage raised its price target on \"resilient services revenue,\" even as another analyst flagged \"softening demand signals in China\" as a near-term risk. Apple has made no official comment. Trading volumes ran above average, with sentiment split roughly evenly on the floor.",
-    insiderNews: "The \"record pre-order demand\" story is being cherry-picked from one region — company-wide, the production trim is real and larger than reported, driven by a genuine component shortage that isn't resolving as fast as suppliers claim. Internally, China demand is softening faster than the bearish analyst's note suggests, and the services-revenue optimism doesn't offset the hardware shortfall this cycle. Expect a negative correction when Apple re-enters the public board."
+    displayNews: "Apple unveiled major new AI features for its next iPhone, with rave early reviews, and one analyst says it could drive the biggest upgrade cycle in years. But a supplier delay, a new EU antitrust probe, and a downgrade citing slowing China sales are adding pressure.",
+    insiderNews: "Wait — despite the display news leaning positive, the decided outcome is weak. The supplier delay turns out worse than first reported and pushes shipments into next quarter. The EU probe escalates faster than expected. China sales genuinely soften. The AI hype fades once real shipment numbers disappoint. Stock closes weak."
   },
   {
     id: 'microsoft',
-    name: 'Microsoft Corporation',
+    name: 'Microsoft',
     ticker: 'MSFT',
     category: 'Tech',
-    returnPercent: 20,
+    returnPercent: -20,
     openingBidPrice: 18000,
-    displayNews: "Microsoft Corporation traded erratically this week following contradictory coverage of its Azure cloud division. One report cited \"internal projections\" suggesting Azure growth was decelerating faster than guided, while a separate outlet claimed enterprise AI contract wins had accelerated well beyond expectations. A major brokerage raised its price target on \"strong AI-driven cloud demand,\" even as another analyst house warned of \"margin compression from data-center capex\" weighing on near-term earnings. Microsoft has made no official statement. Trading volumes ran above average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The \"decelerating Azure growth\" story is based on stale internal projections that have since been revised upward — enterprise AI contract wins are, in fact, running ahead of even the bullish analyst's estimate. The margin-compression concern is real but smaller than reported; capex efficiency gains from recent data-center upgrades are offsetting most of the pressure. Expect a positive surprise when Microsoft re-enters the public board."
+    displayNews: "Microsoft's cloud division posted record growth, crushing Wall Street estimates, and it unveiled a new AI partnership expected to be a multi-billion-dollar revenue driver. Analysts rushed to raise price targets — but a few noted the growth number looked unusually front-loaded.",
+    insiderNews: "The record cloud growth was boosted by heavy one-time enterprise contracts that won't repeat next quarter — real run-rate growth is much slower. The AI partnership involves massive upfront infrastructure spending that eats into margins for at least a year before revenue shows up. Stock closes weak, down 20%."
   },
   {
     id: 'google',
-    name: 'Alphabet Inc. (Google)',
+    name: 'Google (Alphabet inc)',
     ticker: 'GOOGL',
     category: 'Tech',
     returnPercent: -20,
     openingBidPrice: 16000,
-    displayNews: "Alphabet Inc. saw volatile trading this week following dueling reports on its core advertising business. One outlet cited \"internal metrics\" suggesting search ad revenue was holding up better than feared against AI-chatbot competition, while a separate report claimed major advertisers were quietly shifting budgets away from Google Search toward newer AI-native platforms. A leading brokerage raised its target price on \"resilient Cloud segment growth,\" even as another analyst flagged \"regulatory overhang from ongoing antitrust proceedings\" as a near-term risk. Alphabet has made no official comment. Trading volumes ran well above average, with sentiment split roughly evenly on the floor.",
-    insiderNews: "The \"resilient search ad revenue\" story is outdated — the advertiser budget shift toward AI-native platforms is real and accelerating faster than the public report suggests, hitting core search revenue harder than modeled. The Cloud growth optimism doesn't offset this shortfall this cycle, and the antitrust overhang is also expected to force costly remedies sooner than the bearish analyst anticipated. Expect a negative correction when Alphabet re-enters the public board."
+    displayNews: "Google's parent reported record ad revenue and unveiled a major AI search breakthrough, calling it a \"generational leap.\" Analysts raised price targets across the board — though a couple pointed out the ad revenue spike coincided with unusually high political ad spending.",
+    insiderNews: "A large part of that record ad revenue came from temporary political ad spending that won't repeat — core ad growth actually slowed. The AI search breakthrough is still months from public rollout and has hit internal delays. Once the temporary boost fades, the numbers won't look as strong. Stock closes weak, down 20%."
   },
   {
     id: 'ntpc',
-    name: 'NTPC Ltd.',
+    name: 'NTPC',
     ticker: 'NTPC',
     category: 'Energy & Commodities',
     returnPercent: 35,
     openingBidPrice: 6000,
-    displayNews: "NTPC Ltd. traded erratically this week amid contradictory coverage of its power generation capacity plans. One report cited \"government sources\" suggesting a major new thermal plant clearance was imminent, boosting long-term capacity guidance, while a separate outlet claimed the same clearance had been stalled over environmental compliance objections. A domestic brokerage raised its target price citing \"strong PLF (plant load factor) improvement,\" even as another analyst warned of \"coal supply constraints\" pressuring near-term output. NTPC has issued no official statement. Trading volumes ran above average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The environmental-objection story is outdated — those compliance concerns were quietly resolved weeks ago, and the thermal plant clearance is expected to be formally announced sooner than the public report suggests. The coal supply constraint is also less severe than the bearish analyst claims; NTPC has secured additional long-term supply contracts that haven't been disclosed publicly yet. Expect a positive surprise when NTPC re-enters the public board."
+    displayNews: "NTPC shares slid on reports of a coal supply shortage hitting several plants, and a government tariff review is worrying some analysts about margins. A brokerage cut its rating — but NTPC's renewable capacity push is also drawing quiet praise from a few analysts.",
+    insiderNews: "The coal shortage is already resolved through emergency imports arranged last week — output won't actually be hit. The tariff review is expected to favor NTPC, not squeeze it, since it aligns with the renewable push. The downgrade was based on outdated information."
   },
   {
     id: 'power-grid',
-    name: 'Power Grid Corporation',
+    name: 'Power Grid',
     ticker: 'POWERGRID',
     category: 'Energy & Commodities',
     returnPercent: 30,
     openingBidPrice: 9000,
-    displayNews: "Power Grid Corporation of India Ltd. saw volatile trading this week amid contradictory coverage of its transmission infrastructure pipeline. One report cited \"sources within the ministry\" suggesting a major interstate transmission project had won expedited approval, while a separate outlet claimed the same project faced fresh land-acquisition delays. A domestic brokerage raised its target price on \"stable regulated-return business model,\" even as another analyst flagged \"execution risk on new capex commitments.\" Power Grid has issued no official statement. Trading volumes ran above average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The land-acquisition delay story is stale — that issue was resolved through an alternate route months ago, and the expedited approval report is the accurate one, just not yet formally announced. Execution risk on new capex is also overstated; internally, the project pipeline is ahead of schedule with lower-than-guided cost overruns. Expect a positive surprise when Power Grid re-enters the public board."
+    displayNews: "Power Grid shares came under pressure on reports of delays in a key transmission project, flagged as \"execution risk.\" A regulator reviewing its tariff-setting mechanism worried investors, and a brokerage downgraded the stock — though the sell-off looked overdone to some traders.",
+    insiderNews: "The transmission delay is minor — just a few weeks — and won't affect this year's revenue at all. The tariff review is actually expected to lock in stable, favorable rates for years, good news the market hasn't priced in. The downgrade used stale data."
   },
+
+  // Page 3
   {
     id: 'vedanta',
-    name: 'Vedanta Limited',
+    name: 'Vedanta',
     ticker: 'VEDL',
     category: 'Energy & Commodities',
     returnPercent: -20,
     openingBidPrice: 8000,
-    displayNews: "Vedanta faced intense scrutiny regarding its parent entity debt refinancing deadlines and commodity market cycle corrections. Metal price volatility continues to test profit margins.",
-    insiderNews: "Debt servicing pressure at the parent company level is higher than officially admitted, and high dividend payouts are stretching operational liquidity. Expect a negative correction on the board."
+    displayNews: "Vedanta announced a major expansion in metals and mining and declared a surprise special dividend, which analysts called \"a strong signal of management confidence.\" Commodity prices ticked up too — but a few analysts quietly questioned how the dividend was actually funded.",
+    insiderNews: "The special dividend is funded largely through fresh debt, not free cash flow — the balance sheet is more stretched than it looks. The expansion is years from adding production. The commodity price uptick is temporary and already reversing."
   },
   {
     id: 'bel',
@@ -198,8 +203,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Defense & Infra',
     returnPercent: 25,
     openingBidPrice: 12000,
-    displayNews: "Bharat Electronics Ltd. traded erratically this week following dueling reports on its defence order pipeline. One outlet cited \"sources close to the ministry\" suggesting a large radar-systems order was imminent, while a separate report claimed the tender process had been extended, pushing any award well into next year. A brokerage raised its target price on \"record order backlog,\" even as another analyst warned of \"execution delays on existing contracts\" weighing on near-term revenue recognition. BEL has made no official comment. Trading volumes ran well above average, with sentiment split roughly evenly on the floor.",
-    insiderNews: "The tender-extension story is outdated — the radar-systems order has already been informally cleared and is expected to be announced sooner than the public report suggests. The execution-delay concern is also overstated; internally, existing contract deliveries are tracking ahead of schedule, which should support stronger near-term revenue recognition than the bearish note assumes. Expect a positive surprise when BEL re-enters the public board."
+    displayNews: "BEL shares fell on reports of delays in a major defense order, raising \"order execution risk.\" A parliamentary committee reviewing procurement timelines added to the worry, and a brokerage cut its rating — though defense-sector analysts remain broadly bullish long-term.",
+    insiderNews: "The order delay is just paperwork — actual production and delivery stay unaffected. The parliamentary review is expected to fast-track future defense orders, a strong positive the market hasn't priced in. The downgrade was based on outdated information."
   },
   {
     id: 'hal',
@@ -208,8 +213,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Defense & Infra',
     returnPercent: 30,
     openingBidPrice: 15000,
-    displayNews: "HAL saw big market excitement surrounding sovereign defense export talks and multi-engine aircraft manufacture contracts, despite occasional murmur of raw-material inflation.",
-    insiderNews: "The \"technical objections\" story is outdated — those concerns were resolved in a follow-up round of talks that hasn't been made public, and the export order is now close to signing, ahead of the market's expectations. The raw-material cost pressure is also smaller than the bearish analyst suggests, thanks to a recently locked-in supplier contract. Expect a positive surprise when HAL re-enters the public board."
+    displayNews: "HAL shares slid after reports that a fighter jet delivery was pushed back, flagged as a \"production bottleneck.\" A defense ministry audit reviewing cost overruns added concern, and a brokerage downgraded the stock — but government orders for HAL remain strong overall.",
+    insiderNews: "The delivery delay is due to a minor component wait, already resolved — deliveries resume on schedule this week. The cost-overrun audit is expected to clear HAL and even recommend a larger future order. The downgrade used stale information."
   },
   {
     id: 'asian-paints',
@@ -218,18 +223,18 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Consumer & Retail',
     returnPercent: -20,
     openingBidPrice: 15000,
-    displayNews: "Asian Paints Ltd. saw volatile trading this week following dueling reports on consumer demand trends. One outlet cited \"channel checks\" suggesting rural paint demand was rebounding strongly ahead of the festive season, while a separate report claimed dealer inventory was piling up amid weaker-than-expected urban offtake. A brokerage raised its target price on \"market leadership and pricing power,\" even as another analyst warned of \"raw material cost inflation and rising competitive intensity\" from newer entrants. Asian Paints has issued no official statement. Trading volumes ran above average, with sentiment split roughly evenly on the floor.",
-    insiderNews: "The \"rural demand rebound\" story is cherry-picked from one region — company-wide, dealer inventory buildup is real and worse than reported, signaling weaker sell-through than the bullish brokerage assumes. Competitive intensity from newer entrants is also biting harder than modeled, pressuring both volumes and pricing power simultaneously. Expect a negative correction when Asian Paints re-enters the public board."
+    displayNews: "Asian Paints reported strong festive season sales, beating expectations, and announced entry into a new international market, calling it \"the next big growth engine.\" A brokerage raised its target price — though a few analysts flagged unusually heavy dealer discounting behind the numbers.",
+    insiderNews: "The festive sales beat was driven by heavy dealer discounting to push volumes — real demand is weaker than the headline suggests, and margins took a hit. The international expansion needs years of upfront investment. The \"resilient\" narrative won't hold once this is understood."
   },
   {
     id: 'cipla',
-    name: 'Cipla Ltd.',
+    name: 'Cipla',
     ticker: 'CIPLA',
     category: 'Pharma & Healthcare',
     returnPercent: 40,
     openingBidPrice: 20000,
-    displayNews: "Cipla Ltd. traded erratically this week amid contradictory coverage of a key generic drug filing. One report cited \"regulatory sources\" suggesting USFDA approval for a high-value inhaler product was imminent, while a separate outlet claimed the application had received an additional information request, pushing any approval further out. A brokerage raised its target price on \"strong respiratory portfolio momentum,\" even as another analyst flagged \"pricing pressure in the US generics market.\" Cipla has issued no official statement. Trading volumes ran above average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The \"additional information request\" story is outdated — that query was already resolved internally, and the inhaler approval is now expected sooner than the public report suggests. US pricing pressure is also less severe than the bearish analyst claims, thanks to a favorable distribution agreement that hasn't been disclosed yet. Expect a positive surprise when Cipla re-enters the public board."
+    displayNews: "Cipla shares fell sharply after the US FDA flagged \"manufacturing compliance issues\" at a key plant, raising import-alert fears. A top scientist left, and a brokerage downgraded the stock — though the company insists its remediation is already on track.",
+    insiderNews: "The FDA flag is a minor procedural note, not a compliance violation — no import alert is coming, and remediation is already complete. The scientist's exit is routine retirement, not a red flag. The downgrade was based on outdated information."
   },
   {
     id: 'ather-energy',
@@ -238,8 +243,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Auto & EV',
     returnPercent: 30,
     openingBidPrice: 14000,
-    displayNews: "Ather Energy Ltd. saw volatile trading this week following dueling reports on electric two-wheeler sales. One outlet cited \"dealership data\" suggesting monthly delivery numbers had hit a fresh record, while a separate report claimed production bottlenecks at a key plant were causing a backlog of unfulfilled orders. A brokerage raised its target price on \"expanding market share,\" even as another analyst warned of \"cash burn and margin pressure\" typical of a scaling EV player. Ather has made no official comment. Trading volumes ran well above average, with sentiment split roughly evenly on the floor.",
-    insiderNews: "The production-bottleneck story is stale — that constraint was resolved with a capacity upgrade that hasn't been publicly announced, and the record-delivery numbers are the accurate, current picture. Cash burn concerns are also overstated; internally, unit economics have improved faster than the bearish analyst assumes as scale kicks in. Expect a positive surprise when Ather Energy re-enters the public board."
+    displayNews: "Ather Energy shares slid on reports of slowing EV scooter sales, with analysts warning of \"demand fatigue.\" A supplier flagged battery component delays, and a brokerage downgraded the stock citing rising competition — though Ather's brand loyalty remains strong among reviewers.",
+    insiderNews: "The sales slowdown is seasonal, not demand fatigue — pre-orders for the next model are already tracking well above expectations. The battery delay is minor and already resolved through a backup supplier. The downgrade used stale data."
   },
   {
     id: 'titan',
@@ -248,8 +253,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Consumer & Retail',
     returnPercent: 20,
     openingBidPrice: 18000,
-    displayNews: "Titan had a great festive season — jewellery sales are up, and the company is also expanding into a new country. But gold prices have gone up a lot recently, and some experts worry this could eat into profits even though sales are strong and gold is also falling drastically seeing that many investor are thinking of withdrawing their equities.",
-    insiderNews: "Titan already bought its gold months ago at a much lower price, so the price spike everyone's worried about won't actually hurt them this time. Sales are strong, and almost all of it will turn into profit."
+    displayNews: "Titan had a great festive season with jewellery sales up and expansion into a new country — clear positives. But gold prices have risen sharply, and some experts worry this could eat into profits even though sales remain strong.",
+    insiderNews: "Titan already bought its gold months ago at a much lower price, so the current price spike won't hurt them this time. Sales are strong, and almost all of it will turn straight into profit."
   },
   {
     id: 'mahindra',
@@ -258,8 +263,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Auto & EV',
     returnPercent: -10,
     openingBidPrice: 12000,
-    displayNews: "Mahindra & Mahindra Ltd. traded erratically this week amid contradictory coverage of its SUV order book. One report cited \"dealer channel checks\" suggesting waiting periods on flagship models were stretching even longer, signaling robust demand, while a separate outlet claimed cancellations had ticked up as competitors launched aggressively priced rivals. A brokerage raised its target price on \"market-leading SUV franchise,\" even as another analyst warned of \"rising input costs and competitive discounting\" pressuring margins. M&M has issued no official statement. Trading volumes ran above average, with sentiment split roughly evenly across the floor.",
-    insiderNews: "The \"longer waiting periods\" story is cherry-picked from one model — company-wide, cancellations are running higher than reported as competitor pricing bites into the order book faster than modeled. Input cost pressure is also worse than the bearish analyst suggests, and planned discounting to defend market share is expected to compress margins more than the street has priced in. Expect a negative correction when M&M re-enters the public board."
+    displayNews: "M&M reported record SUV sales, beating every estimate, and announced a major new EV platform, calling it \"the future of Indian mobility.\" A brokerage raised its target price — though a few analysts noted heavy dealer incentives behind the sales surge.",
+    insiderNews: "The record SUV sales came from heavy dealer incentives and pre-buying ahead of a price hike — real underlying demand is softer, and margins are under pressure. The EV platform is years from meaningful volume. The \"best-positioned\" narrative won't hold."
   },
   {
     id: 'coal-india',
@@ -268,8 +273,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Energy & Commodities',
     returnPercent: -20,
     openingBidPrice: 15000,
-    displayNews: "Coal India announces record coal production this month, and demand from power plants is at an all-time high because of the summer heat. But the government is also talking about pushing companies to use more solar and wind power instead of coal. On top of that, a workers' union has threatened a strike next month if their demands aren't met. Some people say Coal India will make huge profits right now. Others say the strike and the shift to solar/wind could hurt the company badly, just not yet.",
-    insiderNews: "The strike talk is serious — union leaders have already agreed on dates internally, and it will start before this round ends, hitting production hard. The record output number you saw is actually the last \"normal\" number before that happens. The solar/wind shift is real but years away and won't matter this round. Expecting huge sell off of the shares."
+    displayNews: "Coal India announced record coal production, with power-plant demand at an all-time high due to summer heat — strong near-term news. But a government push toward solar/wind and a threatened workers' strike next month are raising longer-term concerns.",
+    insiderNews: "The strike talk is serious — union leaders have already agreed on dates internally, and it will start before this round ends, hitting production hard. The record output is the last \"normal\" number before that. The solar/wind shift is years away and doesn't matter yet."
   },
   {
     id: 'spacex',
@@ -278,8 +283,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Tech',
     returnPercent: -30,
     openingBidPrice: 12000,
-    displayNews: "SpaceX shares swung this week on conflicting reports: one outlet says a major satellite-constellation deal is signed, another claims regulatory review is delaying it. One brokerage cites \"record launch cadence\"; another flags \"Starship capex burn.\" No official confirmation either way. Volumes ran well above average, sentiment split evenly on the floor.",
-    insiderNews: "The \"signed deal\" report is premature — regulatory review has escalated further than disclosed. Starship costs are running above internal projections, with a milestone delay expected internally but not yet public. Expect a negative correction when SpaceX re-enters the board."
+    displayNews: "SpaceX announced a record number of launches and a massive new government contract, calling it the biggest deal in company history. It hinted at a faster next-gen rocket timeline too — though one analyst quietly questioned the profitability of some of those launches.",
+    insiderNews: "The record launch count includes several low-margin rideshare missions that barely break even — real profitability is weaker than the headline suggests. The new contract has strict penalty clauses internal teams already expect to miss. The next-gen rocket timeline is overly optimistic and likely to slip."
   },
   {
     id: 'ongc',
@@ -288,9 +293,11 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Energy & Commodities',
     returnPercent: -20,
     openingBidPrice: 10000,
-    displayNews: "ONGC saw choppy trading this week after a burst of conflicting reports on its exploration program. One report suggested a new offshore find could meaningfully boost the company's reserve base, supporting long-term production guidance. A separate outlet claimed exploration costs at the same site were running well over budget with disappointing early yield data, directly contradicting the optimistic read. A brokerage flagged \"crude price tailwinds\" as supportive, even as another analyst warned \"aging field decline rates\" could offset any new-find upside. ONGC issued no official statement. Trading volumes ran above average, with sentiment split roughly evenly on the floor.",
-    insiderNews: "The offshore find is smaller than the optimistic report claims, and the disappointing yield data is closer to accurate. More importantly, decline rates at ONGC's legacy fields are accelerating faster than currently modeled — a bigger swing factor than any single new find. The crude price tailwind doesn't offset the volume decline expected internally over coming quarters. Expect a negative correction when ONGC re-enters the public board."
+    displayNews: "ONGC's quarterly profit jumped as crude oil prices rallied, and it announced a major offshore discovery, calling it \"game-changing.\" A brokerage raised its target price — though the offshore find is still years from actual extraction.",
+    insiderNews: "The profit jump was driven mostly by a one-time inventory gain from the price rally, not core production growth — output stayed flat. The \"game-changing\" discovery needs heavy capex before it earns a rupee. Once the one-time gain fades next quarter, numbers drop back down."
   },
+
+  // Page 4
   {
     id: 'maruti-suzuki',
     name: 'Maruti Suzuki',
@@ -298,28 +305,28 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Auto & EV',
     returnPercent: 30,
     openingBidPrice: 18000,
-    displayNews: "Maruti Suzuki traded erratically this week amid a burst of contradictory coverage around export order momentum and rising cost pressures. One report suggested a large new export order from an African market was close to being finalized, seen as a potential volume catalyst for the fiscal year. A separate outlet claimed a new emissions norm would meaningfully raise input costs across the compact-car lineup, offsetting that optimism. A brokerage cited \"market-leading volumes\" as a durable advantage, even as another analyst warned of \"margin compression\" from the compliance-driven cost increase. Maruti issued no official statement. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The export order is further along than reported and larger in scale — a signing is expected sooner than the market anticipates. The margin-compression concern is overstated; a supplier agreement locking in key component costs was recently finalized internally and hasn't been disclosed, keeping the emissions-compliance cost increase well below what's currently modeled. Expect a positive surprise when Maruti Suzuki re-enters the public board."
+    displayNews: "Maruti Suzuki shares fell after a dip in monthly car sales, blamed on \"weak rural demand.\" A supplier flagged a component shortage that could slow production, and a brokerage downgraded the stock — though bookings for an upcoming new model were reportedly strong.",
+    insiderNews: "The sales dip is due to a planned factory shutdown for a model changeover, not weak demand — bookings for the new model are already strong. The supplier shortage is minor and resolved through a backup vendor. The downgrade used outdated information."
   },
   {
     id: 'lic-india',
-    name: 'LIC of India',
+    name: 'LIC India',
     ticker: 'LICI',
     category: 'Banking & NBFC',
     returnPercent: 35,
     openingBidPrice: 9000,
-    displayNews: "LIC saw choppy trading this week following a burst of dueling reports on its business fundamentals. One report claimed new premium collections had hit a record for the quarter, evidence LIC was defending its market position well. A separate outlet claimed policy lapses were actually rising as private insurers stepped up competitive pressure with more flexible products, contradicting the strong-collections narrative. A brokerage highlighted LIC's \"scale and distribution reach\" as a structural moat, even as another analyst flagged \"market share erosion\" to private players as an ongoing concern. LIC issued no official statement. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The lapse-rate concern is overstated — internal figures show the trend actually stabilizing over the past two months, contrary to what's being publicly reported. The record premium collection figure is accurate and continuing into the current quarter at a pace ahead of even the bullish brokerage's own estimate. Expect a positive surprise when LIC re-enters the public board."
+    displayNews: "LIC shares fell on reports of declining new policy sales, with analysts warning of market share loss to private insurers. A regulator is reviewing its investment practices, and a brokerage downgraded the stock — though LIC insists a new policy lineup is already in the works.",
+    insiderNews: "The sales dip is a temporary pause while LIC rolls out a new, higher-margin policy lineup — early internal numbers already outperform expectations. The regulatory review is routine and expected to clear without issue. The downgrade used outdated data."
   },
   {
     id: 'cupid',
-    name: 'Cupid Ltd.',
+    name: 'Cupid Ltd',
     ticker: 'CUPID',
     category: 'Pharma & Healthcare',
     returnPercent: 60,
     openingBidPrice: 10000,
-    displayNews: "Cupid Ltd. traded erratically this week amid a burst of contradictory coverage of its order pipeline. One report suggested the company had won a large government tender, potentially one of its biggest single order wins in recent years. A separate outlet claimed export shipment approvals for an unrelated overseas order were facing regulatory delays, raising concerns about near-term revenue timing regardless of the tender outcome. A brokerage cited \"order book strength\" as the dominant near-term driver, even as another analyst flagged \"regulatory uncertainty\" on the export side as a risk to guidance. Cupid made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The export shipment delay is outdated — that approval was quietly resolved through an alternate regulatory pathway, and shipments have already resumed, though undisclosed. On the tender side, the win is confirmed and larger in value than the figure currently circulating publicly. Expect a positive surprise when Cupid re-enters the public board."
+    displayNews: "Cupid Ltd shares fell on reports of a slowdown in government tender orders, raising \"order book uncertainty.\" A rival launched a cheaper competing product, and a brokerage downgraded the stock citing pricing pressure — though Cupid's export pipeline was rumored to be picking up.",
+    insiderNews: "The tender slowdown is temporary — a new, much larger export order is about to be announced, more than making up for it. The rival's cheaper product already has quality issues surfacing in early reviews. The downgrade used outdated information."
   },
   {
     id: 'itc',
@@ -328,8 +335,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Consumer & Retail',
     returnPercent: -30,
     openingBidPrice: 12000,
-    displayNews: "ITC saw choppy trading this week following a burst of dueling reports on its diversified business segments. One report highlighted strong growth across ITC's FMCG segment, evidence the company's diversification strategy away from tobacco was paying off. A separate outlet cited rising input costs alongside a proposed tax hike on cigarettes under policy discussion, directly raising concerns about the core tobacco business's profitability. A brokerage cited \"diversification beyond tobacco\" as a structural positive, even as another analyst flagged \"regulatory tax risk\" as a near-term headwind for the segment still driving most profits. ITC issued no official statement. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The tax hike proposal is further along in the policy process than what's currently publicly known, and expected to hit tobacco segment margins harder than the bullish diversification narrative accounts for. The FMCG growth figures are accurate but not yet large enough in scale to offset a meaningful tax-driven hit to the core business. Expect a negative correction when ITC re-enters the public board."
+    displayNews: "ITC reported record quarterly revenue across FMCG and hotels, beating estimates, and announced a major packaged-foods expansion, calling it \"the next big growth driver.\" A brokerage raised its target price — though the revenue jump coincided with unusually heavy trade-channel stocking.",
+    insiderNews: "The record FMCG revenue was boosted by heavy trade-channel stocking ahead of a price hike — actual consumer demand is softer, and a sales dip may follow as inventory corrects. The packaged foods expansion needs years to turn profitable."
   },
   {
     id: 'zomato',
@@ -338,8 +345,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Tech',
     returnPercent: 40,
     openingBidPrice: 14000,
-    displayNews: "Zomato traded erratically this week amid a burst of contradictory coverage of its quick-commerce unit's financial performance. One report claimed the unit had turned profitable for the first time, framing it as a significant milestone for the broader business. A separate outlet claimed losses at the same unit were actually still mounting, directly contradicting the profitability claim. A brokerage cited Zomato's \"market leadership\" in both food delivery and quick commerce as the more important long-term driver, even as another analyst flagged \"cash burn\" at the quick-commerce unit as an ongoing concern. Zomato made no official comment. Volumes ran well above average, sentiment split evenly on the floor.",
-    insiderNews: "The profitability report is accurate and arrived ahead of the internal schedule management had guided toward. The loss figures cited in the competing report are from an outdated quarter and don't reflect the unit's current trajectory. Combined with continued market share gains in core delivery, the turnaround looks more durable than the mixed public coverage suggests. Expect a positive surprise when Zomato re-enters the public board."
+    displayNews: "Zomato reported strong order growth this quarter but flagged rising delivery costs and tougher competition from a rival's aggressive discounting. Its new quick-commerce push is reportedly gaining fast, though some worry it's burning cash with no clear profit timeline.",
+    insiderNews: "The quick-commerce push is actually turning profitable faster than expected — a key regional market hit breakeven ahead of schedule. The rival's discounting is unsustainable and already being pulled back internally. Delivery costs are being offset by a new, not-yet-public packaging deal."
   },
   {
     id: 'groww',
@@ -348,8 +355,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Fintech & Exchanges',
     returnPercent: 30,
     openingBidPrice: 15000,
-    displayNews: "Groww saw choppy trading this week following a burst of dueling reports on its business trajectory. One report claimed user growth and trading volumes had hit new highs, pointing to continued strong customer acquisition. A separate outlet claimed upcoming regulatory changes on F&O (futures and options) trading could meaningfully hurt revenue, directly offsetting the growth narrative. A brokerage cited Groww's \"market share gains\" against established brokerages as the dominant trend, even as another analyst flagged \"regulatory headwinds\" as a structural risk to the current revenue mix. Groww issued no official statement. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The regulatory impact from the F&O changes is smaller than the bearish report suggests — an exemption clause applies to a meaningful portion of Groww's core product mix that hasn't been publicized yet. Combined with the genuinely strong user growth and volume figures, the underlying business trajectory looks stronger than the mixed public narrative implies. Expect a positive surprise when Groww re-enters the public board."
+    displayNews: "Groww reported a sharp rise in new user sign-ups and announced plans for a public listing soon. But rising regulatory scrutiny on trading apps and a rival's zero-fee offer to poach users are adding pressure, splitting analyst opinion.",
+    insiderNews: "The regulatory scrutiny doesn't target Groww specifically — its compliance is already ahead of the new rules. The rival's zero-fee offer is a short-term promo already losing them money. The listing plans are moving faster than reported and expected to be well-received."
   },
   {
     id: 'zerodha',
@@ -358,18 +365,18 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Fintech & Exchanges',
     returnPercent: -20,
     openingBidPrice: 10000,
-    displayNews: "Zerodha traded erratically this week amid a burst of contradictory coverage of its user base trends. One report claimed the active user base was still growing steadily, evidence of continued market leadership. A separate outlet claimed churn was actually rising as rival platforms cut fees to attract price-sensitive traders, directly contradicting the steady-growth narrative. A brokerage cited Zerodha's \"brand trust and low-cost model\" as durable competitive advantages, even as another analyst flagged \"fee-war pressure\" from newer, well-funded entrants as a growing threat to the current business model. Zerodha made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The churn numbers are worse than what's currently being publicly reported, and don't account for accelerating attrition among active traders. A fee cut being planned internally to compete with newer entrants is expected to hit revenue harder than currently modeled, since it applies to Zerodha's highest-volume customer segment. The brand-trust advantage isn't proving sufficient to offset the fee-war pressure. Expect a negative correction when Zerodha re-enters the public board."
+    displayNews: "Zerodha announced record trading volumes and user growth, cementing its lead as India's largest broker, and revealed plans for a new wealth management product. Industry watchers call it the most dominant fintech story in India right now — though the volume spike looked unusually sharp.",
+    insiderNews: "The record trading volumes were driven by a short-term retail trading frenzy that's already cooling off — sustainable revenue growth is much slower. The wealth management product is still in early testing with regulatory approvals pending. Once the volume spike fades, the \"dominant\" narrative won't hold."
   },
   {
     id: 'nestle-india',
-    name: 'Nestlé India',
+    name: 'Nestle India',
     ticker: 'NESTLEIND',
     category: 'Consumer & Retail',
     returnPercent: -20,
     openingBidPrice: 10000,
-    displayNews: "Nestlé India saw choppy trading this week following a burst of dueling reports on demand trends heading into the festive season. One report cited strong festive-season sales figures as evidence of resilient consumer demand. A separate outlet claimed rural demand was actually softer than expected, alongside rising input costs, directly contradicting the strong-sales narrative. A brokerage cited Nestlé's \"pricing power\" as a durable advantage that could offset near-term cost pressure, even as another analyst flagged \"volume growth slowdown\" as a more concerning underlying trend than the sales headline suggested. Nestlé India issued no official statement. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The festive sales bump is overstated — underlying volume growth is weaker than the headline figure suggests, once a temporary promotional push is stripped out. Cocoa and dairy input costs are also running above internal guidance, worse than the bullish pricing-power narrative accounts for. Expect a negative correction when Nestlé India re-enters the public board."
+    displayNews: "Nestlé reported record quarterly sales across its food and beverage portfolio, beating expectations, and announced a major new product line, calling it its biggest innovation push in a decade. A brokerage raised its target price — though a few noted the sales jump followed a recent price hike.",
+    insiderNews: "The record sales were driven by aggressive price hikes passed onto consumers, not real volume growth — unit sales actually declined slightly. The new product line has had a weak initial retailer response and may get scaled back. The \"safest, most reliable\" narrative won't hold."
   },
   {
     id: 'netflix',
@@ -378,38 +385,40 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Tech',
     returnPercent: 20,
     openingBidPrice: 10000,
-    displayNews: "Netflix traded erratically this week amid a burst of contradictory coverage of its subscriber trends. One report claimed ad-tier subscriber growth had beaten internal expectations by a wide margin, framing it as a key driver of the next growth phase. A separate outlet claimed gains from the earlier password-sharing crackdown were fading as the one-time boost worked its way through the subscriber base, directly offsetting the ad-tier optimism. A brokerage cited \"content slate strength\" heading into the next quarter as the dominant factor to watch, even as another analyst flagged \"subscriber saturation\" in mature markets as a longer-term concern. Netflix made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "Ad-tier growth is stronger than even the optimistic report suggests, and a major content licensing deal not yet public is expected to drive a fresh wave of subscriber additions next quarter. The fading password-sharing boost is real but smaller in impact than suggested, and doesn't offset the new content-driven growth expected internally. Expect a positive surprise when Netflix re-enters the public board."
+    displayNews: "Netflix shares fell on reports of slowing subscriber growth in developed markets, raising \"market saturation\" fears. A brokerage downgraded it citing rising content costs, and a rival streaming platform announced aggressive price cuts — though emerging-market subscriber trends were quietly holding up.",
+    insiderNews: "The subscriber slowdown is only in developed markets — growth in emerging markets is quietly beating internal targets and more than offsetting it. A recently signed, not-yet-public cost-sharing deal solves the content-cost worry. The rival's price cuts are unsustainable and expected to reverse within weeks."
   },
   {
     id: 'paytm',
-    name: 'Paytm (One97 Communications)',
+    name: 'Paytm',
     ticker: 'PAYTM',
     category: 'Fintech & Exchanges',
     returnPercent: 45,
     openingBidPrice: 14000,
-    displayNews: "Paytm saw choppy trading this week following a burst of dueling reports on its business direction. One report claimed lending partnerships were expanding meaningfully, pointing to a new revenue stream gaining traction. A separate outlet claimed regulatory scrutiny on its core payments business was intensifying, directly raising concerns about near-term operational stability. A brokerage cited \"diversification into lending\" as a positive structural shift, even as another analyst flagged \"compliance risk\" as an overhang that could limit near-term upside regardless of the lending expansion. Paytm issued no official statement. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The regulatory scrutiny concern is largely resolved behind the scenes — a key restriction the market has been pricing in has already been quietly waived following a compliance review, though undisclosed. The lending partnership expansion is also bigger in scope than currently reported, with an additional partner bank in advanced talks. Expect a positive surprise when Paytm re-enters the public board."
+    displayNews: "Paytm shares fell after a regulator flagged \"compliance concerns\" over its lending partnerships, raising \"regulatory overhang\" fears. A senior executive resigned, and a brokerage downgraded the stock, citing an uncertain path to profitability — though Paytm's core payments volumes kept climbing.",
+    insiderNews: "The compliance flag is minor and already addressed informally with the regulator — no penalty is coming. The executive resignation is personal, unrelated to any internal issue. The company is actually closer to profitability than reported, with a real turnaround expected next quarter."
   },
+
+  // Page 5
   {
     id: 'coinbase',
-    name: 'Coinbase Global',
+    name: 'Coinbase',
     ticker: 'COIN',
     category: 'Fintech & Exchanges',
     returnPercent: 40,
     openingBidPrice: 18000,
-    displayNews: "Coinbase saw volatile trading this week amid a burst of contradictory coverage of trading volume trends against a backdrop of broader crypto market volatility. One report claimed institutional trading volume was surging as more traditional finance players entered the space, framing it as a structural tailwind. A separate outlet claimed retail trading activity had dropped sharply over the same period, raising concerns about the platform's more volatile revenue segment. A brokerage cited \"institutional adoption\" as the dominant long-term trend, even as another analyst flagged \"revenue concentration risk\" given how much near-term revenue still depends on retail trading fees. Coinbase made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "Institutional trading volume is even stronger than the optimistic report suggests, and a new custody services deal with a major asset manager — not yet public — is expected to add a significant new, more stable revenue stream. The retail volume drop is real but smaller than reported, and the institutional strength more than offsets it internally. Expect a positive surprise when Coinbase re-enters the public board."
+    displayNews: "Coinbase shares fell as crypto prices turned volatile and a regulator opened a new inquiry into its practices. Analysts warned of regulatory risk and declining trading volumes, and a brokerage downgraded the stock, citing an uncertain \"crypto winter\" ahead — though on-chain data hinted at rising activity.",
+    insiderNews: "The regulatory inquiry is routine and expected to close with no action. Trading volumes have actually picked up sharply in the last few days as prices stabilize — data the market hasn't seen yet. The \"crypto winter\" call is based on outdated sentiment."
   },
   {
     id: 'nvidia',
-    name: 'NVIDIA Corporation',
+    name: 'NVIDIA',
     ticker: 'NVDA',
     category: 'Tech',
     returnPercent: -30,
     openingBidPrice: 18000,
-    displayNews: "Nvidia traded erratically this week amid a burst of contradictory coverage of AI chip demand and export policy. One report claimed AI chip demand remained \"insatiable\" across data-center customers, pointing to continued order backlog strength. A separate outlet cited rumors of a new export restriction that could limit sales to a key overseas market, directly raising concerns about near-term revenue exposure. A brokerage cited Nvidia's \"data-center dominance\" as the more important long-term driver regardless of any single-market restriction, even as another analyst flagged \"geopolitical risk\" as a growing overhang on the stock. Nvidia made no official comment. Volumes ran well above average, sentiment split evenly on the floor.",
-    insiderNews: "The export restriction is more serious than currently reported — a rumored licensing workaround the market had hoped for has fallen through, and a meaningful chunk of sales to that key market are now effectively blocked, worse than what the bearish analyst assumed. The \"insatiable demand\" narrative doesn't fully account for this specific market being closed off in the near term. Expect a negative correction when Nvidia re-enters the public board."
+    displayNews: "NVIDIA reported record quarterly revenue driven by soaring AI chip demand, crushing every estimate, and unveiled its next-gen AI chip, calling it \"a generational leap.\" Multiple brokerages raised price targets — though a few analysts flagged unusually large bulk orders behind the revenue jump.",
+    insiderNews: "A large chunk of that record revenue came from a handful of bulk orders pulled forward from next quarter — real run-rate demand is much lower than it looks. The next-gen chip is facing production yield issues that could delay wide availability. This quarter's number won't repeat."
   },
   {
     id: 'netweb',
@@ -418,18 +427,18 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Tech',
     returnPercent: 50,
     openingBidPrice: 20000,
-    displayNews: "Netweb Technologies saw choppy trading this week following a burst of dueling reports on its order pipeline. One report highlighted a large AI-server order win, framing it as a significant validation of the company's positioning in the domestic AI infrastructure buildout. A separate outlet claimed execution delays were pushing revenue recognition for that same order into the next fiscal year, directly offsetting the near-term optimism. A brokerage cited \"AI infrastructure tailwinds\" as a durable long-term driver, even as another analyst flagged \"order-to-revenue lag\" as a recurring concern for the company's growth numbers. Netweb made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The execution-delay concern is outdated — internal delivery timelines show the order actually shipping and being recognized within the current quarter, ahead of even the bullish brokerage's own estimate. The order-to-revenue lag flagged as a recurring issue doesn't apply to this particular contract given the accelerated internal timeline. Expect a positive surprise when Netweb Technologies re-enters the public board."
+    displayNews: "Netweb shares fell on reports of a delay in a major government supercomputing order, raising \"execution risk\" fears for this small-cap stock. A brokerage flagged high valuation concerns, and a competitor announced a rival product launch — though Netweb's order pipeline was rumored to be growing.",
+    insiderNews: "The order delay is just a paperwork formality — actual delivery and revenue booking stay on schedule this quarter. The competitor's rival product is still in early testing, years from being a real threat. The valuation concern was based on old numbers before a new, not-yet-public private-sector deal."
   },
   {
     id: 'jp-morgan',
-    name: 'JPMorgan Chase & Co.',
+    name: 'JP Morgan',
     ticker: 'JPM',
     category: 'Banking & NBFC',
     returnPercent: 20,
     openingBidPrice: 15000,
-    displayNews: "JPMorgan Chase traded erratically this week amid a burst of contradictory coverage of its quarterly performance drivers. One report claimed trading-desk revenue had hit a record on elevated market volatility, pointing to a strong quarter for the markets business. A separate outlet claimed loan-loss provisions were rising on growing credit concerns across the consumer and commercial loan books, directly raising questions about overall earnings quality. A brokerage cited JPMorgan's \"diversified revenue base\" as a structural strength, even as another analyst flagged \"credit risk building\" as a trend worth monitoring closely. JPMorgan made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "Trading revenue is even stronger than the optimistic report suggests, and the loan-loss provisions being flagged are actually being front-loaded conservatively by management as a precaution, overstating the actual underlying credit risk. Combined with the record trading quarter, overall earnings quality looks stronger than the mixed public coverage suggests. Expect a positive surprise when JPMorgan Chase re-enters the public board."
+    displayNews: "JP Morgan reported record quarterly profit, beating every estimate, and announced a major digital banking expansion, calling it \"the future of the company.\" A brokerage raised its target price — though a few analysts noted an unusual one-time trading gain behind the profit beat.",
+    insiderNews: "A large chunk of that record profit came from a one-time trading gain that won't repeat next quarter — core banking revenue actually grew slower than expected. The digital banking expansion is burning heavily on tech spend with no real payoff yet."
   },
   {
     id: 'goldman-sachs',
@@ -437,9 +446,263 @@ export const INITIAL_STOCKS: Stock[] = [
     ticker: 'GS',
     category: 'Banking & NBFC',
     returnPercent: -20,
+    openingBidPrice: 12000,
+    displayNews: "Goldman Sachs reported record quarterly trading revenue, beating every estimate, and announced a major wealth management expansion, calling it \"a new era of growth beyond Wall Street.\" A brokerage raised its target price — though a few analysts flagged unusually volatile trading weeks behind the revenue surge.",
+    insiderNews: "The record trading revenue came from a few unusually volatile weeks that won't repeat — underlying trading desk performance was actually flat. The wealth management expansion is burning cash on hiring and infrastructure with no meaningful revenue yet."
+  },
+  {
+    id: 'bharti-airtel',
+    name: 'Bharti Airtel',
+    ticker: 'BHARTIARTL',
+    category: 'Tech',
+    returnPercent: -20,
+    openingBidPrice: 12000,
+    displayNews: "Airtel saw choppy trading — one report says its Africa business posted record growth, another claims spectrum payment obligations are straining near-term cash flow. A brokerage likes \"diversified geography,\" another flags \"debt servicing risk.\" No official statement. Volumes above average, sentiment split.",
+    insiderNews: "The Africa growth figure is accurate but small relative to the spectrum obligation, which is larger than disclosed and due sooner than modeled. Expect a negative consolidation irrespective of volume average."
+  },
+  {
+    id: 'wipro',
+    name: 'Wipro',
+    ticker: 'WIPRO',
+    category: 'Tech',
+    returnPercent: 20,
+    openingBidPrice: 10000,
+    displayNews: "Wipro traded erratically — one report says it won a large multi-year IT services contract, another claims attrition among senior consultants is rising sharply. A brokerage cites \"deal pipeline strength,\" another flags \"talent risk.\" No comment from the company. Sentiment split evenly.",
+    insiderNews: "The attrition concern is overstated — most departures are at junior levels with minimal client impact. The new contract is larger than publicly disclosed. Expect a positive surprise."
+  },
+  {
+    id: 'reliance-jio',
+    name: 'Reliance Jio',
+    ticker: 'JIO',
+    category: 'Tech',
+    returnPercent: 20,
+    openingBidPrice: 14000,
+    displayNews: "Reliance Jio traded erratically this week amid conflicting reports on its 5G rollout. One outlet claims subscriber additions hit a record high, another says tariff hikes are pushing users to cheaper rivals. A brokerage cites \"market leadership,\" another flags \"ARPU pressure.\" No official comment. Volumes ran above average, sentiment split evenly.",
+    insiderNews: "The tariff-hike churn is smaller than reported — most switching users are low-value accounts. Subscriber growth in the high-ARPU segment is genuinely strong and understated. Expect a positive surprise."
+  },
+  {
+    id: 'hcl-tech',
+    name: 'HCLTech',
+    ticker: 'HCLTECH',
+    category: 'Tech',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: "HCLTech saw choppy trading — one report highlights strong engineering-services revenue, another claims a major client is reducing its outsourcing budget. A brokerage likes \"diversified vertical mix,\" another flags \"client concentration risk.\" No official statement. Volumes above average.",
+    insiderNews: "The client budget cut is real and larger than reported, affecting a bigger revenue share than the bullish note assumes. Expect a negative correction."
+  },
+  {
+    id: 'tech-mahindra',
+    name: 'Tech Mahindra',
+    ticker: 'TECHM',
+    category: 'Tech',
+    returnPercent: 20,
+    openingBidPrice: 12000,
+    displayNews: "Tech Mahindra traded erratically — one report says a telecom-vertical deal win is imminent, another claims margin pressure from wage hikes is mounting. A brokerage cites \"5G vertical strength,\" another flags \"cost inflation.\" No comment. Sentiment split evenly on the floor.",
+    insiderNews: "The wage-hike impact is smaller than modeled due to an internal automation push. The telecom deal is bigger and closer to signing than reported. Expect a positive surprise."
+  },
+  {
+    id: 'britannia',
+    name: 'Britannia Industries',
+    ticker: 'BRITANNIA',
+    category: 'Consumer & Retail',
+    returnPercent: -20,
+    openingBidPrice: 12000,
+    displayNews: "Britannia saw choppy trading — one report cites strong festive biscuit sales, another claims rising wheat and palm oil costs are squeezing margins. A brokerage likes \"brand strength,\" another flags \"input cost inflation.\" No official statement.",
+    insiderNews: "The festive sales bump is smaller than headlined, and input costs are running above internal guidance. Expect a negative correction."
+  },
+
+  // Page 6
+  {
+    id: 'dabur',
+    name: 'Dabur India',
+    ticker: 'DABUR',
+    category: 'Consumer & Retail',
+    returnPercent: 20,
+    openingBidPrice: 10000,
+    displayNews: "Dabur traded erratically — one report says rural demand for its health portfolio is rebounding, another claims urban volumes are softening amid competitive discounting. A brokerage cites \"ayurveda portfolio strength,\" another flags \"volume slowdown.\" No comment.",
+    insiderNews: "The rural rebound is real and broader than reported; urban softness is smaller and temporary. Expect a positive surprise."
+  },
+  {
+    id: 'havells',
+    name: 'Havells India',
+    ticker: 'HAVELLS',
+    category: 'Consumer & Retail',
+    returnPercent: -20,
+    openingBidPrice: 12000,
+    displayNews: "Havells saw choppy trading — one report highlights strong summer appliance sales, another claims copper and aluminium cost spikes are hitting margins. A brokerage likes \"distribution reach,\" another flags \"commodity cost risk.\" No official statement.",
+    insiderNews: "The appliance sales bump is smaller than reported, and commodity costs are running well above internal guidance. Expect a negative correction."
+  },
+  {
+    id: 'dmart',
+    name: 'Avenue Supermarts (DMart)',
+    ticker: 'DMART',
+    category: 'Consumer & Retail',
+    returnPercent: 20,
     openingBidPrice: 15000,
-    displayNews: "Goldman Sachs saw choppy trading this week following a burst of dueling reports on its two core business lines. One report claimed the investment-banking deal pipeline was recovering strongly, pointing to a pickup in M&A advisory mandates. A separate outlet claimed trading revenue was set to disappoint on an unusually slow quarter for market-making activity, directly offsetting the investment-banking optimism. A brokerage cited an \"M&A pipeline rebound\" as the more important driver heading into the next reporting cycle, even as another analyst flagged \"trading revenue softness\" as a bigger near-term drag. Goldman Sachs made no official comment. Volumes ran above average, sentiment split evenly on the floor.",
-    insiderNews: "The deal-pipeline recovery is overstated — several large deals characterized as \"in the pipeline\" have quietly stalled internally, undisclosed publicly. Trading revenue softness is also worse than what the bearish analyst assumed. With both weaker than reported, the setup looks more negative than the mixed public coverage currently reflects. Expect a negative correction when Goldman Sachs re-enters the public board."
+    displayNews: "DMart traded erratically — one report says same-store sales growth beat expectations, another claims new store openings are slower than guided due to real estate delays. A brokerage cites \"cost discipline,\" another flags \"expansion slowdown.\" No comment.",
+    insiderNews: "The store-opening delay is smaller than reported — three new stores are opening ahead of schedule, undisclosed. Expect a positive surprise."
+  },
+  {
+    id: 'irctc',
+    name: 'IRCTC',
+    ticker: 'IRCTC',
+    category: 'Defense & Infra',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: "IRCTC saw choppy trading — one report cites record ticket-booking volumes, another claims a proposed reduction in convenience-fee rates is under government review. A brokerage likes \"monopoly position,\" another flags \"fee-cut risk.\" No official statement.",
+    insiderNews: "The fee-cut proposal is further along than publicly known and expected to hit revenue harder than the bullish case assumes. Expect a negative correction."
+  },
+  {
+    id: 'divis-lab',
+    name: "Divi's Laboratories",
+    ticker: 'DIVISLAB',
+    category: 'Pharma & Healthcare',
+    returnPercent: 20,
+    openingBidPrice: 14000,
+    displayNews: "Divi's Labs traded erratically — one report says a large API export order was won, another claims a key customer is delaying orders amid inventory destocking. A brokerage cites \"specialty API strength,\" another flags \"destocking risk.\" No comment.",
+    insiderNews: "The destocking concern is nearly resolved — the customer's order delay was temporary and orders have already resumed, undisclosed. Expect a positive surprise."
+  },
+  {
+    id: 'trent',
+    name: 'Trent Ltd.',
+    ticker: 'TRENT',
+    category: 'Consumer & Retail',
+    returnPercent: -20,
+    openingBidPrice: 15000,
+    displayNews: "Trent saw choppy trading — one report highlights strong Zudio store expansion, another claims same-store sales growth is decelerating faster than guided. A brokerage likes \"value-fashion positioning,\" another flags \"same-store slowdown.\" No official statement.",
+    insiderNews: "The same-store slowdown is worse than reported and is structural, not seasonal, as newer stores cannibalize older ones. Expect a negative correction."
+  },
+  {
+    id: 'bata',
+    name: 'Bata India',
+    ticker: 'BATAINDIA',
+    category: 'Consumer & Retail',
+    returnPercent: 20,
+    openingBidPrice: 10000,
+    displayNews: "Bata traded erratically — one report says festive footwear sales hit a multi-year high, another claims rising leather costs are pressuring margins. A brokerage cites \"brand recall,\" another flags \"input cost risk.\" No comment from the company.",
+    insiderNews: "Leather costs are locked in below current spot prices via an undisclosed supplier contract. Festive sales strength is real and continuing. Expect a positive surprise."
+  },
+  {
+    id: 'pvr-inox',
+    name: 'PVR Inox',
+    ticker: 'PVRINOX',
+    category: 'Consumer & Retail',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: "PVR Inox saw choppy trading — one report cites a strong box-office weekend, another claims footfall recovery is stalling as streaming competition intensifies. A brokerage likes \"content pipeline,\" another flags \"structural footfall decline.\" No official statement.",
+    insiderNews: "The strong weekend was a one-off driven by a single release; underlying footfall trends are weaker than reported. Expect a negative correction."
+  },
+  {
+    id: 'jubilant-food',
+    name: 'Jubilant FoodWorks',
+    ticker: 'JUBLFOOD',
+    category: 'Consumer & Retail',
+    returnPercent: 20,
+    openingBidPrice: 12000,
+    displayNews: "Jubilant FoodWorks traded erratically — one report says delivery order volumes hit a record, another claims rising cheese and packaging costs are squeezing margins. A brokerage cites \"store expansion pace,\" another flags \"cost inflation.\" No comment.",
+    insiderNews: "A supplier contract locking in cheese costs was recently finalized internally, undisclosed. Delivery volume growth is stronger than reported. Expect a positive surprise."
+  },
+  {
+    id: 'idfc-first',
+    name: 'IDFC First Bank',
+    ticker: 'IDFCFIRSTB',
+    category: 'Banking & NBFC',
+    returnPercent: -20,
+    openingBidPrice: 8000,
+    displayNews: "IDFC First Bank saw choppy trading — one report highlights strong retail loan growth, another claims asset quality in its microfinance book is deteriorating. A brokerage likes \"retail franchise build-out,\" another flags \"microfinance stress.\" No official statement.",
+    insiderNews: "Microfinance stress is worse than reported, and a provisioning increase is expected to hit earnings harder than the bullish case assumes. Expect a negative correction."
+  },
+  {
+    id: 'sbi',
+    name: 'State Bank of India (SBI)',
+    ticker: 'SBIN',
+    category: 'Banking & NBFC',
+    returnPercent: 20,
+    openingBidPrice: 12000,
+    displayNews: "SBI traded erratically — one report says corporate loan growth is accelerating, another claims employee pension provisioning could rise sharply. A brokerage cites \"scale advantage,\" another flags \"provisioning risk.\" No comment from the bank.",
+    insiderNews: "The pension provisioning concern is overstated — an actuarial revision already accounted for it internally. Corporate loan growth is stronger than reported. Expect a positive surprise."
+  },
+  {
+    id: 'jsw-steel',
+    name: 'JSW Steel',
+    ticker: 'JSWSTEEL',
+    category: 'Energy & Commodities',
+    returnPercent: -20,
+    openingBidPrice: 12000,
+    displayNews: "JSW Steel saw choppy trading — one report cites rising global steel prices, another claims a key blast furnace is undergoing an unplanned shutdown. A brokerage likes \"capacity expansion,\" another flags \"production disruption.\" No official statement.",
+    insiderNews: "The blast furnace shutdown is longer than disclosed and will hit output more than the bullish pricing narrative offsets. Expect a negative correction."
+  },
+
+  // Page 7
+  {
+    id: 'ultratech',
+    name: 'UltraTech Cement',
+    ticker: 'ULTRACEMCO',
+    category: 'Defense & Infra',
+    returnPercent: 20,
+    openingBidPrice: 14000,
+    displayNews: "UltraTech traded erratically — one report says cement demand is picking up on infrastructure spending, another claims fuel and freight costs are rising sharply. A brokerage cites \"pricing power,\" another flags \"cost inflation.\" No comment.",
+    insiderNews: "Fuel costs are hedged below current spot levels via an undisclosed contract. Demand pickup is real and stronger than reported. Expect a positive surprise."
+  },
+  {
+    id: 'bajaj-auto',
+    name: 'Bajaj Auto',
+    ticker: 'BAJAJ-AUTO',
+    category: 'Auto & EV',
+    returnPercent: -20,
+    openingBidPrice: 15000,
+    displayNews: "Bajaj Auto saw choppy trading — one report highlights strong three-wheeler export orders, another claims domestic two-wheeler sales are declining amid rural demand weakness. A brokerage likes \"export diversification,\" another flags \"domestic slowdown.\" No official statement.",
+    insiderNews: "Domestic weakness is worse than reported and export orders are smaller in near-term revenue impact than headlined. Expect a negative correction."
+  },
+  {
+    id: 'hero-motocorp',
+    name: 'Hero MotoCorp',
+    ticker: 'HEROMOTOCO',
+    category: 'Auto & EV',
+    returnPercent: 20,
+    openingBidPrice: 12000,
+    displayNews: "Hero MotoCorp traded erratically — one report says festive two-wheeler sales beat expectations, another claims rising commodity costs are squeezing margins. A brokerage cites \"rural demand recovery,\" another flags \"cost pressure.\" No comment from the company.",
+    insiderNews: "Commodity costs are smaller than modeled due to an undisclosed hedging position. Festive sales strength is continuing into the current month. Expect a positive surprise."
+  },
+  {
+    id: 'eicher-motors',
+    name: 'Eicher Motors',
+    ticker: 'EICHERMOT',
+    category: 'Auto & EV',
+    returnPercent: -20,
+    openingBidPrice: 14000,
+    displayNews: "Eicher Motors saw choppy trading — one report cites strong Royal Enfield export demand, another claims domestic waiting periods are shrinking as demand cools. A brokerage likes \"premium positioning,\" another flags \"domestic demand softening.\" No official statement.",
+    insiderNews: "Domestic demand softening is worse than reported and export demand isn't large enough yet to offset it. Expect a negative correction."
+  },
+  {
+    id: 'tesla',
+    name: 'Tesla Inc.',
+    ticker: 'TSLA',
+    category: 'Auto & EV',
+    returnPercent: 20,
+    openingBidPrice: 18000,
+    displayNews: "Tesla traded erratically — one report says a new affordable model is nearing production, another claims delivery numbers missed internal targets this quarter. A brokerage cites \"energy storage growth,\" another flags \"delivery miss.\" No official comment.",
+    insiderNews: "The delivery miss is smaller than reported once a logistics delay is accounted for. The affordable model timeline is ahead of what's public. Expect a positive surprise."
+  },
+  {
+    id: 'meta',
+    name: 'Meta Platforms',
+    ticker: 'META',
+    category: 'Tech',
+    returnPercent: -20,
+    openingBidPrice: 18000,
+    displayNews: "Meta saw choppy trading — one report highlights strong ad revenue growth, another claims regulatory pressure in the EU over data practices is intensifying. A brokerage likes \"AI-driven ad targeting,\" another flags \"regulatory overhang.\" No official statement.",
+    insiderNews: "The EU regulatory action is more advanced than disclosed and expected to force costly changes sooner than the bullish case assumes. Expect a negative correction."
+  },
+  {
+    id: 'amazon',
+    name: 'Amazon.com',
+    ticker: 'AMZN',
+    category: 'Tech',
+    returnPercent: 20,
+    openingBidPrice: 20000,
+    displayNews: "Amazon traded erratically — one report says AWS cloud growth is reaccelerating, another claims retail margins are under pressure from rising fulfillment costs. A brokerage cites \"cloud dominance,\" another flags \"retail margin risk.\" No comment.",
+    insiderNews: "Fulfillment cost pressure is smaller than modeled due to an undisclosed automation rollout. AWS growth is stronger than the bullish note suggests. Expect a positive surprise."
   }
 ];
 

@@ -194,6 +194,22 @@ export const RulesView: React.FC = () => {
           </ol>
         </div>
       </div>
+
+      {/* Section 7: Rectification & Error Recovery Protocol */}
+      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 text-xs">
+        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          7. Operator Rectification & Error Correction Protocol
+        </h3>
+        <p className="text-slate-300 leading-relaxed">
+          In high-energy auction environments, rapid bidding or counting slips may occur. This system incorporates a fail-safe rectification engine:
+        </p>
+        <ul className="list-disc list-inside space-y-1.5 text-slate-300">
+          <li><strong>One-Click Transaction Undo:</strong> Any normal allotment, insider auction, or exchange trade can be immediately rolled back from the audit feed with full cash and lot restoration.</li>
+          <li><strong>Direct Portfolio Rectification:</strong> Click <em>"Rectify Mistake"</em> in the header or on any team card to manually adjust lots or cash balances if numbers were entered incorrectly.</li>
+          <li><strong>Audit Trail:</strong> All calculations, penalties, and lot allotments are automatically tracked and preserved in real time.</li>
+        </ul>
+      </div>
     </div>
   );
 };
