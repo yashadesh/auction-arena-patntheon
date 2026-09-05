@@ -7,18 +7,18 @@ import {
   Search, 
   Sparkles,
   Lock,
-  Clock,
   Play,
   Pause,
   RotateCcw,
   CheckSquare,
   Square,
   TrendingUp,
-  HelpCircle,
-  Gavel,
-  SlidersHorizontal,
   History,
-  Trash2
+  ArrowRight,
+  Flame,
+  Tv,
+  Calculator,
+  Eye
 } from 'lucide-react';
 import { formatINR, formatPercent } from '../utils/formatters';
 import { soundFX } from '../utils/soundFX';
@@ -35,15 +35,15 @@ export const NormalRoundView: React.FC = () => {
     executeNormalRound,
     normalTransactions,
     revertNormalTransaction,
-    rectifyTeamHolding,
     revealedMultipliers,
-    toggleRevealMultiplier
+    setActiveTab
   } = useGame();
 
   const [lotSelections, setLotSelections] = useState<Record<string, number>>({});
+  const [customBids, setCustomBids] = useState<Record<string, number>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [autoDeductMoney, setAutoDeductMoney] = useState(false); // Default false since user handles money deduction
+  const [autoDeductMoney, setAutoDeductMoney] = useState(true);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string; lastTxId?: string } | null>(null);
   const [isRectifyModalOpen, setIsRectifyModalOpen] = useState(false);
   const [rectifyTeamId, setRectifyTeamId] = useState<string | undefined>(undefined);
@@ -75,6 +75,7 @@ export const NormalRoundView: React.FC = () => {
   }, [isTimerRunning, timerSeconds]);
 
   const selectedStock = stocks.find(s => s.id === selectedStockId) || stocks[0];
+  const openingBid = selectedStock.openingBidPrice || 10000;
   const isRevealed = !!revealedMultipliers[selectedStock.id];
   const multiplier = 1 + (selectedStock.returnPercent / 100);
 
@@ -101,7 +102,19 @@ export const NormalRoundView: React.FC = () => {
   };
 
   const totalLotsEntered: number = Object.values(lotSelections).reduce<number>((a, b) => a + Number(b), 0);
-  const totalBaseCost: number = totalLotsEntered * config.lotBasePrice;
+  
+  // Total cost per team
+  const getTeamCost = (teamId: string, lots: number) => {
+    if (lots <= 0) return 0;
+    if (customBids[teamId] && customBids[teamId] > 0) {
+      return customBids[teamId];
+    }
+    return lots * openingBid;
+  };
+
+  const totalBaseCost: number = Object.entries(lotSelections).reduce((acc, [tId, lots]) => {
+    return acc + getTeamCost(tId, Number(lots));
+  }, 0);
 
   const handleExecute = () => {
     if (totalLotsEntered === 0) {
@@ -109,9 +122,19 @@ export const NormalRoundView: React.FC = () => {
       return;
     }
 
-    const res = executeNormalRound(selectedStock.id, lotSelections, autoDeductMoney);
+    // Convert customBids to price per lot for executeNormalRound if custom entered
+    const customLotPrices: Record<string, number> = {};
+    Object.entries(customBids).forEach(([tId, totalBid]) => {
+      const lots = lotSelections[tId] || 0;
+      const numBid = typeof totalBid === 'number' ? totalBid : 0;
+      if (lots > 0 && numBid > 0) {
+        customLotPrices[tId] = Math.round(numBid / lots);
+      }
+    });
+
+    const res = executeNormalRound(selectedStock.id, lotSelections, autoDeductMoney, customLotPrices);
     if (res.success) {
-      // Find latest tx
+      soundFX.playGavel();
       const latestTx = normalTransactions[0];
       setStatusMessage({ 
         type: 'success', 
@@ -119,6 +142,7 @@ export const NormalRoundView: React.FC = () => {
         lastTxId: latestTx?.id
       });
       setLotSelections({});
+      setCustomBids({});
     } else {
       setStatusMessage({ type: 'error', text: res.message });
     }
@@ -146,12 +170,14 @@ export const NormalRoundView: React.FC = () => {
     if (currentIndex > 0) {
       setSelectedStockId(stocks[currentIndex - 1].id);
       setLotSelections({});
+      setCustomBids({});
     }
   };
   const handleNextStock = () => {
     if (currentIndex < stocks.length - 1) {
       setSelectedStockId(stocks[currentIndex + 1].id);
       setLotSelections({});
+      setCustomBids({});
     }
   };
 
@@ -159,15 +185,15 @@ export const NormalRoundView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Header with 30s Timer & Rectify Button */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900 border border-slate-800">
+      {/* Top Header with 30s Timer & Controls */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Coins className="w-5 h-5" />
             </span>
-            <h2 className="text-xl font-bold text-slate-100 font-mono">
-              STOCK ALLOTMENT & CALCULATOR
+            <h2 className="text-xl font-bold text-slate-100 font-mono uppercase tracking-wide">
+              LIVE FLOOR AUCTION (STOCK-BY-STOCK)
             </h2>
             <button
               onClick={() => {
@@ -175,21 +201,21 @@ export const NormalRoundView: React.FC = () => {
                 setIsRectifyModalOpen(true);
               }}
               className="ml-2 px-2.5 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-[11px] font-bold flex items-center gap-1.5 transition"
-              title="Fix any mistake in shares or cash without fail"
+              title="Fix any mistake in shares or cash"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Rectify Mistake</span>
+              <span>Rectify</span>
             </button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Select stock → Record lots shared with Team A through Team J → Instant portfolio calculation & Undo support.
+            Section 3: Starting bid buys 1 lot. Bidding a bigger amount buys more lots at once. All 44 stocks traversed in sequence.
           </p>
         </div>
 
         {/* 30-Second Auction Timer Widget */}
         <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-950 border border-slate-800">
           <div className="px-3 py-0.5 text-center">
-            <span className="text-[9px] text-slate-400 uppercase font-bold block">30s Timer</span>
+            <span className="text-[9px] text-slate-400 uppercase font-bold block">Round Buzzer</span>
             <span className={`text-xl font-black font-mono tracking-wider ${
               timerSeconds <= 10 && timerSeconds > 0 
                 ? 'text-red-400 animate-pulse' 
@@ -256,11 +282,11 @@ export const NormalRoundView: React.FC = () => {
 
       {/* Main Calculation & Allotment Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 4 Cols: Stock Picker */}
+        {/* Left 4 Cols: Stock Catalog Navigator */}
         <div className="lg:col-span-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Select Stock ({stocks.length})
+              Stock Catalog ({stocks.length})
             </h3>
             <span className="text-[10px] text-amber-400 font-mono">1 Lot = 20 Shares</span>
           </div>
@@ -269,14 +295,14 @@ export const NormalRoundView: React.FC = () => {
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
             <input
               type="text"
-              placeholder="Filter stocks..."
+              placeholder="Search companies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
             />
           </div>
 
-          {/* Quick Category Filter Pills */}
+          {/* Category Filter Pills */}
           <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]">
             {categories.map((cat) => (
               <button
@@ -293,7 +319,7 @@ export const NormalRoundView: React.FC = () => {
             ))}
           </div>
 
-          <div className="max-h-[420px] overflow-y-auto space-y-1.5 pr-1">
+          <div className="max-h-[440px] overflow-y-auto space-y-1.5 pr-1">
             {filteredStocks.map((st) => {
               const isSelected = st.id === selectedStock.id;
               return (
@@ -302,6 +328,7 @@ export const NormalRoundView: React.FC = () => {
                   onClick={() => {
                     setSelectedStockId(st.id);
                     setLotSelections({});
+                    setCustomBids({});
                   }}
                   className={`w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between ${
                     isSelected
@@ -314,7 +341,7 @@ export const NormalRoundView: React.FC = () => {
                       {st.name}
                     </span>
                     <span className="text-[10px] text-slate-500 font-mono uppercase">
-                      {st.ticker} • {st.category}
+                      {st.ticker} • ₹{st.openingBidPrice.toLocaleString('en-IN')}/lot
                     </span>
                   </div>
                   <div className="text-right shrink-0">
@@ -329,10 +356,10 @@ export const NormalRoundView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right 8 Cols: Stock Info & Allotment Entry */}
+        {/* Right 8 Cols: Stock Spotlight & Bidding Interface */}
         <div className="lg:col-span-8 space-y-4">
           {/* Selected Stock Info Banner with Prev/Next Navigation */}
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-md">
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-md space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
               <div>
                 <div className="flex items-center gap-2">
@@ -343,13 +370,13 @@ export const NormalRoundView: React.FC = () => {
                     Stock #{currentIndex + 1} of {stocks.length}
                   </span>
                 </div>
-                <h3 className="text-2xl font-black text-slate-100 mt-1 font-mono">
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-100 mt-1 font-mono">
                   {selectedStock.name}
                 </h3>
               </div>
 
               <div className="flex items-center gap-3">
-                {/* Prev & Next Stock Fast Navigation */}
+                {/* Prev & Next Stock Navigation */}
                 <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
                   <button
                     onClick={handlePrevStock}
@@ -370,22 +397,62 @@ export const NormalRoundView: React.FC = () => {
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-500 block">Base Price</span>
-                  <span className="text-sm font-bold font-mono text-amber-400">₹10,000 / lot</span>
-                </div>
-                <div className="text-right border-l border-slate-800 pl-3">
-                  <span className="text-[10px] text-slate-500 block">Return</span>
-                  <span className={`text-sm font-bold font-mono ${selectedStock.returnPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {selectedStock.returnPercent >= 0 ? `+${selectedStock.returnPercent}%` : `${selectedStock.returnPercent}%`} ({multiplier.toFixed(2)}x)
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Starting Bid (1 Lot)</span>
+                  <span className="text-base font-black font-mono text-amber-400">
+                    ₹{openingBid.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Public Clue */}
-            <div className="mt-3 p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300">
-              <span className="text-amber-400 font-bold mr-2">Market Clue:</span>
-              "{selectedStock.displayNews}"
+            {/* Confusing Public Clue Banner */}
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-amber-500/30 space-y-1">
+              <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[11px] uppercase font-mono">
+                <Sparkles className="w-3.5 h-3.5" />
+                Public Clue (Contradictory & Confusing on Purpose):
+              </div>
+              <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+                "{selectedStock.displayNews}"
+              </p>
+            </div>
+
+            {/* Lot Ladder Calculator Bar (Rule 3 Demonstration) */}
+            <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+              <span className="text-slate-400 font-bold text-[11px]">Bidding Scale (Rule 3):</span>
+              <div className="flex flex-wrap gap-2 text-[11px]">
+                <span className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                  1 Lot = <strong className="text-amber-400">{formatINR(openingBid)}</strong>
+                </span>
+                <span className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                  2 Lots = <strong className="text-amber-400">{formatINR(openingBid * 2)}</strong>
+                </span>
+                <span className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                  3 Lots = <strong className="text-amber-400">{formatINR(openingBid * 3)}</strong>
+                </span>
+                <span className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                  4 Lots = <strong className="text-amber-400">{formatINR(openingBid * 4)}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Trigger Surprise Insider Round Banner */}
+            <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-800/60 flex items-center justify-between gap-3">
+              <div className="text-xs">
+                <span className="font-bold text-purple-300 flex items-center gap-1.5">
+                  <Flame className="w-4 h-4 text-purple-400" />
+                  Run as Surprise Insider Round? (Section 4)
+                </span>
+                <span className="text-[11px] text-slate-400 block">
+                  1-winner auction: Winner gets 6 lots guaranteed + confidential intelligence for their winning bid!
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveTab('insider')}
+                className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 transition shrink-0 shadow-md"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                Launch Insider Auction
+              </button>
             </div>
           </div>
 
@@ -395,14 +462,14 @@ export const NormalRoundView: React.FC = () => {
               <div>
                 <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2 font-mono">
                   <Lock className="w-4 h-4 text-amber-400" />
-                  TEAM ALLOTMENT & SHARES INPUT
+                  TEAM BIDS & ALLOTMENT INPUT
                 </h4>
                 <p className="text-[11px] text-slate-400">
-                  Enter how many lots each team received (1 lot = 20 shares).
+                  Bidding ₹{openingBid.toLocaleString('en-IN')} buys 1 lot (20 sh). Enter lots won by each team.
                 </p>
               </div>
 
-              {/* Mode Toggle: Auto Deduct vs Just Store Shares */}
+              {/* Mode Toggle: Auto Deduct vs Manual */}
               <button
                 onClick={() => setAutoDeductMoney(!autoDeductMoney)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
@@ -412,7 +479,7 @@ export const NormalRoundView: React.FC = () => {
                 }`}
               >
                 {autoDeductMoney ? <CheckSquare className="w-4 h-4 text-amber-400" /> : <Square className="w-4 h-4 text-slate-500" />}
-                <span>Auto-deduct cash ({autoDeductMoney ? 'ON' : 'OFF - Manual'})</span>
+                <span>Auto-deduct cash ({autoDeductMoney ? 'ON' : 'OFF'})</span>
               </button>
             </div>
 
@@ -422,11 +489,11 @@ export const NormalRoundView: React.FC = () => {
                 <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
                   <tr>
                     <th className="px-3 py-2.5">Team</th>
-                    <th className="px-3 py-2.5 text-center">Current Owned</th>
-                    <th className="px-3 py-2.5 text-center">Add Lots</th>
-                    <th className="px-3 py-2.5 text-right">Base Cost</th>
-                    <th className="px-3 py-2.5 text-right">Calculated Final Value</th>
-                    <th className="px-3 py-2.5 text-right">Current Cash</th>
+                    <th className="px-3 py-2.5 text-center">Owned</th>
+                    <th className="px-3 py-2.5 text-center">Lots Won</th>
+                    <th className="px-3 py-2.5 text-right">Calculated Bid Cost</th>
+                    <th className="px-3 py-2.5 text-right">Custom Bid (Optional)</th>
+                    <th className="px-3 py-2.5 text-right">Available Cash</th>
                     <th className="px-3 py-2.5 text-center">Fix</th>
                   </tr>
                 </thead>
@@ -434,9 +501,7 @@ export const NormalRoundView: React.FC = () => {
                   {teams.map((team) => {
                     const currentHeld = team.holdings[selectedStock.id] || 0;
                     const selectedLots = lotSelections[team.id] || 0;
-                    const cost = selectedLots * config.lotBasePrice;
-                    const totalAfterLots = currentHeld + selectedLots;
-                    const calculatedStockValue = totalAfterLots * config.lotBasePrice * multiplier;
+                    const cost = getTeamCost(team.id, selectedLots);
                     const maxAdd = config.maxLotsPerStock - currentHeld;
 
                     return (
@@ -454,7 +519,7 @@ export const NormalRoundView: React.FC = () => {
                           <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                             currentHeld > 0 ? 'bg-amber-500/10 text-amber-400' : 'text-slate-500'
                           }`}>
-                            {currentHeld} lots ({currentHeld * 20} sh)
+                            {currentHeld} lots
                           </span>
                         </td>
                         <td className="px-3 py-2.5">
@@ -481,13 +546,30 @@ export const NormalRoundView: React.FC = () => {
                             >
                               +
                             </button>
+                            <button
+                              onClick={() => handleLotChange(team.id, 2)}
+                              disabled={selectedLots + 2 > maxAdd}
+                              className="px-1.5 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-[10px] text-amber-300 font-bold"
+                              title="Add 2 lots"
+                            >
+                              +2
+                            </button>
                           </div>
                         </td>
                         <td className="px-3 py-2.5 text-right text-amber-400 font-bold">
                           {cost > 0 ? formatINR(cost) : '—'}
                         </td>
-                        <td className="px-3 py-2.5 text-right font-bold text-slate-200">
-                          {totalAfterLots > 0 ? formatINR(calculatedStockValue) : '—'}
+                        <td className="px-3 py-2.5 text-right">
+                          <input
+                            type="number"
+                            placeholder={selectedLots > 0 ? `₹${(selectedLots * openingBid).toLocaleString('en-IN')}` : 'Auto'}
+                            value={customBids[team.id] || ''}
+                            onChange={(e) => {
+                              const v = parseInt(e.target.value) || 0;
+                              setCustomBids(prev => ({ ...prev, [team.id]: v }));
+                            }}
+                            className="w-24 px-2 py-1 bg-slate-950 border border-slate-800 rounded-lg text-right font-mono text-[11px] text-slate-100 focus:outline-none focus:border-amber-500"
+                          />
                         </td>
                         <td className="px-3 py-2.5 text-right text-slate-400">
                           {formatINR(team.cash)}
@@ -514,13 +596,16 @@ export const NormalRoundView: React.FC = () => {
             {/* Action Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
               <div className="text-xs text-slate-400">
-                Total Lots to Save: <span className="font-bold text-slate-100 font-mono">{totalLotsEntered} lots</span> ({totalLotsEntered * 20} shares)
+                Total Lots: <span className="font-bold text-slate-100 font-mono">{totalLotsEntered} lots</span> ({totalLotsEntered * 20} shares)
                 {autoDeductMoney && ` • Deducting: ${formatINR(totalBaseCost)}`}
               </div>
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
-                  onClick={() => setLotSelections({})}
+                  onClick={() => {
+                    setLotSelections({});
+                    setCustomBids({});
+                  }}
                   className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
                 >
                   Clear Inputs
@@ -532,19 +617,30 @@ export const NormalRoundView: React.FC = () => {
                   className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition"
                 >
                   <Lock className="w-4 h-4" />
-                  Save Allotment & Update Calculations
+                  Save Bids & Allot Shares
                 </button>
+
+                {currentIndex < stocks.length - 1 && (
+                  <button
+                    onClick={handleNextStock}
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 transition border border-slate-700"
+                    title="Move to Next Stock per Section 5"
+                  >
+                    Next Stock
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Recent Allotments for Selected Stock with Instant Undo */}
+          {/* Past Transactions for This Stock */}
           {stockAllotments.length > 0 && (
             <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-slate-300">
                 <span className="flex items-center gap-1.5">
                   <History className="w-3.5 h-3.5 text-amber-400" />
-                  Past Allotments for {selectedStock.name} ({stockAllotments.length})
+                  Recorded Allotments for {selectedStock.name} ({stockAllotments.length})
                 </span>
                 <span className="text-[11px] text-slate-500">Mistakes can be undone with 1-click</span>
               </div>
@@ -556,7 +652,7 @@ export const NormalRoundView: React.FC = () => {
                       <span className="text-slate-500 font-mono mr-2">{new Date(tx.timestamp).toLocaleTimeString()}</span>
                       {tx.teamPurchases.map(p => {
                         const t = teams.find(tm => tm.id === p.teamId);
-                        return `${t?.name || 'Team'}: ${p.lots} lots`;
+                        return `${t?.name || 'Team'}: ${p.lots} lots (${formatINR(p.amountPaid)})`;
                       }).join(', ')}
                     </div>
 
@@ -586,4 +682,3 @@ export const NormalRoundView: React.FC = () => {
     </div>
   );
 };
-

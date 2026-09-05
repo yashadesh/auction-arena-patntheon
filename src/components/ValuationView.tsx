@@ -103,12 +103,12 @@ Organized by: ${config.clubName}`;
               <Award className="w-6 h-6" />
             </span>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-100 font-mono tracking-tight">
-              FINAL VALUATION & WINNER CEREMONY
+              FINAL EVALUATION & WINNER (SECTION 6)
             </h2>
           </div>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-            Official formula: <code className="text-amber-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">Final Net Worth = Liquid Cash + ∑(Lots Held × ₹10,000 × Multiplier)</code>. 
-            Reveal return multipliers to calculate instant audited standings.
+            Section 6 Formula: <code className="text-amber-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono font-bold">Final Value = Cash remaining + Value of all shares held (after outcomes are applied)</code>.
+            Once every stock on the list has been through its round, hidden outcomes are revealed all at once.
           </p>
         </div>
 

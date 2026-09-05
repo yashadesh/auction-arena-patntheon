@@ -325,14 +325,35 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setConfig(prev => ({ ...prev, ...updates }));
   };
 
+  const resetAllTeamsToCapital = (amount: number = 1000000) => {
+    setTeams(prev => prev.map(t => ({
+      ...t,
+      startingCash: amount,
+      cash: amount,
+      holdings: {},
+      holdingInvested: {},
+      penalties: 0,
+      bonus: 0
+    })));
+  };
+
   // Normal round lot purchases / allocations
+  // Per Section 3: Announced starting bid buys 1 lot. Bidding bigger amount buys more lots at once.
   const executeNormalRound = (
     stockId: string, 
     teamPurchases: Record<string, number>, 
-    deductCash: boolean = true
+    deductCash: boolean = true,
+    customLotPrices?: Record<string, number>
   ) => {
     const stock = stocks.find(s => s.id === stockId);
     if (!stock) return { success: false, message: 'Stock not found' };
+
+    const getLotPrice = (teamId: string) => {
+      if (customLotPrices && customLotPrices[teamId] !== undefined && customLotPrices[teamId] > 0) {
+        return customLotPrices[teamId];
+      }
+      return stock.openingBidPrice || config.lotBasePrice || 10000;
+    };
 
     // Validate
     for (const team of teams) {
@@ -348,7 +369,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (deductCash) {
-        const totalCost = additionalLots * config.lotBasePrice;
+        const lotPrice = getLotPrice(team.id);
+        const totalCost = additionalLots * lotPrice;
         if (team.cash < totalCost) {
           return {
             success: false,
@@ -366,9 +388,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const additionalLots = teamPurchases[team.id] || 0;
         if (additionalLots <= 0) return team;
 
-        const totalCost = additionalLots * config.lotBasePrice;
+        const lotPrice = getLotPrice(team.id);
+        const totalCost = additionalLots * lotPrice;
         const currentLots = team.holdings[stockId] || 0;
-        const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * config.lotBasePrice);
+        const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * (stock.openingBidPrice || config.lotBasePrice));
 
         recordedPurchases.push({
           teamId: team.id,
@@ -406,6 +429,94 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { 
       success: true, 
       message: `Successfully allocated shares of ${stock.name}${deductCash ? ' and deducted cash' : ' (allotment recorded; cash handled manually)'}!` 
+    };
+  };
+
+  // Section 4: Official 6-Lot Insider Round Auction
+  // One-winner auction where the single highest bidder receives BOTH:
+  // 1. 6 lots of that stock, guaranteed (paid for by their winning bid)
+  // 2. Confidential inside information revealing whether that stock will rise or fall
+  const executeInsiderRound6Lots = (
+    stockId: string,
+    winnerTeamId: string,
+    winningBid: number,
+    deductCash: boolean = true
+  ) => {
+    const stock = stocks.find(s => s.id === stockId);
+    if (!stock) return { success: false, message: 'Stock not found' };
+
+    const winner = teams.find(t => t.id === winnerTeamId);
+    if (!winner) return { success: false, message: 'Winner team not found' };
+
+    const winnerCurrentLots = winner.holdings[stockId] || 0;
+    const maxAllowed = Math.max(config.maxLotsPerStock, 8);
+    if (winnerCurrentLots + 6 > maxAllowed) {
+      return {
+        success: false,
+        message: `${winner.name} already holds ${winnerCurrentLots} lots. Adding 6 lots exceeds maximum limit of ${maxAllowed}!`
+      };
+    }
+
+    if (deductCash && winner.cash < winningBid) {
+      return { 
+        success: false, 
+        message: `${winner.name} has insufficient cash for winning bid ₹${winningBid.toLocaleString('en-IN')} (Available: ₹${winner.cash.toLocaleString('en-IN')})` 
+      };
+    }
+
+    // Apply 6 lots to winner & deduct bid
+    setTeams(prev =>
+      prev.map(team => {
+        if (team.id === winnerTeamId) {
+          const currentLots = team.holdings[stockId] || 0;
+          const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * (stock.openingBidPrice || config.lotBasePrice));
+          return {
+            ...team,
+            cash: deductCash ? team.cash - winningBid : team.cash,
+            holdings: {
+              ...team.holdings,
+              [stockId]: currentLots + 6
+            },
+            holdingInvested: {
+              ...(team.holdingInvested || {}),
+              [stockId]: currentInvested + winningBid
+            }
+          };
+        }
+        return team;
+      })
+    );
+
+    setInsiderTransactions(prev => [
+      {
+        id: `insider-6l-tx-${Date.now()}`,
+        timestamp: Date.now(),
+        stockId,
+        type: '6_lots_bid',
+        pass: 1,
+        winnerTeamId,
+        winnerBid: winningBid,
+        winnerLots: 6,
+        deductCash
+      },
+      ...prev
+    ]);
+
+    setInsiderNewsTransactions(prev => [
+      {
+        id: `news-tx-${Date.now()}`,
+        timestamp: Date.now(),
+        stockId,
+        winnerTeamId,
+        bidAmount: winningBid,
+        deductCash: false // already deducted with the 6 lots
+      },
+      ...prev
+    ]);
+
+    return {
+      success: true,
+      message: `Insider Round Won by ${winner.name}! 6 Lots of ${stock.name} awarded for winning bid of ₹${winningBid.toLocaleString('en-IN')}${deductCash ? ' (cash deducted)' : ''}, and confidential intelligence unlocked!`
     };
   };
 
@@ -1155,7 +1266,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addStock,
         syncOfficialStocks,
         updateConfig,
+        resetAllTeamsToCapital,
         executeNormalRound,
+        executeInsiderRound6Lots,
         executeInsiderRound,
         executeInsiderNewsAuction,
         executeStockAuction5Lots,

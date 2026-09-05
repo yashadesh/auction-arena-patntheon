@@ -57,14 +57,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
   };
 
   const navItems = [
-    { id: 'dashboard', label: 'Summary', icon: Layers, badge: null },
-    { id: 'normal', label: '1. Allot & Calculate', icon: Coins, badge: 'R1' },
-    { id: 'insider', label: '2. Insider Auction (5L/3L)', icon: Eye, badge: 'R2' },
-    { id: 'exchange', label: '3. P2P Exchange', icon: ArrowLeftRight, badge: 'R3' },
-    { id: 'valuation', label: '4. Leaderboard & P&L', icon: Award, badge: 'Win' },
-    { id: 'projector', label: '30s Arena Timer', icon: Tv, badge: '30s' },
-    { id: 'stocks-master', label: 'Stocks & Multipliers', icon: FileSpreadsheet, badge: `${stocks.length}` },
-    { id: 'rules', label: 'Rules', icon: BookOpen, badge: null },
+    { id: 'dashboard', label: 'Command Center', icon: Layers, badge: null },
+    { id: 'normal', label: 'Live Floor (Stock-by-Stock)', icon: Coins, badge: 'Sec 3' },
+    { id: 'insider', label: 'Insider Round (6 Lots + Intel)', icon: Eye, badge: 'Sec 4' },
+    { id: 'exchange', label: 'P2P Trading', icon: ArrowLeftRight, badge: null },
+    { id: 'valuation', label: 'Final Valuation', icon: Award, badge: 'Sec 6' },
+    { id: 'projector', label: 'Arena Projector', icon: Tv, badge: '30s' },
+    { id: 'stocks-master', label: 'Stocks Catalog', icon: FileSpreadsheet, badge: `${stocks.length}` },
+    { id: 'rules', label: 'Official Rules', icon: BookOpen, badge: '6 Sec' },
   ];
 
   const handleDownloadBackup = () => {
@@ -332,70 +332,86 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
               </button>
             </div>
 
-            {/* Core Valuation Rule Highlight */}
+            {/* Core Rulebook Summary */}
             <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-amber-600/5 border border-amber-500/30 space-y-2">
               <span className="text-[11px] uppercase font-bold text-amber-400 font-mono tracking-wider flex items-center gap-1.5">
                 <Coins className="w-3.5 h-3.5" />
-                Actual Purchase Price Rule (Rulebook Core)
+                Rule 2: Starting Capital — ₹10,00,000 per Team
               </span>
               <p className="text-xs text-slate-200 leading-relaxed">
-                If <strong className="text-amber-300">Team A</strong> buys 5 lots of Reliance for <strong className="text-emerald-400">₹40,000</strong>:
+                Every team starts with <strong className="text-emerald-400">₹10,00,000</strong> in virtual capital. No top-ups, no borrowing.
               </p>
               <div className="p-3 rounded-lg bg-slate-950 font-mono text-xs text-slate-300 space-y-1 border border-slate-800">
-                <div className="text-slate-400">Stock Return: <span className="text-emerald-400 font-bold">+20%</span></div>
-                <div>Profit Earned = 20% × ₹40,000 = <span className="text-emerald-400 font-bold">+₹8,000</span></div>
-                <div className="text-amber-400 font-bold pt-1 border-t border-slate-800">
-                  Total Holding Value = ₹40,000 + ₹8,000 = ₹48,000 (1.20x)
+                <div className="text-slate-400">Section 6 Evaluation Formula:</div>
+                <div className="text-amber-400 font-bold">
+                  Final Value = Cash Remaining + Value of All Shares Held (After Outcomes Applied)
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400 italic">
-                The platform automatically records the exact winning bid in <code className="text-amber-300">holdingInvested</code> so returns are calculated on actual bid amounts.
-              </p>
             </div>
 
             {/* Step-by-Step Round Flow */}
             <div className="space-y-3 pt-2 text-xs">
               <h4 className="font-bold text-slate-200 uppercase font-mono text-[11px] tracking-wider text-slate-400">
-                Standard Event Execution Flow:
+                Official Rule Book 6-Section Framework:
               </h4>
 
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-amber-400 font-mono">1. Round 1: Allot & Calculate</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">1 Lot = ₹10k Base</span>
+                  <span className="font-bold text-amber-400 font-mono">1. What is this Event?</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">Stock-by-Stock</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
-                  Select a team and stock, choose lot count (1, 2, or custom), click <strong>Allot Lots</strong>. Cash is deducted, lots added.
+                  Companies shown one at a time with confusing and contradictory news clues. Read between the lines to decide whether it will rise or fall.
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-amber-400 font-mono">2. Round 2: Insider Auction (5L / 3L)</span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px] font-mono border border-amber-500/20">Sealed Intelligence</span>
+                  <span className="font-bold text-amber-400 font-mono">2. Starting Capital</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-emerald-400 font-mono font-bold">₹10,00,000</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
-                  Auction 5 lots to the highest bidder starting from the stock's official Opening Bid. Quick preset buttons (₹30k, ₹40k, ₹50k) allow instant entry. Winner receives confidential insider news and lots.
+                  Only money a team has for the entire event — no top-ups, no borrowing.
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-amber-400 font-mono">3. Round 3: Peer-to-Peer Trading Floor</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">Negotiation</span>
+                  <span className="font-bold text-amber-400 font-mono">3. Normal Round Bidding</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">1 Lot = Starting Bid</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
-                  Teams negotiate and trade stock lots directly at agreed cash prices with zero transfer fees.
+                  Announced starting bid buys exactly 1 lot. Bidding a bigger amount buys more lots at once (e.g. Tata Steel ₹15k = 1 lot, ₹30k = 2 lots, ₹45k = 3 lots).
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-emerald-400 font-mono">4. Finale: Leaderboard & P&L</span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">Final Reveal</span>
+                  <span className="font-bold text-purple-400 font-mono">4. The Insider Round</span>
+                  <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 text-[10px] font-mono border border-purple-500/20">6 Lots + Intel</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
-                  Click <strong>Reveal All Outcomes</strong> to show final returns for every stock. The system computes final Net Worth (Holdings Value + Cash) and crowns the Wolf of BIT Mesra!
+                  Surprise 1-winner auction. Highest bid directly buys <strong>6 lots guaranteed + confidential inside information</strong>. Immediately after, the stock reopens for normal bidding open to all teams.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-300 font-mono">5. Catalog Continues</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">All 44 Stocks</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Process repeats stock by stock until the full catalog has been traversed.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-400 font-mono">6. Final Evaluation & Winner</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">Reveal All At Once</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Outcomes revealed all at once. Final Value = Cash remaining + Value of all shares held after outcomes applied. Highest final value wins Wolf of BIT Mesra!
                 </p>
               </div>
             </div>

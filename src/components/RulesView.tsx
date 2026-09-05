@@ -1,225 +1,434 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { 
   BookOpen, 
   Coins, 
   Eye, 
-  ArrowLeftRight, 
   Award, 
   ShieldCheck, 
-  HelpCircle,
-  AlertTriangle
+  TrendingUp, 
+  Calculator,
+  ArrowRight,
+  Flame,
+  CheckCircle2,
+  Tv,
+  Users
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 
 export const RulesView: React.FC = () => {
-  const { config } = useGame();
+  const { config, stocks, setActiveTab, resetAllTeamsToCapital } = useGame();
+  
+  // Interactive Example Calculator for Rule 3
+  const [calcStockOpening, setCalcStockOpening] = useState<number>(15000);
+  const [calcLots, setCalcLots] = useState<number>(2);
+
+  // Interactive Example Calculator for Rule 6
+  const [demoCash, setDemoCash] = useState<number>(850000);
+  const [demoInvested, setDemoInvested] = useState<number>(150000);
+  const [demoReturnPct, setDemoReturnPct] = useState<number>(25);
+
+  const demoHoldingValue = demoInvested + (demoInvested * demoReturnPct) / 100;
+  const demoFinalNetWorth = demoCash + demoHoldingValue;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Banner */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/40 border border-slate-800">
-        <div className="flex items-center gap-2 text-amber-400 font-mono text-xs uppercase font-bold">
+    <div className="space-y-8 max-w-5xl mx-auto pb-12">
+      {/* Header Banner */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/40 border border-slate-800 shadow-2xl relative overflow-hidden">
+        <div className="flex items-center gap-2 text-amber-400 font-mono text-xs uppercase tracking-widest font-bold mb-2">
           <BookOpen className="w-4 h-4" />
-          Official Rulebook & Operational Procedures
+          Official Rule Book & Operating Guidelines
         </div>
-        <h2 className="text-2xl font-black text-slate-100 font-mono mt-1">
-          {config.eventName} — Simplified Official Rules
-        </h2>
-        <p className="text-xs text-slate-400 mt-1">
-          {config.clubName} • Live Trading Floor Simulation
-        </p>
-      </div>
-
-      {/* Core Rules Table */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="text-slate-500 block text-[10px] uppercase font-bold">Starting Cash</span>
-          <span className="text-base font-extrabold font-mono text-emerald-400 mt-1 block">
-            {formatINR(config.startingCash)}
-          </span>
-          <span className="text-[11px] text-slate-500">Virtual cash per team</span>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="text-slate-500 block text-[10px] uppercase font-bold">1 Lot Definition</span>
-          <span className="text-base font-extrabold font-mono text-amber-400 mt-1 block">
-            {config.lotSize} Shares
-          </span>
-          <span className="text-[11px] text-slate-500">Fixed block unit</span>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="text-slate-500 block text-[10px] uppercase font-bold">Price per Lot</span>
-          <span className="text-base font-extrabold font-mono text-slate-100 mt-1 block">
-            ₹{config.lotBasePrice.toLocaleString('en-IN')}
-          </span>
-          <span className="text-[11px] text-slate-500">During normal rounds</span>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="text-slate-500 block text-[10px] uppercase font-bold">Maximum per Stock</span>
-          <span className="text-base font-extrabold font-mono text-purple-400 mt-1 block">
-            {config.maxLotsPerStock} Lots (160 Sh)
-          </span>
-          <span className="text-[11px] text-slate-500">Max ₹80,000 cost/stock</span>
-        </div>
-      </div>
-
-      {/* Section 1 & 2: Objective & Lot Rules */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 text-xs">
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
-          <Award className="w-4 h-4 text-amber-400" />
-          1. Game Objective & Winning Condition
-        </h3>
-        <p className="text-slate-300 leading-relaxed">
-          Teams start with equal virtual cash ({formatINR(config.startingCash)}) and build a portfolio by purchasing lots of mystery stocks. The game combines normal stock rounds, an Insider Round, and a final Exchange Round. The team with the <strong>highest final Net Worth</strong> at the end wins.
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-100 font-mono tracking-tight">
+          {config.eventName}
+        </h1>
+        <p className="text-sm text-slate-400 mt-2 max-w-2xl leading-relaxed">
+          {config.clubName} • The complete 6-section official operational framework. Read below for event structure, starting capital, normal bidding mechanics, surprise insider rounds, and final evaluation formulas.
         </p>
 
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 pt-2">
-          <Coins className="w-4 h-4 text-amber-400" />
-          2. Basic Lot Rules
-        </h3>
-        <ul className="list-disc list-inside space-y-1.5 text-slate-300">
-          <li>1 lot = 20 shares.</li>
-          <li>1 lot costs ₹10,000 during normal stock rounds.</li>
-          <li>A team may buy 0–8 lots of any one stock.</li>
-          <li>Maximum holding in one stock is 160 shares (8 lots), costing ₹80,000.</li>
-          <li>Teams may buy different stocks as long as they have enough cash.</li>
-          <li>Once a normal-round purchase is locked, it cannot be reversed except through the Exchange Round.</li>
-        </ul>
-      </div>
-
-      {/* Section 3: Normal Stock Round */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 text-xs">
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
-          <Coins className="w-4 h-4 text-blue-400" />
-          3. Normal Stock Round
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
-            <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
-              <tr>
-                <th className="px-4 py-2.5 w-20">Step</th>
-                <th className="px-4 py-2.5">What Happens</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
-              <tr>
-                <td className="px-4 py-2.5 font-bold font-mono text-amber-400">1</td>
-                <td className="px-4 py-2.5">The host reveals 2–3 clues about the mystery company.</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2.5 font-bold font-mono text-amber-400">2</td>
-                <td className="px-4 py-2.5">Teams privately choose how many lots (0–8) they want.</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2.5 font-bold font-mono text-amber-400">3</td>
-                <td className="px-4 py-2.5">At the buzzer, all decisions are locked.</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2.5 font-bold font-mono text-amber-400">4</td>
-                <td className="px-4 py-2.5">The company is revealed and ₹10,000 per lot is deducted.</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2.5 font-bold font-mono text-amber-400">5</td>
-                <td className="px-4 py-2.5">Holdings and cash are updated on the team ledger/scoreboard.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setActiveTab('normal')}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-amber-500/20"
+          >
+            <Coins className="w-4 h-4" />
+            Open Live Floor Auction
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setActiveTab('insider')}
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-slate-700 transition"
+          >
+            <Eye className="w-4 h-4 text-amber-400" />
+            Insider Round Arena (6 Lots + Intel)
+          </button>
+          <button
+            onClick={() => {
+              if (confirm('Set all participating teams to the official ₹10,00,000 starting capital?')) {
+                resetAllTeamsToCapital(1000000);
+                alert('All teams reset to ₹10,00,000 starting cash!');
+              }
+            }}
+            className="px-3.5 py-2 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/40 text-xs font-semibold flex items-center gap-1.5 transition"
+            title="Reset starting capital for all teams to ₹10,00,000 as per Rule 2"
+          >
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            Sync ₹10,00,000 Starting Cash
+          </button>
         </div>
       </div>
 
-      {/* Section 4: Insider Round */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 text-xs">
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
-          <Eye className="w-4 h-4 text-amber-400" />
-          4. Insider Bidding & Stock Auction Rules
-        </h3>
-        <ul className="list-disc list-inside space-y-2 text-slate-300">
-          <li>
-            <strong className="text-purple-400">1. Insider News Bidding (Intel Auction):</strong> Teams bid competitively for exclusive access to the confidential market intel / clue. The winning team pays their bid amount, which is deducted from their cash balance, and receives the confidential report.
-          </li>
-          <li>
-            <strong className="text-amber-400">2. 5-Lot Stock Auction (100 Shares):</strong> The amount for 5 lots is decided by <strong>competitive open bidding</strong>. The highest bidder pays their winning bid amount (deducted from cash) and is awarded 5 lots (100 shares).
-          </li>
-          <li>
-            <strong className="text-blue-400">3. 3-Lot Stock Allotment (Deducted by Us):</strong> For the 3 lots (60 shares), the price is decided and <strong>deducted by the host/coordinators only</strong> (default ₹30,000 or custom host price).
-          </li>
-          <li>Both the 5-lot bid and insider news bid amounts are subtracted from the winning team's cash balance.</li>
-          <li>All lots acquired count toward each team's strict 8-lot (160 shares) maximum holding cap per stock.</li>
-        </ul>
+      {/* Quick Summary Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 2: Starting Capital</span>
+          <span className="text-lg font-black text-emerald-400 mt-1 block">₹10,00,000</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">No top-ups, no borrowing</span>
+        </div>
+        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 3: Normal Bidding</span>
+          <span className="text-lg font-black text-amber-400 mt-1 block">1 Lot = Starting Bid</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Bid size decides lots won</span>
+        </div>
+        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 4: Insider Round</span>
+          <span className="text-lg font-black text-purple-400 mt-1 block">6 Lots + Intel</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Single winning bid pays for both</span>
+        </div>
+        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 6: Evaluation</span>
+          <span className="text-lg font-black text-blue-400 mt-1 block">Cash + Outcome Val</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Revealed all at once</span>
+        </div>
       </div>
 
-      {/* Section 5 & 6: Exchange Round & Final Valuation */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 text-xs">
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
-          <ArrowLeftRight className="w-4 h-4 text-purple-400" />
-          5. Exchange Round — How It Works
-        </h3>
-        <p className="text-slate-300 leading-relaxed">
-          After all stocks have been revealed, teams can sell holdings directly to other teams. This round uses seller-controlled pricing and competitive bidding:
-        </p>
-        <ul className="list-disc list-inside space-y-1.5 text-slate-300">
-          <li><strong>Select:</strong> Selling team selects one stock and offers 1 full lot (20 shares).</li>
-          <li><strong>Seller Price:</strong> Seller decides minimum selling price they will accept.</li>
-          <li><strong>Random Opening:</strong> Coordinator announces random opening bid price.</li>
-          <li><strong>Bidding:</strong> Interested teams increase bid (bidder decides increment).</li>
-          <li><strong>Sale:</strong> Highest valid bidder wins, pays final bid, receives 1 lot.</li>
-          <li><strong>Seller:</strong> Receives final bid amount and loses 1 lot from holdings.</li>
-        </ul>
+      {/* SECTION 1 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-sm">
+            01
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              1. What is this Event?
+            </h2>
+            <span className="text-xs text-slate-400">Trading Floor Concept & Mechanics</span>
+          </div>
+        </div>
 
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 pt-3">
-          <Award className="w-4 h-4 text-emerald-400" />
-          6. Final Valuation Formula & Portfolio Return Calculation
-        </h3>
-        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-          <p className="font-mono text-amber-400 text-sm font-bold">
-            Final Net Worth = Cash in Hand + Total Portfolio Value - Penalties + Bonus
+        <div className="space-y-3 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            <strong className="text-slate-100">Wolf of BIT Mesra</strong> is a live stock trading simulation. Every team starts with the same amount of pretend money and spends the event buying and holding shares in a list of companies.
           </p>
-          <p className="font-mono text-slate-200 text-xs">
-            Stock Holding Value = Actual Purchase Cost + (Decided Return % × Actual Purchase Cost)
+          <p>
+            Stocks are shown to everyone one at a time, and teams bid against each other to buy shares of whichever stock is currently on screen. Along with each stock, a short piece of news about that company is displayed. <strong className="text-amber-300">The news is written to be confusing and contradictory on purpose</strong> — it has clues pointing both up and down, and it's up to each team to read between the lines and decide whether they think the stock will actually rise or fall.
           </p>
-          <div className="p-3 bg-slate-900 rounded-lg border border-amber-500/20 text-[11px] font-mono space-y-1">
-            <span className="text-amber-400 font-bold block">
-              Rule Example (e.g. Team A bought 5 lots of Reliance in ₹40,000):
+          <p className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs">
+            At the very end, every stock's real outcome is revealed, and whichever team's total money (cash left over, plus the value of everything they bought) is the highest, wins.
+          </p>
+        </div>
+      </div>
+
+      {/* SECTION 2 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-black text-sm">
+            02
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              2. Starting Capital
+            </h2>
+            <span className="text-xs text-slate-400">Capital Rules & Constraints</span>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-slate-300 text-sm leading-relaxed pl-12">
+          <div className="p-4 rounded-2xl bg-slate-950 border border-emerald-500/20 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-mono font-bold text-sm">
+              <ShieldCheck className="w-4 h-4" />
+              Official Starting Capital: ₹10,00,000 per team
+            </div>
+            <ul className="list-disc list-inside space-y-1.5 text-xs text-slate-300">
+              <li>Every team begins the event with <strong>₹10,00,000 in virtual capital</strong>.</li>
+              <li>This is the <strong>only money</strong> a team has to work with for the entire event — <strong>there are no top-ups, and there is no borrowing</strong>.</li>
+              <li>Teams must budget carefully across all 44 companies.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 3 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 font-mono font-black text-sm">
+            03
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              3. How a Normal Round Works
+            </h2>
+            <span className="text-xs text-slate-400">Stock-by-Stock Auction Mechanics & Lot Bidding</span>
+          </div>
+        </div>
+
+        <div className="space-y-4 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            The event moves through the stock list one company at a time. For each stock, the process is:
+          </p>
+
+          <ol className="space-y-2.5 text-xs">
+            <li className="flex items-start gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">1</span>
+              <span>The stock's name and its confusing news are displayed on screen for everyone to see.</span>
+            </li>
+            <li className="flex items-start gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">2</span>
+              <span>A starting bid amount is announced for that stock. <strong>This amount buys exactly one lot of shares.</strong></span>
+            </li>
+            <li className="flex items-start gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">3</span>
+              <span><strong>Teams bid against each other.</strong> Bidding a bigger amount buys more lots at once — the size of the bid directly decides how many lots that team walks away with.</span>
+            </li>
+            <li className="flex items-start gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">4</span>
+              <span>Once no team wants to bid any higher, the stock closes for that round and the event moves to the next stock.</span>
+            </li>
+          </ol>
+
+          {/* Official Rulebook Example Box */}
+          <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+            <div className="flex items-center gap-2 text-amber-400 font-mono font-bold text-xs uppercase tracking-wider">
+              <Calculator className="w-4 h-4" />
+              Official Example from Rule Book:
+            </div>
+            <p className="text-xs text-slate-200">
+              <strong className="text-amber-300">Tata Steel</strong> opens at <strong className="text-emerald-400">₹15,000</strong>:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono text-xs">
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 block text-[10px]">Bid of ₹15,000</span>
+                <span className="font-bold text-amber-400">Buys 1 Lot (20 Sh)</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 block text-[10px]">Bid of ₹30,000</span>
+                <span className="font-bold text-amber-400">Buys 2 Lots (40 Sh)</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 block text-[10px]">Bid of ₹45,000</span>
+                <span className="font-bold text-amber-400">Buys 3 Lots (60 Sh)</span>
+              </div>
+            </div>
+            <p className="text-xs text-slate-300 italic pt-1">
+              "A team can win as many or as few lots of a stock as they can afford and are willing to bid for. There is no requirement to buy every stock — skipping a stock entirely is a completely valid strategy."
+            </p>
+          </div>
+
+          {/* Interactive Calculator */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+            <span className="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider block">
+              Interactive Lot Bidding Estimator:
             </span>
-            <div className="text-slate-300 space-y-0.5">
-              <div>• Base Purchase Price = <span className="font-bold text-slate-100">₹40,000</span></div>
-              <div>• Stock Return % = <span className="font-bold text-emerald-400">+20%</span></div>
-              <div>• Calculated Return = 20% of ₹40,000 = <span className="font-bold text-emerald-400">+₹8,000</span></div>
-              <div>• <strong className="text-amber-300">Final Amount Added to Portfolio:</strong> ₹40,000 + ₹8,000 = <strong className="text-amber-300">₹48,000</strong></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Stock Opening Bid (1 Lot Price)</label>
+                <input
+                  type="number"
+                  step="1000"
+                  value={calcStockOpening}
+                  onChange={(e) => setCalcStockOpening(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 font-mono text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Number of Lots</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="8"
+                  value={calcLots}
+                  onChange={(e) => setCalcLots(Math.max(1, Math.min(8, Number(e.target.value))))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 font-mono text-xs"
+                />
+              </div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between font-mono text-xs">
+              <span className="text-slate-400">Total Bid Required for {calcLots} Lots ({calcLots * 20} Shares):</span>
+              <span className="text-base font-black text-amber-400">{formatINR(calcStockOpening * calcLots)}</span>
             </div>
           </div>
-          <p className="text-slate-400 text-[11px]">
-            If a standard allotment was purchased at default lot base price (₹10,000/lot), base cost equals (Lots × ₹10,000). For custom bid auctions (such as 5 lots won at ₹40,000), the return % is calculated directly on the actual purchase amount.
-          </p>
-        </div>
-
-        <div className="pt-2">
-          <h4 className="font-bold text-slate-200 mb-1">Tie-Breaker Hierarchy:</h4>
-          <ol className="list-decimal list-inside space-y-1 text-slate-300">
-            <li>Higher cash in hand</li>
-            <li>Fewer distinct stocks held</li>
-            <li>Coin toss</li>
-          </ol>
         </div>
       </div>
 
-      {/* Section 7: Rectification & Error Recovery Protocol */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 text-xs">
-        <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          7. Operator Rectification & Error Correction Protocol
-        </h3>
-        <p className="text-slate-300 leading-relaxed">
-          In high-energy auction environments, rapid bidding or counting slips may occur. This system incorporates a fail-safe rectification engine:
-        </p>
-        <ul className="list-disc list-inside space-y-1.5 text-slate-300">
-          <li><strong>One-Click Transaction Undo:</strong> Any normal allotment, insider auction, or exchange trade can be immediately rolled back from the audit feed with full cash and lot restoration.</li>
-          <li><strong>Direct Portfolio Rectification:</strong> Click <em>"Rectify Mistake"</em> in the header or on any team card to manually adjust lots or cash balances if numbers were entered incorrectly.</li>
-          <li><strong>Audit Trail:</strong> All calculations, penalties, and lot allotments are automatically tracked and preserved in real time.</li>
-        </ul>
+      {/* SECTION 4 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 font-mono font-black text-sm">
+            04
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              4. The Insider Round
+            </h2>
+            <span className="text-xs text-slate-400">Surprise One-Winner Auction (6 Lots + Confidential Intelligence)</span>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            For a few stocks during the event — <strong className="text-purple-300">chosen at random, never announced in advance</strong> — instead of the normal bidding process, that stock goes through a special one-winner auction called the <strong>Insider Round</strong>.
+          </p>
+          <p>
+            In the Insider Round, teams bid against each other just once, and <strong>only the single highest bidder wins</strong>. That one winning team receives two things at the same time:
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-1">
+              <span className="text-[10px] font-bold text-purple-400 uppercase font-mono block">Package Benefit #1</span>
+              <span className="text-base font-bold text-slate-100 font-mono block">6 Lots Guaranteed</span>
+              <p className="text-slate-300 text-xs">
+                Exactly 120 shares — this is exactly what their winning bid pays for!
+              </p>
+            </div>
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <span className="text-[10px] font-bold text-amber-400 uppercase font-mono block">Package Benefit #2</span>
+              <span className="text-base font-bold text-slate-100 font-mono block">Confidential Intelligence</span>
+              <p className="text-slate-300 text-xs">
+                Reveals whether that stock is actually going to rise or fall at the end!
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+            <span className="font-bold text-amber-400 uppercase font-mono block text-[11px]">
+              Critical Design Point:
+            </span>
+            <p className="text-slate-300 leading-relaxed">
+              The winning bid is <strong>not a separate payment just for information</strong>. It directly buys the 6 lots. There is nothing further the winning team needs to pay to use what they've learned — they already own the shares.
+            </p>
+            <p className="text-purple-300 font-medium pt-1 border-t border-slate-800/80">
+              Immediately after the Insider Round closes, that same stock is shown again — this time open to every team, including the Insider Round winner, under the normal bidding process described in Section 3. This gives every other team a fair chance to buy into that stock too, even though only one team knows for certain which way it will move.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 5 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-sm">
+            05
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              5. The Event Continues
+            </h2>
+            <span className="text-xs text-slate-400">Full Catalog Flow</span>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            This entire process — display the stock, run the bidding (normal or Insider Round), then move on — <strong>repeats for every stock on the list, one after another, until the full stock list has been covered</strong> ({stocks.length} master companies).
+          </p>
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 font-mono flex items-center justify-between">
+            <span>Master Catalog Size: {stocks.length} Companies</span>
+            <button
+              onClick={() => setActiveTab('stocks-master')}
+              className="text-amber-400 hover:text-amber-300 font-bold"
+            >
+              View All Stocks →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 6 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-black text-sm">
+            06
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              6. Final Evaluation & Winner
+            </h2>
+            <span className="text-xs text-slate-400">Hidden Outcomes Reveal & Net Worth Formula</span>
+          </div>
+        </div>
+
+        <div className="space-y-4 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            Every stock has a real outcome that was decided in advance but kept hidden throughout the event — for example, a stock might have been fixed to rise 20% or fall 20%. <strong>Once every stock on the list has been through its round, these outcomes are revealed all at once.</strong>
+          </p>
+
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-950 to-emerald-950/40 border border-emerald-500/40 space-y-2">
+            <span className="text-xs font-bold text-emerald-400 uppercase font-mono tracking-wider block">
+              Official Valuation Formula:
+            </span>
+            <div className="text-lg font-mono font-extrabold text-slate-100 p-3 rounded-xl bg-slate-900 border border-slate-800">
+              Cash remaining + Value of all shares held (after outcomes are applied)
+            </div>
+            <p className="text-xs text-slate-300 mt-2">
+              The team with the <strong>highest final value wins Wolf of BIT Mesra</strong>.
+            </p>
+          </div>
+
+          {/* Interactive Calculator for Rule 6 */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+            <span className="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider block">
+              Test Valuation Calculation:
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Cash Remaining (₹)</label>
+                <input
+                  type="number"
+                  step="10000"
+                  value={demoCash}
+                  onChange={(e) => setDemoCash(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Base Cost Invested (₹)</label>
+                <input
+                  type="number"
+                  step="10000"
+                  value={demoInvested}
+                  onChange={(e) => setDemoInvested(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Stock Outcome Return (%)</label>
+                <input
+                  type="number"
+                  step="5"
+                  value={demoReturnPct}
+                  onChange={(e) => setDemoReturnPct(Number(e.target.value))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 text-xs"
+                />
+              </div>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              <div>
+                <span className="text-slate-400 block text-[10px]">Shares Value After Outcome:</span>
+                <span className="font-bold text-slate-200">
+                  {formatINR(demoHoldingValue)} ({demoReturnPct >= 0 ? '+' : ''}{demoReturnPct}%)
+                </span>
+              </div>
+              <div className="sm:text-right">
+                <span className="text-slate-400 block text-[10px]">Final Calculated Net Worth:</span>
+                <span className="text-base font-black text-emerald-400">{formatINR(demoFinalNetWorth)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs text-slate-500 italic">
+            Note: All companies, news, and outcomes used in this event are fictional and created for simulation purposes only.
+          </div>
+        </div>
       </div>
     </div>
   );

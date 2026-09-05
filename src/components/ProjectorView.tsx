@@ -214,19 +214,34 @@ export const ProjectorView: React.FC = () => {
               </p>
             </div>
 
-            {/* Floor Rules / Constraints Pill Row */}
-            <div className="grid grid-cols-3 gap-3 text-center text-xs font-mono">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase">Base Lot Price</span>
-                <span className="font-bold text-amber-400 text-sm">₹10,000</span>
+            {/* Bidding Ladder & Starting Bid (Rule 3) */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-400 uppercase font-mono tracking-wider">
+                  Starting Bid (Buys Exactly 1 Lot):
+                </span>
+                <span className="text-xl font-black font-mono text-amber-400">
+                  ₹{selectedStock.openingBidPrice.toLocaleString('en-IN')}
+                </span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase">Max Holding</span>
-                <span className="font-bold text-slate-200 text-sm">8 Lots (160 Sh)</span>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase">Insider Opening</span>
-                <span className="font-bold text-blue-400 text-sm">₹{selectedStock.openingBidPrice.toLocaleString('en-IN')}</span>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono pt-1">
+                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-slate-500 block text-[10px]">1 Lot (20 Sh)</span>
+                  <span className="font-bold text-slate-200">{formatINR(selectedStock.openingBidPrice)}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-slate-500 block text-[10px]">2 Lots (40 Sh)</span>
+                  <span className="font-bold text-slate-200">{formatINR(selectedStock.openingBidPrice * 2)}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-slate-500 block text-[10px]">3 Lots (60 Sh)</span>
+                  <span className="font-bold text-slate-200">{formatINR(selectedStock.openingBidPrice * 3)}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-slate-500 block text-[10px]">4 Lots (80 Sh)</span>
+                  <span className="font-bold text-slate-200">{formatINR(selectedStock.openingBidPrice * 4)}</span>
+                </div>
               </div>
             </div>
           </div>

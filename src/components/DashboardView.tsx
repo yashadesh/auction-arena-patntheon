@@ -101,17 +101,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
     ...insiderTransactions.map(tx => {
       const stock = stocks.find(s => s.id === tx.stockId);
       const winner = teams.find(t => t.id === tx.winnerTeamId);
-      const runnerUp = tx.runnerUpTeamId ? teams.find(t => t.id === tx.runnerUpTeamId) : null;
-      const is5Lot = tx.type === '5_lots_bid' || tx.winnerLots === 5 || tx.pass === 1;
+      const is6Lot = tx.type === '6_lots_bid' || tx.winnerLots === 6;
       return {
         id: tx.id,
         timestamp: tx.timestamp,
-        type: is5Lot ? '5-Lot Stock Auction' : '3-Lot Host Allotment',
-        icon: is5Lot ? TrendingUp : Coins,
-        color: is5Lot ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' : 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-        text: is5Lot
-          ? `${winner?.name || 'Winner'} won 5 lots (100 sh) of ${stock?.name || 'Stock'} (Highest Bid) at ${formatINR(tx.winnerBid)}${runnerUp ? ` & ${runnerUp.name} won runner-up at ${formatINR(tx.runnerUpBid || 0)}` : ''}.`
-          : `Allotted ${tx.winnerLots} lots (${tx.winnerLots * 20} sh) of ${stock?.name || 'Stock'} to ${winner?.name || 'Winner'} at ${formatINR(tx.winnerBid)} (Deducted by Us).`
+        type: is6Lot ? 'Insider Round (6 Lots + Intel)' : 'Insider Auction',
+        icon: TrendingUp,
+        color: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+        text: `${winner?.name || 'Winner'} won ${tx.winnerLots} lots (${tx.winnerLots * 20} sh) of ${stock?.name || 'Stock'} at ${formatINR(tx.winnerBid)}${is6Lot ? ' (includes confidential intel)' : ''}.`
       };
     }),
     ...exchangeTransactions.map(tx => {
@@ -156,35 +153,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
               className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-amber-500/20"
             >
               <Coins className="w-4 h-4" />
-              Open Round 1: Normal Stock
+              Live Floor (Stock-by-Stock)
             </button>
             <button
               onClick={() => setActiveTab('insider')}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-slate-700 transition"
+              className="px-4 py-2 rounded-xl bg-purple-900/60 hover:bg-purple-800 text-purple-200 font-semibold text-xs flex items-center gap-2 border border-purple-700 transition"
             >
-              <Eye className="w-4 h-4 text-amber-400" />
-              Open Round 2: Insider Auction
+              <Eye className="w-4 h-4 text-purple-400" />
+              Insider Round (6 Lots + Intel)
             </button>
             <button
               onClick={() => setActiveTab('exchange')}
               className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-slate-700 transition"
             >
-              <ArrowLeftRight className="w-4 h-4 text-purple-400" />
-              Open Round 3: Exchange P2P
+              <ArrowLeftRight className="w-4 h-4 text-amber-400" />
+              P2P Trading Floor
             </button>
             <button
               onClick={() => setActiveTab('valuation')}
               className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition"
             >
               <Award className="w-4 h-4" />
-              Final Calculations & Results
+              Final Evaluation & Winner
             </button>
             <button
               onClick={() => setActiveTab('projector')}
               className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs flex items-center gap-2 border border-slate-800 transition"
             >
               <Tv className="w-4 h-4 text-amber-400" />
-              Projector Display
+              Arena Projector (30s)
             </button>
 
             <button

@@ -130,9 +130,21 @@ export interface GameContextType {
   addStock: (stock: Omit<Stock, 'id'>) => void;
   syncOfficialStocks: () => void;
   updateConfig: (updates: Partial<GameConfig>) => void;
+  resetAllTeamsToCapital: (amount?: number) => void;
   
   // Round Operations
-  executeNormalRound: (stockId: string, teamPurchases: Record<string, number>, deductCash?: boolean) => { success: boolean; message: string };
+  executeNormalRound: (
+    stockId: string, 
+    teamPurchases: Record<string, number>, 
+    deductCash?: boolean, 
+    customLotPrices?: Record<string, number>
+  ) => { success: boolean; message: string };
+  executeInsiderRound6Lots: (
+    stockId: string,
+    winnerTeamId: string,
+    winningBid: number,
+    deductCash?: boolean
+  ) => { success: boolean; message: string };
   executeInsiderRound: (
     stockId: string,
     winnerTeamId: string,
