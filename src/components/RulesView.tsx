@@ -152,7 +152,7 @@ export const RulesView: React.FC = () => {
             <ul className="list-disc list-inside space-y-1.5 text-xs text-slate-300">
               <li>Every team begins the event with <strong>₹10,00,000 in virtual capital</strong>.</li>
               <li>This is the <strong>only money</strong> a team has to work with for the entire event — <strong>there are no top-ups, and there is no borrowing</strong>.</li>
-              <li>Teams must budget carefully across all 44 companies.</li>
+              <li>Teams must budget carefully across all {stocks.length} companies.</li>
             </ul>
           </div>
         </div>
@@ -219,6 +219,9 @@ export const RulesView: React.FC = () => {
                 <span className="font-bold text-amber-400">Buys 3 Lots (60 Sh)</span>
               </div>
             </div>
+            <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-200">
+              <strong className="text-emerald-300">New Rule — No Lot Limitation:</strong> Teams can buy as many lots of any stock as they want and can afford. There is no maximum cap per stock (e.g. 5, 10, 20, or more lots). Teams can bid for unlimited lots subject only to their available cash.
+            </div>
             <p className="text-xs text-slate-300 italic pt-1">
               "A team can win as many or as few lots of a stock as they can afford and are willing to bid for. There is no requirement to buy every stock — skipping a stock entirely is a completely valid strategy."
             </p>
@@ -227,7 +230,7 @@ export const RulesView: React.FC = () => {
           {/* Interactive Calculator */}
           <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
             <span className="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider block">
-              Interactive Lot Bidding Estimator:
+              Interactive Lot Bidding Estimator (Unlimited Lots):
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
@@ -241,13 +244,12 @@ export const RulesView: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Number of Lots</label>
+                <label className="text-slate-400 block text-[10px] uppercase font-bold mb-1">Number of Lots (No Cap)</label>
                 <input
                   type="number"
                   min="1"
-                  max="8"
                   value={calcLots}
-                  onChange={(e) => setCalcLots(Math.max(1, Math.min(8, Number(e.target.value))))}
+                  onChange={(e) => setCalcLots(Math.max(1, Number(e.target.value) || 1))}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 font-mono text-xs"
                 />
               </div>

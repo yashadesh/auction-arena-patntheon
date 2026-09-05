@@ -299,11 +299,10 @@ export const ExchangeRoundView: React.FC = () => {
                     <option value="">-- Choose Buyer Team --</option>
                     {teams.filter(t => t.id !== sellerTeamId).map(t => {
                       const currentBuyerHeld = t.holdings[selectedStock.id] || 0;
-                      const hasRoom = currentBuyerHeld + 1 <= config.maxLotsPerStock;
                       const canAfford = t.cash >= finalBidPrice;
                       return (
-                        <option key={t.id} value={t.id} disabled={!hasRoom || !canAfford}>
-                          {t.name} (Cash: ₹{t.cash.toLocaleString('en-IN')}) [Holds {currentBuyerHeld}/8] {!hasRoom ? '• [Max 8 lots]' : ''} {!canAfford ? '• [Insufficient Cash]' : ''}
+                        <option key={t.id} value={t.id} disabled={!canAfford}>
+                          {t.name} (Cash: ₹{t.cash.toLocaleString('en-IN')}) [Holds {currentBuyerHeld} lots] {!canAfford ? '• [Insufficient Cash]' : ''}
                         </option>
                       );
                     })}

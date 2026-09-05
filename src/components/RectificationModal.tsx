@@ -533,24 +533,36 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Max Limit</span>
-                    <span className="text-xs font-mono text-slate-300">{config.maxLotsPerStock} Lots (160 Shares)</span>
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Holding Cap</span>
+                    <span className="text-xs font-mono text-emerald-400 font-bold">No Lot Limit (Unlimited)</span>
                   </div>
                 </div>
 
                 {/* Lot Selection Selector */}
                 <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-200 block">
-                    Set Corrected Lot Count (0 to {config.maxLotsPerStock} Lots):
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-slate-200 block">
+                      Set Corrected Lot Count:
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-mono">Custom:</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={targetLots}
+                        onChange={(e) => setTargetLots(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-16 h-7 bg-slate-950 border border-slate-800 rounded-lg px-2 text-center font-mono font-bold text-slate-100 text-xs focus:outline-none focus:border-amber-500"
+                      />
+                    </div>
+                  </div>
                   
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                    {[0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20].map(num => (
                       <button
                         key={num}
                         type="button"
                         onClick={() => setTargetLots(num)}
-                        className={`w-10 h-10 rounded-xl font-mono font-bold text-xs transition ${
+                        className={`h-8 px-2.5 rounded-xl font-mono font-bold text-xs transition ${
                           targetLots === num
                             ? 'bg-amber-500 text-slate-950 ring-2 ring-amber-400 shadow-md'
                             : 'bg-slate-950 text-slate-300 border border-slate-800 hover:bg-slate-800'

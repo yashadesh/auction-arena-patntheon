@@ -398,7 +398,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-300 font-mono">5. Catalog Continues</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">All 44 Stocks</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">All {stocks.length} Stocks</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
                   Process repeats stock by stock until the full catalog has been traversed.

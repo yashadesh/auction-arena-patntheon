@@ -2,7 +2,7 @@ export interface Stock {
   id: string;
   name: string;
   ticker: string;
-  category: 'Tech' | 'Banking & NBFC' | 'Energy & Commodities' | 'Auto & EV' | 'Pharma & Healthcare' | 'Defense & Infra' | 'Consumer & Retail' | 'Fintech & Exchanges';
+  category: 'Tech' | 'Banking & NBFC' | 'Energy & Commodities' | 'Auto & EV' | 'Pharma & Healthcare' | 'Defense & Infra' | 'Consumer & Retail' | 'Fintech & Exchanges' | 'FMCG & Consumer' | 'Telecom' | string;
   returnPercent: number; // e.g. 20 for +20%, -30 for -30%
   openingBidPrice: number; // in Rs. e.g. 12000
   displayNews: string;
@@ -15,7 +15,7 @@ export interface Team {
   avatarColor: string;
   startingCash: number;
   cash: number;
-  // Map of stockId -> number of lots held (0 to 8)
+  // Map of stockId -> number of lots held (unlimited lots)
   holdings: Record<string, number>;
   // Map of stockId -> actual purchase amount paid/invested (e.g. 40,000 for 5 lots of Reliance)
   holdingInvested?: Record<string, number>;
@@ -75,8 +75,8 @@ export interface GameConfig {
   clubName: string;
   startingCash: number; // Rs. 1,000,000 (10 Lakhs)
   lotSize: number; // 20 shares
-  lotBasePrice: number; // Rs. 10,000
-  maxLotsPerStock: number; // 8 lots (160 shares = Rs. 80,000)
+  lotBasePrice: number; // Base price per lot
+  maxLotsPerStock: number; // No limitation on lots - teams can buy as much as they want
   minBidIncrement: number; // Rs. 5,000
 }
 

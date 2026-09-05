@@ -385,7 +385,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
                   1. Normal Round Allotment
                 </div>
                 <p className="text-slate-400 text-[11px] leading-relaxed">
-                  Reveal 2-3 market clues. Teams buy 0-8 lots @ ₹10,000/lot (20 shares). Deduct cash & lock.
+                  Reveal market clues. Teams can buy as many lots as desired with no lot limit @ opening bid price. Deduct cash & lock.
                 </p>
               </div>
 

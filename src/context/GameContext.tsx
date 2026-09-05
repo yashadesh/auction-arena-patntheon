@@ -13,7 +13,7 @@ import {
 import { INITIAL_STOCKS, DEFAULT_TEAMS } from '../data/defaultStocks';
 import { calculateAllTeamsValuation } from '../utils/calculations';
 
-const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V5';
+const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V7';
 
 const DEFAULT_CONFIG: GameConfig = {
   eventName: 'WOLF OF BIT MESRA',
@@ -21,7 +21,7 @@ const DEFAULT_CONFIG: GameConfig = {
   startingCash: 1000000,
   lotSize: 20,
   lotBasePrice: 10000,
-  maxLotsPerStock: 8,
+  maxLotsPerStock: 999999, // No limitation of lots
   minBidIncrement: 5000,
 };
 
@@ -251,7 +251,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setTeamStockLots = (teamId: string, stockId: string, lots: number) => {
-    const safeLots = Math.max(0, Math.min(config.maxLotsPerStock, lots));
+    const safeLots = Math.max(0, lots);
     setTeams(prev => prev.map(t => {
       if (t.id !== teamId) return t;
       const updatedHoldings = { ...t.holdings };
@@ -360,14 +360,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const additionalLots = teamPurchases[team.id] || 0;
       if (additionalLots <= 0) continue;
 
-      const currentLots = team.holdings[stockId] || 0;
-      if (currentLots + additionalLots > config.maxLotsPerStock) {
-        return {
-          success: false,
-          message: `${team.name} cannot hold more than ${config.maxLotsPerStock} lots of ${stock.name} (already holds ${currentLots}, tried adding ${additionalLots})`
-        };
-      }
-
       if (deductCash) {
         const lotPrice = getLotPrice(team.id);
         const totalCost = additionalLots * lotPrice;
@@ -447,15 +439,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const winner = teams.find(t => t.id === winnerTeamId);
     if (!winner) return { success: false, message: 'Winner team not found' };
-
-    const winnerCurrentLots = winner.holdings[stockId] || 0;
-    const maxAllowed = Math.max(config.maxLotsPerStock, 8);
-    if (winnerCurrentLots + 6 > maxAllowed) {
-      return {
-        success: false,
-        message: `${winner.name} already holds ${winnerCurrentLots} lots. Adding 6 lots exceeds maximum limit of ${maxAllowed}!`
-      };
-    }
 
     if (deductCash && winner.cash < winningBid) {
       return { 
@@ -581,14 +564,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const winner = teams.find(t => t.id === winnerTeamId);
     if (!winner) return { success: false, message: 'Winner team not found' };
 
-    const winnerCurrentLots = winner.holdings[stockId] || 0;
-    if (winnerCurrentLots + 5 > config.maxLotsPerStock) {
-      return {
-        success: false,
-        message: `${winner.name} already holds ${winnerCurrentLots} lots. Adding 5 lots exceeds max limit of ${config.maxLotsPerStock}!`
-      };
-    }
-
     if (deductCash && winner.cash < winnerBid) {
       return { 
         success: false, 
@@ -600,14 +575,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (runnerUpTeamId && runnerUpBid && runnerUpBid > 0 && runnerUpLots > 0) {
       runnerUp = teams.find(t => t.id === runnerUpTeamId);
       if (!runnerUp) return { success: false, message: 'Runner-up team not found' };
-
-      const runnerUpCurrentLots = runnerUp.holdings[stockId] || 0;
-      if (runnerUpCurrentLots + runnerUpLots > config.maxLotsPerStock) {
-        return {
-          success: false,
-          message: `${runnerUp.name} already holds ${runnerUpCurrentLots} lots. Adding ${runnerUpLots} lots exceeds max limit of ${config.maxLotsPerStock}!`
-        };
-      }
 
       if (deductCash && runnerUp.cash < runnerUpBid) {
         return { 
@@ -693,14 +660,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const team = teams.find(t => t.id === teamId);
     if (!team) return { success: false, message: 'Team not found' };
-
-    const currentLots = team.holdings[stockId] || 0;
-    if (currentLots + lots > config.maxLotsPerStock) {
-      return {
-        success: false,
-        message: `${team.name} already holds ${currentLots} lots. Adding ${lots} lots exceeds max limit of ${config.maxLotsPerStock}!`
-      };
-    }
 
     if (deductCash && team.cash < priceDeducted) {
       return {
@@ -792,11 +751,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const sellerLots = seller.holdings[stockId] || 0;
     if (sellerLots < 1) {
       return { success: false, message: `${seller.name} does not own any lots of ${stock.name} to sell` };
-    }
-
-    const buyerLots = buyer.holdings[stockId] || 0;
-    if (buyerLots + 1 > config.maxLotsPerStock) {
-      return { success: false, message: `${buyer.name} already holds ${buyerLots} lots. Max limit is ${config.maxLotsPerStock}` };
     }
 
     if (buyer.cash < finalPrice) {
@@ -1075,7 +1029,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const stock = stocks.find(s => s.id === stockId);
     if (!team || !stock) return { success: false, message: 'Team or Stock not found' };
 
-    const safeLots = Math.max(0, Math.min(config.maxLotsPerStock, newLots));
+    const safeLots = Math.max(0, newLots);
     const currentLots = team.holdings[stockId] || 0;
     const lotDiff = safeLots - currentLots;
 

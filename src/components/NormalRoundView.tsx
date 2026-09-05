@@ -81,10 +81,7 @@ export const NormalRoundView: React.FC = () => {
 
   const handleLotChange = (teamId: string, delta: number) => {
     const currentLots = lotSelections[teamId] || 0;
-    const currentHolding = teams.find(t => t.id === teamId)?.holdings[selectedStock.id] || 0;
-    const maxAdditional = config.maxLotsPerStock - currentHolding;
-    
-    const newLots = Math.max(0, Math.min(maxAdditional, currentLots + delta));
+    const newLots = Math.max(0, currentLots + delta);
     setLotSelections(prev => ({
       ...prev,
       [teamId]: newLots
@@ -92,9 +89,7 @@ export const NormalRoundView: React.FC = () => {
   };
 
   const handleSetLotsDirect = (teamId: string, val: number) => {
-    const currentHolding = teams.find(t => t.id === teamId)?.holdings[selectedStock.id] || 0;
-    const maxAdditional = config.maxLotsPerStock - currentHolding;
-    const newLots = Math.max(0, Math.min(maxAdditional, Math.max(0, val)));
+    const newLots = Math.max(0, val);
     setLotSelections(prev => ({
       ...prev,
       [teamId]: newLots
@@ -208,7 +203,7 @@ export const NormalRoundView: React.FC = () => {
             </button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Section 3: Starting bid buys 1 lot. Bidding a bigger amount buys more lots at once. All 44 stocks traversed in sequence.
+            Section 3: Starting bid buys 1 lot. Teams can buy as many lots as desired (no lot limitation). All {stocks.length} stocks traversed in sequence.
           </p>
         </div>
 
@@ -502,8 +497,6 @@ export const NormalRoundView: React.FC = () => {
                     const currentHeld = team.holdings[selectedStock.id] || 0;
                     const selectedLots = lotSelections[team.id] || 0;
                     const cost = getTeamCost(team.id, selectedLots);
-                    const maxAdd = config.maxLotsPerStock - currentHeld;
-
                     return (
                       <tr key={team.id} className="hover:bg-slate-800/30 transition">
                         <td className="px-3 py-2.5 font-sans font-semibold text-slate-200">
@@ -534,25 +527,30 @@ export const NormalRoundView: React.FC = () => {
                             <input
                               type="number"
                               min={0}
-                              max={maxAdd}
                               value={selectedLots}
                               onChange={(e) => handleSetLotsDirect(team.id, parseInt(e.target.value) || 0)}
-                              className="w-12 h-7 bg-slate-950 border border-slate-800 rounded-lg text-center font-mono font-bold text-slate-100 text-xs focus:outline-none focus:border-amber-500"
+                              className="w-14 h-7 bg-slate-950 border border-slate-800 rounded-lg text-center font-mono font-bold text-slate-100 text-xs focus:outline-none focus:border-amber-500"
                             />
                             <button
                               onClick={() => handleLotChange(team.id, 1)}
-                              disabled={selectedLots >= maxAdd}
-                              className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-200 font-bold text-sm flex items-center justify-center transition"
+                              className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm flex items-center justify-center transition"
+                              title="Add 1 lot"
                             >
                               +
                             </button>
                             <button
                               onClick={() => handleLotChange(team.id, 2)}
-                              disabled={selectedLots + 2 > maxAdd}
-                              className="px-1.5 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-[10px] text-amber-300 font-bold"
+                              className="px-1.5 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] text-amber-300 font-bold"
                               title="Add 2 lots"
                             >
                               +2
+                            </button>
+                            <button
+                              onClick={() => handleLotChange(team.id, 5)}
+                              className="px-1.5 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] text-emerald-400 font-bold"
+                              title="Add 5 lots"
+                            >
+                              +5
                             </button>
                           </div>
                         </td>

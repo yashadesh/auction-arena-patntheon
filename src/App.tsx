@@ -14,7 +14,7 @@ import { TeamDetailModal } from './components/TeamDetailModal';
 import { ConfigModal } from './components/ConfigModal';
 
 function MainLayout() {
-  const { activeTab } = useGame();
+  const { activeTab, stocks } = useGame();
   const [isTeamManagerOpen, setIsTeamManagerOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [selectedTeamDetailId, setSelectedTeamDetailId] = useState<string | null>(null);
@@ -49,7 +49,7 @@ function MainLayout() {
       <footer className="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500 font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>Wolf of BIT Mesra • Finance Club Live Auction & Valuation Engine</span>
-          <span className="text-[11px] text-slate-600">44 Master Stocks • Multipliers • Real-Time P&L</span>
+          <span className="text-[11px] text-slate-600">{stocks.length} Master Stocks • Unlimited Lots • Multipliers • Real-Time P&L</span>
         </div>
       </footer>
 
