@@ -12,12 +12,16 @@ import {
   Flame,
   CheckCircle2,
   Tv,
-  Users
+  Users,
+  ShieldAlert,
+  Briefcase,
+  AlertTriangle,
+  Scale
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 
 export const RulesView: React.FC = () => {
-  const { config, stocks, setActiveTab, resetAllTeamsToCapital } = useGame();
+  const { config, stocks, teams, setActiveTab, resetAllTeamsToCapital, insiderTransactions } = useGame();
   
   // Interactive Example Calculator for Rule 3
   const [calcStockOpening, setCalcStockOpening] = useState<number>(15000);
@@ -31,6 +35,17 @@ export const RulesView: React.FC = () => {
   const demoHoldingValue = demoInvested + (demoInvested * demoReturnPct) / 100;
   const demoFinalNetWorth = demoCash + demoHoldingValue;
 
+  // Interactive Simulator for Rule 7
+  const [simDistinctStocks, setSimDistinctStocks] = useState<number>(7);
+
+  // Rule 8 Live Syndicate Wins Map
+  const teamWinsMap: Record<string, number> = {};
+  insiderTransactions.forEach(tx => {
+    if (tx.winnerTeamId) {
+      teamWinsMap[tx.winnerTeamId] = (teamWinsMap[tx.winnerTeamId] || 0) + 1;
+    }
+  });
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-12">
       {/* Header Banner */}
@@ -43,7 +58,7 @@ export const RulesView: React.FC = () => {
           {config.eventName}
         </h1>
         <p className="text-sm text-slate-400 mt-2 max-w-2xl leading-relaxed">
-          {config.clubName} • The complete 6-section official operational framework. Read below for event structure, starting capital, normal bidding mechanics, surprise insider rounds, and final evaluation formulas.
+          {config.clubName} • The complete 8-section official operational framework. Read below for event structure, starting capital, normal bidding mechanics, surprise insider rounds, tie-breakers, final evaluation formulas, portfolio size requirements, and insider round caps.
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -78,27 +93,47 @@ export const RulesView: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Summary Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
-          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 2: Starting Capital</span>
-          <span className="text-lg font-black text-emerald-400 mt-1 block">₹10,00,000</span>
-          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">No top-ups, no borrowing</span>
+      {/* Quick Summary Grid (All 8 Rules Highlighted) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 2: Starting Cash</span>
+          <span className="text-base font-black text-emerald-400 mt-1 block">₹10,00,000</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Strict capital ceiling</span>
         </div>
-        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
           <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 3: Normal Bidding</span>
-          <span className="text-lg font-black text-amber-400 mt-1 block">1 Lot = Starting Bid</span>
+          <span className="text-base font-black text-amber-400 mt-1 block">1 Lot = Start Bid</span>
           <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Bid size decides lots won</span>
         </div>
-        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
           <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 4: Insider Round</span>
-          <span className="text-lg font-black text-purple-400 mt-1 block">6 Lots + Intel</span>
-          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Single winning bid pays for both</span>
+          <span className="text-base font-black text-purple-400 mt-1 block">Secret Intel</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Highest bidder wins (No shares)</span>
         </div>
-        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
-          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 6: Evaluation</span>
-          <span className="text-lg font-black text-blue-400 mt-1 block">Cash + Outcome Val</span>
-          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Revealed all at once</span>
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 6: Final Valuation</span>
+          <span className="text-base font-black text-blue-400 mt-1 block">Cash + Outcomes</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">All revealed simultaneously</span>
+        </div>
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 7: Portfolio Size</span>
+          <span className="text-base font-black text-amber-400 mt-1 block">6 to 9 Stocks</span>
+          <span className="text-[11px] text-red-400 font-sans mt-0.5 block font-semibold">&lt;6 or &gt;9 Disqualified!</span>
+        </div>
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Rule 8: Insider Wins</span>
+          <span className="text-base font-black text-purple-400 mt-1 block">No Win Limit</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Unlimited wins per team</span>
+        </div>
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Catalog Size</span>
+          <span className="text-base font-black text-slate-200 mt-1 block">Exactly 100 Stocks</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Official locked dataset</span>
+        </div>
+        <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <span className="text-slate-500 block text-[10px] uppercase font-bold">Tie-Breaker Hierarchy</span>
+          <span className="text-base font-black text-emerald-400 mt-1 block">Cash &gt; Fewer Stocks</span>
+          <span className="text-[11px] text-slate-400 font-sans mt-0.5 block">Official resolution order</span>
         </div>
       </div>
 
@@ -272,7 +307,7 @@ export const RulesView: React.FC = () => {
             <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
               4. The Insider Round
             </h2>
-            <span className="text-xs text-slate-400">Surprise One-Winner Auction (6 Lots + Confidential Intelligence)</span>
+            <span className="text-xs text-slate-400">Surprise One-Winner Auction for Confidential Intelligence (No Shares Allotted)</span>
           </div>
         </div>
 
@@ -281,35 +316,26 @@ export const RulesView: React.FC = () => {
             For a few stocks during the event — <strong className="text-purple-300">chosen at random, never announced in advance</strong> — instead of the normal bidding process, that stock goes through a special one-winner auction called the <strong>Insider Round</strong>.
           </p>
           <p>
-            In the Insider Round, teams bid against each other just once, and <strong>only the single highest bidder wins</strong>. That one winning team receives two things at the same time:
+            In the Insider Round, teams bid against each other just once, and <strong>only the single highest bidder wins</strong>. The winning team unlocks exclusive access to:
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-1">
-              <span className="text-[10px] font-bold text-purple-400 uppercase font-mono block">Package Benefit #1</span>
-              <span className="text-base font-bold text-slate-100 font-mono block">6 Lots Guaranteed</span>
-              <p className="text-slate-300 text-xs">
-                Exactly 120 shares — this is exactly what their winning bid pays for!
-              </p>
-            </div>
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
-              <span className="text-[10px] font-bold text-amber-400 uppercase font-mono block">Package Benefit #2</span>
-              <span className="text-base font-bold text-slate-100 font-mono block">Confidential Intelligence</span>
-              <p className="text-slate-300 text-xs">
-                Reveals whether that stock is actually going to rise or fall at the end!
-              </p>
-            </div>
+          <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-1 text-xs">
+            <span className="text-[10px] font-bold text-purple-400 uppercase font-mono block">Winning Auction Benefit</span>
+            <span className="text-base font-bold text-slate-100 font-mono block">Confidential Intelligence (Secret Clue)</span>
+            <p className="text-slate-300 text-xs">
+              Reveals whether that stock is actually going to rise or fall at the end!
+            </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
             <span className="font-bold text-amber-400 uppercase font-mono block text-[11px]">
-              Critical Design Point:
+              No Automatic Share Allotment:
             </span>
             <p className="text-slate-300 leading-relaxed">
-              The winning bid is <strong>not a separate payment just for information</strong>. It directly buys the 6 lots. There is nothing further the winning team needs to pay to use what they've learned — they already own the shares.
+              <strong>No shares or lots are allotted in the Insider Round</strong>. The winning bid directly buys confidential access to the inside intelligence. There is no limitation on how many insider rounds each team can win.
             </p>
             <p className="text-purple-300 font-medium pt-1 border-t border-slate-800/80">
-              Immediately after the Insider Round closes, that same stock is shown again — this time open to every team, including the Insider Round winner, under the normal bidding process described in Section 3. This gives every other team a fair chance to buy into that stock too, even though only one team knows for certain which way it will move.
+              Immediately after the Insider Round closes, that same stock is shown again — this time open to every team, including the Insider Round winner, under the normal bidding process described in Section 3. This allows the winning team to leverage their knowledge by buying shares, while still giving every other team an equal chance to participate.
             </p>
           </div>
         </div>
@@ -429,6 +455,182 @@ export const RulesView: React.FC = () => {
 
           <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs text-slate-500 italic">
             Note: All companies, news, and outcomes used in this event are fictional and created for simulation purposes only.
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 7 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 font-mono font-black text-sm">
+            07
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              7. Portfolio Size Requirement (6 to 9 Stocks)
+            </h2>
+            <span className="text-xs text-slate-400">Strict Diversification Boundaries & Disqualification</span>
+          </div>
+        </div>
+
+        <div className="space-y-4 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            By the end of the event, every team must hold shares in <strong>at least 6 different stocks</strong>, and <strong>no more than 9 different stocks</strong>.
+          </p>
+
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-red-950/40 via-slate-950 to-slate-950 border border-red-500/40 space-y-2">
+            <div className="flex items-center gap-2 text-red-400 font-bold text-xs uppercase font-mono tracking-wider">
+              <ShieldAlert className="w-4 h-4" />
+              Strict Disqualification Mandate:
+            </div>
+            <p className="text-sm font-semibold text-slate-100 leading-snug">
+              "If, at the end of the event, a team holds fewer than 6 different stocks, or more than 9 different stocks, that team is disqualified — regardless of how high their final value would otherwise have been."
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <span className="text-amber-400 font-bold font-mono uppercase block">Why the lower limit (Minimum 6)?</span>
+              <p className="text-slate-400 leading-relaxed">
+                Prevents a team from parking all their capital into just 1 or 2 stocks they feel certain about or won insider info on, forcing genuine portfolio management and risk distribution across the market.
+              </p>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <span className="text-amber-400 font-bold font-mono uppercase block">Why the upper limit (Maximum 9)?</span>
+              <p className="text-slate-400 leading-relaxed">
+                Prevents teams from buying small amounts of everything to eliminate risk entirely without conviction.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
+            <span className="font-bold text-slate-200 font-mono block text-xs">
+              Important Distinction: Distinct Stocks vs. Lots Held
+            </span>
+            <p className="text-slate-400 leading-relaxed">
+              This limit is on the <strong>number of different stocks</strong> you hold, not on the number of lots. You can buy as many lots of any of those 6 to 9 stocks as you wish (subject to cash and bidding outcome).
+            </p>
+          </div>
+
+          {/* Interactive Simulator for Rule 7 */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+            <span className="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider block">
+              Rule 7 Compliance Simulator:
+            </span>
+            <div className="flex flex-col sm:flex-row items-center gap-4 text-xs font-mono">
+              <div className="flex-1 w-full">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">Distinct Stocks in Portfolio:</span>
+                  <span className="text-base font-black text-slate-100">{simDistinctStocks} Stocks</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="15"
+                  value={simDistinctStocks}
+                  onChange={(e) => setSimDistinctStocks(Number(e.target.value))}
+                  className="w-full accent-amber-500 cursor-pointer"
+                />
+                <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>1 (Under)</span>
+                  <span className="text-amber-400 font-bold">6 (Min)</span>
+                  <span className="text-emerald-400 font-bold">7-8 (Optimal)</span>
+                  <span className="text-amber-400 font-bold">9 (Max)</span>
+                  <span>15 (Over)</span>
+                </div>
+              </div>
+
+              <div className={`p-4 rounded-xl border w-full sm:w-64 text-center ${
+                simDistinctStocks >= 6 && simDistinctStocks <= 9
+                  ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
+                  : 'bg-red-950/40 border-red-500/50 text-red-300'
+              }`}>
+                <span className="text-[10px] uppercase font-bold block mb-1">Status Under Rule 7</span>
+                <span className="text-sm font-black font-mono block">
+                  {simDistinctStocks >= 6 && simDistinctStocks <= 9 ? '✓ ELIGIBLE FOR VICTORY' : '⚠️ DISQUALIFIED'}
+                </span>
+                <span className="text-[11px] block mt-1">
+                  {simDistinctStocks < 6 
+                    ? `Needs ${6 - simDistinctStocks} more stock${6 - simDistinctStocks === 1 ? '' : 's'}` 
+                    : simDistinctStocks > 9 
+                    ? `Holds ${simDistinctStocks - 9} stock${simDistinctStocks - 9 === 1 ? '' : 's'} too many` 
+                    : 'Portfolio size within 6–9 range'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 8 */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 font-mono font-black text-sm">
+            08
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-slate-100 font-mono uppercase tracking-wide">
+              8. Insider Round Participation: No Limit on Wins
+            </h2>
+            <span className="text-xs text-slate-400">Open Bidding Strategy Across All Surprise Rounds</span>
+          </div>
+        </div>
+
+        <div className="space-y-4 text-slate-300 text-sm leading-relaxed pl-12">
+          <p>
+            Across the entire event, <strong>there is no limitation on the number of Insider Rounds any team can win</strong>.
+          </p>
+
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-purple-950/40 via-slate-950 to-slate-950 border border-purple-500/40 space-y-2">
+            <div className="flex items-center gap-2 text-purple-400 font-bold text-xs uppercase font-mono tracking-wider">
+              <Flame className="w-4 h-4" />
+              Official Rule 8 Mandate:
+            </div>
+            <p className="text-sm font-semibold text-slate-100 leading-snug">
+              "Any team with sufficient capital may bid on and win as many Insider Rounds as they wish. No shares are allotted in the Insider Round — the winning bid unlocks confidential intelligence. Teams can then use that knowledge to bid for lots in the open normal bidding round that follows."
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-2">
+            <span className="text-purple-400 font-bold font-mono uppercase block">Capital Strategy Note:</span>
+            <p className="text-slate-400 leading-relaxed">
+              Because winning the Insider Round costs money directly out of cash-in-hand without adding shares to the team's portfolio, teams must carefully weigh the cost of buying intelligence against the capital needed to actually purchase shares in the subsequent round while maintaining their mandatory 6-to-9 distinct stock portfolio.
+            </p>
+          </div>
+
+          {/* Live Syndicate Wins Tracker */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-300 font-mono uppercase tracking-wider block">
+                Live Syndicate Insider Win Counts:
+              </span>
+              <span className="text-[11px] text-purple-400 font-mono">
+                No Limitation
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+              {teams.map(t => {
+                const wins = teamWinsMap[t.id] || 0;
+                return (
+                  <div
+                    key={t.id}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between ${
+                      wins > 0
+                        ? 'bg-purple-950/30 border-purple-800/60 text-purple-200'
+                        : 'bg-slate-900/60 border-slate-800/80 text-slate-400'
+                    }`}
+                  >
+                    <span className="truncate font-sans font-medium text-[11px] mr-1">{t.name}</span>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className="font-bold text-purple-300">
+                        {wins} {wins === 1 ? 'win' : 'wins'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

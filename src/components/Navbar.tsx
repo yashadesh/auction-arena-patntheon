@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
     { id: 'valuation', label: 'Final Valuation', icon: Award, badge: 'Sec 6' },
     { id: 'projector', label: 'Arena Projector', icon: Tv, badge: '30s' },
     { id: 'stocks-master', label: 'Stocks Catalog', icon: FileSpreadsheet, badge: `${stocks.length}` },
-    { id: 'rules', label: 'Official Rules', icon: BookOpen, badge: '6 Sec' },
+    { id: 'rules', label: 'Official Rules', icon: BookOpen, badge: '8 Rules' },
   ];
 
   const handleDownloadBackup = () => {
@@ -412,6 +412,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
                   Outcomes revealed all at once. Final Value = Cash remaining + Value of all shares held after outcomes applied. Highest final value wins Wolf of BIT Mesra!
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-red-400 font-mono">7. Portfolio Size Requirement</span>
+                  <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 text-[10px] font-mono border border-red-500/20">6 to 9 Stocks</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Every team must hold between 6 and 9 different stocks by the end of the event. Holding fewer than 6 or more than 9 results in <strong>immediate disqualification</strong>!
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-purple-400 font-mono">8. Insider Round Cap</span>
+                  <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 text-[10px] font-mono border border-purple-500/20">Max 4 Wins</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  A team may win the Insider Round a maximum of 4 times across the entire event. Once at 4 wins, they cannot bid in further Insider Rounds, but can still bid in normal rounds.
                 </p>
               </div>
             </div>

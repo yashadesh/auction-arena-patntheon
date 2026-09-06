@@ -2,7 +2,7 @@ export interface Stock {
   id: string;
   name: string;
   ticker: string;
-  category: 'Tech' | 'Banking & NBFC' | 'Energy & Commodities' | 'Auto & EV' | 'Pharma & Healthcare' | 'Defense & Infra' | 'Consumer & Retail' | 'Fintech & Exchanges' | 'FMCG & Consumer' | 'Telecom' | string;
+  category: 'Tech' | 'Banking & NBFC' | 'Energy & Commodities' | 'Auto & EV' | 'Pharma & Healthcare' | 'Defense & Infra' | 'Consumer & Retail' | 'Fintech & Exchanges' | 'FMCG & Consumer' | 'Telecom' | 'Aviation & Logistics' | string;
   returnPercent: number; // e.g. 20 for +20%, -30 for -30%
   openingBidPrice: number; // in Rs. e.g. 12000
   displayNews: string;
@@ -103,6 +103,11 @@ export interface TeamValuation {
   distinctStocksCount: number;
   totalLotsHeld: number;
   rank: number;
+  // Rule 7 & Rule 8 Additions
+  isDisqualified: boolean;
+  disqualificationReason?: string;
+  portfolioStatus: 'compliant' | 'under' | 'over';
+  insiderWinsCount: number;
 }
 
 export interface GameContextType {
@@ -140,6 +145,12 @@ export interface GameContextType {
     customLotPrices?: Record<string, number>
   ) => { success: boolean; message: string };
   executeInsiderRound6Lots: (
+    stockId: string,
+    winnerTeamId: string,
+    winningBid: number,
+    deductCash?: boolean
+  ) => { success: boolean; message: string };
+  executeInsiderRoundIntel: (
     stockId: string,
     winnerTeamId: string,
     winningBid: number,

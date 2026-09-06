@@ -13,7 +13,7 @@ import {
 import { INITIAL_STOCKS, DEFAULT_TEAMS } from '../data/defaultStocks';
 import { calculateAllTeamsValuation } from '../utils/calculations';
 
-const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V7';
+const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V100';
 
 const DEFAULT_CONFIG: GameConfig = {
   eventName: 'WOLF OF BIT MESRA',
@@ -29,42 +29,23 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [stocks, setStocks] = useState<Stock[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_STOCKS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_STOCKS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_STOCKS');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_STOCKS`);
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          const initMap = new Map<string, Stock>(INITIAL_STOCKS.map(s => [s.id, s]));
-          const result: Stock[] = [];
-          const seen = new Set<string>();
-          
-          // Official stocks get updated opening prices and return percentages from latest INITIAL_STOCKS
-          INITIAL_STOCKS.forEach(initStock => {
+        if (Array.isArray(parsed) && parsed.length === INITIAL_STOCKS.length) {
+          // Strictly map over the 100 official INITIAL_STOCKS to maintain exact order and count
+          return INITIAL_STOCKS.map(initStock => {
             const savedStock = parsed.find((p: Stock) => p.id === initStock.id);
             if (savedStock) {
-              result.push({
-                ...savedStock,
-                openingBidPrice: initStock.openingBidPrice,
-                returnPercent: initStock.returnPercent,
-                displayNews: initStock.displayNews,
-                insiderNews: initStock.insiderNews,
-                name: initStock.name,
-                ticker: initStock.ticker,
-                category: initStock.category
-              });
-            } else {
-              result.push(initStock);
+              return {
+                ...initStock,
+                openingBidPrice: typeof savedStock.openingBidPrice === 'number' ? savedStock.openingBidPrice : initStock.openingBidPrice,
+                returnPercent: typeof savedStock.returnPercent === 'number' ? savedStock.returnPercent : initStock.returnPercent,
+              };
             }
-            seen.add(initStock.id);
+            return initStock;
           });
-          
-          // Also preserve any custom stocks created by the user
-          parsed.forEach((s: Stock) => {
-            if (!seen.has(s.id)) {
-              result.push(s);
-            }
-          });
-          return result;
         }
       } catch (e) {}
     }
@@ -72,7 +53,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [config, setConfig] = useState<GameConfig>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_CONFIG`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_CONFIG');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_CONFIG`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_CONFIG');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -83,7 +64,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [teams, setTeams] = useState<Team[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_TEAMS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_TEAMS');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_TEAMS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_TEAMS');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -106,7 +87,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [selectedStockId, setSelectedStockId] = useState<string>(INITIAL_STOCKS[0].id);
   const [revealedMultipliers, setRevealedMultipliers] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_REVEALED`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_REVEALED');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_REVEALED`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_REVEALED');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -114,7 +95,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [normalTransactions, setNormalTransactions] = useState<NormalRoundTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_NORMAL_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_NORMAL_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_NORMAL_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_NORMAL_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -122,7 +103,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [insiderTransactions, setInsiderTransactions] = useState<InsiderRoundTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -130,7 +111,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [insiderNewsTransactions, setInsiderNewsTransactions] = useState<InsiderNewsTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_NEWS_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_NEWS_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_NEWS_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_NEWS_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -138,7 +119,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [exchangeTransactions, setExchangeTransactions] = useState<ExchangeTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_EXCHANGE_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_EXCHANGE_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_EXCHANGE_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_EXCHANGE_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -281,44 +262,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addStock = (stockData: Omit<Stock, 'id'>) => {
+    // Strictly maintain the 100 stocks of the official rulebook sheet
     const newId = `stock-${Date.now()}`;
-    setStocks(prev => [...prev, { ...stockData, id: newId }]);
+    setStocks(prev => {
+      if (prev.length >= 100) return prev;
+      return [...prev, { ...stockData, id: newId }];
+    });
   };
 
   const syncOfficialStocks = () => {
-    setStocks(prev => {
-      const initMap = new Map<string, Stock>(INITIAL_STOCKS.map(s => [s.id, s]));
-      const result: Stock[] = [];
-      const seen = new Set<string>();
-
-      INITIAL_STOCKS.forEach(initStock => {
-        const currentStock = prev.find(p => p.id === initStock.id);
-        if (currentStock) {
-          result.push({
-            ...currentStock,
-            openingBidPrice: initStock.openingBidPrice,
-            returnPercent: initStock.returnPercent,
-            displayNews: initStock.displayNews,
-            insiderNews: initStock.insiderNews,
-            name: initStock.name,
-            ticker: initStock.ticker,
-            category: initStock.category
-          });
-        } else {
-          result.push(initStock);
-        }
-        seen.add(initStock.id);
-      });
-
-      // Keep custom user stocks
-      prev.forEach(s => {
-        if (!seen.has(s.id)) {
-          result.push(s);
-        }
-      });
-
-      return result;
-    });
+    setStocks(INITIAL_STOCKS);
+    try {
+      localStorage.setItem(`${STORAGE_KEY}_STOCKS`, JSON.stringify(INITIAL_STOCKS));
+    } catch (e) {}
   };
 
   const updateConfig = (updates: Partial<GameConfig>) => {
@@ -424,10 +380,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   };
 
-  // Section 4: Official 6-Lot Insider Round Auction
-  // One-winner auction where the single highest bidder receives BOTH:
-  // 1. 6 lots of that stock, guaranteed (paid for by their winning bid)
-  // 2. Confidential inside information revealing whether that stock will rise or fall
+  // Section 4: Official Insider Round Auction (Confidential Intelligence)
+  // One-winner auction where the single highest bidder unlocks confidential inside information.
+  // Note: No automatic share/lot allotment in the insider round. Winning bid pays for intelligence.
+  // There is NO limit/cap on how many insider rounds each team can win.
   const executeInsiderRound6Lots = (
     stockId: string,
     winnerTeamId: string,
@@ -447,39 +403,31 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    // Apply 6 lots to winner & deduct bid
-    setTeams(prev =>
-      prev.map(team => {
-        if (team.id === winnerTeamId) {
-          const currentLots = team.holdings[stockId] || 0;
-          const currentInvested = team.holdingInvested?.[stockId] ?? (currentLots * (stock.openingBidPrice || config.lotBasePrice));
-          return {
-            ...team,
-            cash: deductCash ? team.cash - winningBid : team.cash,
-            holdings: {
-              ...team.holdings,
-              [stockId]: currentLots + 6
-            },
-            holdingInvested: {
-              ...(team.holdingInvested || {}),
-              [stockId]: currentInvested + winningBid
-            }
-          };
-        }
-        return team;
-      })
-    );
+    // Deduct bid from winner's cash. NO lots are allotted!
+    if (deductCash && winningBid > 0) {
+      setTeams(prev =>
+        prev.map(team => {
+          if (team.id === winnerTeamId) {
+            return {
+              ...team,
+              cash: team.cash - winningBid
+            };
+          }
+          return team;
+        })
+      );
+    }
 
     setInsiderTransactions(prev => [
       {
-        id: `insider-6l-tx-${Date.now()}`,
+        id: `insider-intel-tx-${Date.now()}`,
         timestamp: Date.now(),
         stockId,
-        type: '6_lots_bid',
+        type: 'intel_bid',
         pass: 1,
         winnerTeamId,
         winnerBid: winningBid,
-        winnerLots: 6,
+        winnerLots: 0,
         deductCash
       },
       ...prev
@@ -492,16 +440,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         stockId,
         winnerTeamId,
         bidAmount: winningBid,
-        deductCash: false // already deducted with the 6 lots
+        deductCash: false // cash handled above
       },
       ...prev
     ]);
 
     return {
       success: true,
-      message: `Insider Round Won by ${winner.name}! 6 Lots of ${stock.name} awarded for winning bid of ₹${winningBid.toLocaleString('en-IN')}${deductCash ? ' (cash deducted)' : ''}, and confidential intelligence unlocked!`
+      message: `Insider Round Won by ${winner.name}! Confidential intelligence unlocked for winning bid of ₹${winningBid.toLocaleString('en-IN')}${deductCash ? ' (cash deducted)' : ''} (No shares allotted).`
     };
   };
+
+  const executeInsiderRoundIntel = executeInsiderRound6Lots;
 
   // 1. Insider News Bidding (Auction for Secret Clue / Intel)
   const executeInsiderNewsAuction = (
@@ -1101,6 +1051,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetGame = () => {
+    setStocks(INITIAL_STOCKS);
+    try {
+      localStorage.setItem(`${STORAGE_KEY}_STOCKS`, JSON.stringify(INITIAL_STOCKS));
+    } catch (e) {}
     setTeams(DEFAULT_TEAMS.map(dt => ({
       id: dt.id,
       name: dt.name,
@@ -1193,7 +1147,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const valuations = calculateAllTeamsValuation(teams, stocks, config);
+  const insiderWinsMap: Record<string, number> = {};
+  insiderTransactions.forEach(tx => {
+    if (tx.winnerTeamId) {
+      insiderWinsMap[tx.winnerTeamId] = (insiderWinsMap[tx.winnerTeamId] || 0) + 1;
+    }
+  });
+
+  const valuations = calculateAllTeamsValuation(teams, stocks, config, insiderWinsMap);
 
   return (
     <GameContext.Provider
@@ -1223,6 +1184,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         resetAllTeamsToCapital,
         executeNormalRound,
         executeInsiderRound6Lots,
+        executeInsiderRoundIntel,
         executeInsiderRound,
         executeInsiderNewsAuction,
         executeStockAuction5Lots,

@@ -43,12 +43,26 @@ export const NormalRoundView: React.FC = () => {
   const [customBids, setCustomBids] = useState<Record<string, number>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'allotted' | 'unallotted'>('all');
   const [autoDeductMoney, setAutoDeductMoney] = useState(true);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string; lastTxId?: string } | null>(null);
   const [isRectifyModalOpen, setIsRectifyModalOpen] = useState(false);
   const [rectifyTeamId, setRectifyTeamId] = useState<string | undefined>(undefined);
 
-  const categories = ['All', 'Tech', 'Banking & NBFC', 'Energy & Commodities', 'Auto & EV', 'Defense & Infra', 'Pharma & Healthcare', 'Consumer & Retail', 'Fintech & Exchanges'];
+  const categories = [
+    'All', 
+    'Tech', 
+    'Banking & NBFC', 
+    'Energy & Commodities', 
+    'Auto & EV', 
+    'Defense & Infra', 
+    'Pharma & Healthcare', 
+    'Consumer & Retail', 
+    'Fintech & Exchanges',
+    'FMCG & Consumer',
+    'Telecom',
+    'Aviation & Logistics'
+  ];
 
   // 30-Second Round Timer
   const [timerSeconds, setTimerSeconds] = useState<number>(30);
@@ -153,11 +167,27 @@ export const NormalRoundView: React.FC = () => {
     }
   };
 
+  // Allotment stats for 100 stocks
+  const stockAllotmentMap = React.useMemo(() => {
+    const map = new Map<string, number>();
+    normalTransactions.forEach(tx => {
+      map.set(tx.stockId, (map.get(tx.stockId) || 0) + tx.lotsPurchased);
+    });
+    return map;
+  }, [normalTransactions]);
+
+  const allottedCount = stockAllotmentMap.size;
+  const progressPercent = Math.round((allottedCount / (stocks.length || 1)) * 100);
+
   const filteredStocks = stocks.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           s.ticker.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCat = selectedCategory === 'All' || s.category === selectedCategory;
-    return matchesSearch && matchesCat;
+    const isAllotted = (stockAllotmentMap.get(s.id) || 0) > 0;
+    const matchesStatus = filterStatus === 'all' || 
+                          (filterStatus === 'allotted' && isAllotted) || 
+                          (filterStatus === 'unallotted' && !isAllotted);
+    return matchesSearch && matchesCat && matchesStatus;
   });
 
   const currentIndex = stocks.findIndex(s => s.id === selectedStock.id);
@@ -286,15 +316,89 @@ export const NormalRoundView: React.FC = () => {
             <span className="text-[10px] text-amber-400 font-mono">1 Lot = 20 Shares</span>
           </div>
 
+          {/* Progress Tracker */}
+          <div className="p-2 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+            <div className="flex items-center justify-between text-[11px] font-mono">
+              <span className="text-slate-400">Auction Progress</span>
+              <span className="text-amber-400 font-bold">{allottedCount} / {stocks.length} ({progressPercent}%)</span>
+            </div>
+            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div 
+                className="bg-amber-500 h-full rounded-full transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Quick Direct Jump Dropdown */}
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+              Direct Jump (#1 to #{stocks.length})
+            </label>
+            <select
+              value={selectedStock.id}
+              onChange={(e) => {
+                setSelectedStockId(e.target.value);
+                setLotSelections({});
+                setCustomBids({});
+              }}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:border-amber-500 focus:outline-none truncate"
+            >
+              {stocks.map((st, i) => {
+                const lots = stockAllotmentMap.get(st.id) || 0;
+                return (
+                  <option key={st.id} value={st.id}>
+                    #{i + 1} {st.ticker} - {st.name} {lots > 0 ? `(${lots} lots)` : ''}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          {/* Search Box */}
           <div className="relative">
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
             <input
               type="text"
-              placeholder="Search companies..."
+              placeholder="Search companies or ticker..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
             />
+          </div>
+
+          {/* Allotment Status Tabs */}
+          <div className="grid grid-cols-3 gap-1 p-0.5 bg-slate-950 rounded-xl border border-slate-800 text-[11px] font-semibold">
+            <button
+              onClick={() => setFilterStatus('all')}
+              className={`py-1 rounded-lg transition text-center ${
+                filterStatus === 'all' 
+                  ? 'bg-slate-800 text-slate-100 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              All ({stocks.length})
+            </button>
+            <button
+              onClick={() => setFilterStatus('allotted')}
+              className={`py-1 rounded-lg transition text-center ${
+                filterStatus === 'allotted' 
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Allotted ({allottedCount})
+            </button>
+            <button
+              onClick={() => setFilterStatus('unallotted')}
+              className={`py-1 rounded-lg transition text-center ${
+                filterStatus === 'unallotted' 
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Pending ({stocks.length - allottedCount})
+            </button>
           </div>
 
           {/* Category Filter Pills */}
@@ -309,14 +413,16 @@ export const NormalRoundView: React.FC = () => {
                     : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
                 }`}
               >
-                {cat === 'All' ? 'All' : cat.split(' ')[0]}
+                {cat === 'All' ? 'All Sectors' : cat}
               </button>
             ))}
           </div>
 
-          <div className="max-h-[440px] overflow-y-auto space-y-1.5 pr-1">
+          <div className="max-h-[420px] overflow-y-auto space-y-1.5 pr-1">
             {filteredStocks.map((st) => {
               const isSelected = st.id === selectedStock.id;
+              const globalIdx = stocks.findIndex(s => s.id === st.id);
+              const allottedLots = stockAllotmentMap.get(st.id) || 0;
               return (
                 <button
                   key={st.id}
@@ -331,13 +437,25 @@ export const NormalRoundView: React.FC = () => {
                       : 'bg-slate-950/60 border-slate-800/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
                   }`}
                 >
-                  <div className="truncate">
-                    <span className="text-xs font-bold block truncate text-slate-200">
-                      {st.name}
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-mono uppercase">
-                      {st.ticker} • ₹{st.openingBidPrice.toLocaleString('en-IN')}/lot
-                    </span>
+                  <div className="truncate mr-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-slate-400 shrink-0">
+                        #{globalIdx + 1}
+                      </span>
+                      <span className="text-xs font-bold truncate text-slate-200">
+                        {st.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] text-slate-500 font-mono uppercase">
+                        {st.ticker} • ₹{st.openingBidPrice.toLocaleString('en-IN')}/lot
+                      </span>
+                      {allottedLots > 0 && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                          {allottedLots} lots
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="text-right shrink-0">
                     <span className={`text-xs font-mono font-bold block ${st.returnPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -438,7 +556,7 @@ export const NormalRoundView: React.FC = () => {
                   Run as Surprise Insider Round? (Section 4)
                 </span>
                 <span className="text-[11px] text-slate-400 block">
-                  1-winner auction: Winner gets 6 lots guaranteed + confidential intelligence for their winning bid!
+                  1-winner auction: Winner unlocks confidential inside intelligence for their winning bid (no shares allotted)!
                 </span>
               </div>
               <button
@@ -460,7 +578,7 @@ export const NormalRoundView: React.FC = () => {
                   TEAM BIDS & ALLOTMENT INPUT
                 </h4>
                 <p className="text-[11px] text-slate-400">
-                  Bidding ₹{openingBid.toLocaleString('en-IN')} buys 1 lot (20 sh). Enter lots won by each team.
+                  Bidding ₹{openingBid.toLocaleString('en-IN')} buys 1 lot (20 sh). Enter lots won by each team. Rule 7 portfolio limit: 6 to 9 distinct stocks.
                 </p>
               </div>
 
@@ -483,7 +601,7 @@ export const NormalRoundView: React.FC = () => {
               <table className="w-full text-xs text-left">
                 <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
                   <tr>
-                    <th className="px-3 py-2.5">Team</th>
+                    <th className="px-3 py-2.5">Team & Portfolio (6–9)</th>
                     <th className="px-3 py-2.5 text-center">Owned</th>
                     <th className="px-3 py-2.5 text-center">Lots Won</th>
                     <th className="px-3 py-2.5 text-right">Calculated Bid Cost</th>
@@ -497,6 +615,10 @@ export const NormalRoundView: React.FC = () => {
                     const currentHeld = team.holdings[selectedStock.id] || 0;
                     const selectedLots = lotSelections[team.id] || 0;
                     const cost = getTeamCost(team.id, selectedLots);
+                    const distinctStocks = Object.values(team.holdings).filter((l: number) => l > 0).length;
+                    const isNewStock = currentHeld === 0 && selectedLots > 0;
+                    const projectedDistinct = isNewStock ? distinctStocks + 1 : distinctStocks;
+
                     return (
                       <tr key={team.id} className="hover:bg-slate-800/30 transition">
                         <td className="px-3 py-2.5 font-sans font-semibold text-slate-200">
@@ -506,6 +628,21 @@ export const NormalRoundView: React.FC = () => {
                               style={{ backgroundColor: team.avatarColor }}
                             />
                             <span>{team.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1 font-mono text-[10px]">
+                            <span className={`px-1.5 py-0.2 rounded font-bold ${
+                              projectedDistinct >= 6 && projectedDistinct <= 9
+                                ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60'
+                                : projectedDistinct > 9
+                                ? 'bg-red-950 text-red-400 border border-red-800 font-black'
+                                : 'bg-slate-800 text-amber-400'
+                            }`}>
+                              {distinctStocks}/6-9 stocks
+                              {isNewStock && <span className="text-emerald-300 ml-1">(+1 new → {projectedDistinct})</span>}
+                            </span>
+                            {projectedDistinct > 9 && (
+                              <span className="text-red-400 text-[9px] font-sans">⚠️ &gt;9 Limit!</span>
+                            )}
                           </div>
                         </td>
                         <td className="px-3 py-2.5 text-center">

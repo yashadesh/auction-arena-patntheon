@@ -705,6 +705,320 @@ export const INITIAL_STOCKS: Stock[] = [
     openingBidPrice: 14000,
     displayNews: 'Amazon traded erratically — one report says AWS cloud growth is reaccelerating, another claims retail margins are under pressure from rising fulfillment costs. A brokerage cites "cloud dominance," another flags "retail margin risk." No comment.',
     insiderNews: 'Fulfillment cost pressure is smaller than modeled due to an undisclosed automation rollout. AWS growth is stronger than the bullish note suggests. Expect a positive surprise.'
+  },
+  // Page 12
+  {
+    id: 'kotak-bank',
+    name: 'Kotak Mahindra Bank',
+    ticker: 'KOTAKBANK',
+    category: 'Banking & NBFC',
+    returnPercent: 20,
+    openingBidPrice: 10000,
+    displayNews: 'Kotak Mahindra Bank posted strong loan growth this quarter, but a senior management change was announced the same day. A brokerage likes the growth, another calls the leadership shuffle "unsettling." No clarity yet.',
+    insiderNews: 'The leadership change is a planned succession, not a resignation under pressure. Loan growth momentum is genuine and continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'indusind-bank',
+    name: 'IndusInd Bank',
+    ticker: 'INDUSINDBK',
+    category: 'Banking & NBFC',
+    returnPercent: -25,
+    openingBidPrice: 8000,
+    displayNews: 'IndusInd Bank reported a rise in deposits, but a report claims its microfinance book is seeing rising defaults. One brokerage stays bullish, another downgrades on asset quality worries.',
+    insiderNews: 'The default numbers are worse than disclosed, and a provisioning hit is expected next quarter. Expect a negative correction.'
+  },
+  {
+    id: 'bank-of-baroda',
+    name: 'Bank of Baroda',
+    ticker: 'BANKBARODA',
+    category: 'Banking & NBFC',
+    returnPercent: 15,
+    openingBidPrice: 8000,
+    displayNews: 'Bank of Baroda beat profit estimates this quarter, but a report says a large corporate account may need restructuring. Analysts are split on whether this is a one-off or a pattern.',
+    insiderNews: 'The account in question is fully secured with no expected loss. Profit growth is genuine and continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'hindalco',
+    name: 'Hindalco Industries',
+    ticker: 'HINDALCO',
+    category: 'Energy & Commodities',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: 'Hindalco announced expansion plans as aluminium prices rise, but a report flags a smelter facing a temporary power-supply issue. Bulls cite pricing, bears cite disruption.',
+    insiderNews: 'The power issue is longer than disclosed and will cut output meaningfully this quarter. Expect a negative correction.'
+  },
+  {
+    id: 'adani-green',
+    name: 'Adani Green Energy',
+    ticker: 'ADANIGREEN',
+    category: 'Energy & Commodities',
+    returnPercent: 30,
+    openingBidPrice: 12000,
+    displayNews: 'Adani Green announced a record renewable capacity addition, but a rating agency is reviewing group-level debt, same as other Adani stocks. Sentiment is split.',
+    insiderNews: "This entity's project financing is ring-fenced and unaffected by the group review. Capacity additions are ahead of schedule. Expect a positive surprise."
+  },
+  {
+    id: 'adani-power',
+    name: 'Adani Power',
+    ticker: 'ADANIPOWER',
+    category: 'Energy & Commodities',
+    returnPercent: -20,
+    openingBidPrice: 12000,
+    displayNews: 'Adani Power reported higher power generation, but coal supply costs are reportedly rising sharply for its plants. One brokerage stays bullish on demand, another flags margin risk.',
+    insiderNews: "Coal costs are running well above what's been disclosed, and margins will be squeezed harder than modeled. Expect a negative correction."
+  },
+  {
+    id: 'gail',
+    name: 'GAIL India',
+    ticker: 'GAIL',
+    category: 'Energy & Commodities',
+    returnPercent: 15,
+    openingBidPrice: 10000,
+    displayNews: 'GAIL reported strong gas transmission volumes, but a report says a pipeline expansion project is facing regulatory delays. Bulls and bears are evenly split.',
+    insiderNews: 'The regulatory delay is a formality already close to resolution internally. Transmission volume growth is stronger than reported. Expect a positive surprise.'
+  },
+  {
+    id: 'ioc',
+    name: 'Indian Oil Corporation (IOC)',
+    ticker: 'IOC',
+    category: 'Energy & Commodities',
+    returnPercent: -15,
+    openingBidPrice: 6000,
+    displayNews: 'IOC posted higher refining margins this quarter, but crude sourcing costs are reportedly rising fast. A brokerage likes margins, another flags cost pressure.',
+    insiderNews: 'Sourcing costs are higher than disclosed and expected to erode the margin gain entirely. Expect a negative correction.'
+  },
+  // Page 13
+  {
+    id: 'grasim',
+    name: 'Grasim Industries',
+    ticker: 'GRASIM',
+    category: 'Energy & Commodities',
+    returnPercent: 20,
+    openingBidPrice: 6000,
+    displayNews: 'Grasim announced expansion in its chemicals division, but a report flags rising input costs across its businesses. Analysts are split on the net impact.',
+    insiderNews: 'Input costs are already hedged via a supplier contract not yet disclosed. The chemicals expansion is ahead of schedule. Expect a positive surprise.'
+  },
+  {
+    id: 'ambuja-cements',
+    name: 'Ambuja Cements',
+    ticker: 'AMBUJACEM',
+    category: 'Defense & Infra',
+    returnPercent: -10,
+    openingBidPrice: 8000,
+    displayNews: 'Ambuja Cements reported higher sales volumes, but a report says fuel costs are rising sharply at several plants. One brokerage stays bullish, another flags margin risk.',
+    insiderNews: 'Fuel costs are running higher than disclosed and will offset most of the volume gain. Expect a negative correction.'
+  },
+  {
+    id: 'pidilite',
+    name: 'Pidilite Industries',
+    ticker: 'PIDILITIND',
+    category: 'Consumer & Retail',
+    returnPercent: 25,
+    openingBidPrice: 10000,
+    displayNews: 'Pidilite reported strong festive-season demand for its adhesives, but a report flags rising VAM (raw material) costs. Bulls and bears are evenly split.',
+    insiderNews: 'Raw material costs are locked in below spot levels via an undisclosed contract. Demand strength is continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'godrej-consumer',
+    name: 'Godrej Consumer Products',
+    ticker: 'GODREJCP',
+    category: 'FMCG & Consumer',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: 'Godrej Consumer reported strong household product sales, but a report flags rising palm oil costs squeezing margins. A brokerage likes the sales growth, another flags cost pressure.',
+    insiderNews: 'The sales bump was driven by heavy trade discounting, and palm oil costs are worse than disclosed. Expect a negative correction.'
+  },
+  {
+    id: 'marico',
+    name: 'Marico',
+    ticker: 'MARICO',
+    category: 'FMCG & Consumer',
+    returnPercent: 15,
+    openingBidPrice: 8000,
+    displayNews: 'Marico reported strong rural demand recovery, but a report flags rising copra prices pressuring its edible oils business. Analysts are split on the net impact.',
+    insiderNews: 'Copra costs are smaller than modeled due to an undisclosed hedge. Rural demand recovery is genuine and continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'hul',
+    name: 'Hindustan Unilever (HUL)',
+    ticker: 'HINDUNILVR',
+    category: 'FMCG & Consumer',
+    returnPercent: -10,
+    openingBidPrice: 10000,
+    displayNews: 'HUL reported steady volume growth, but a report flags intensifying competition from smaller regional FMCG brands. A brokerage likes scale, another flags market-share risk.',
+    insiderNews: 'Regional competitor gains are larger than disclosed in key categories. Expect a negative correction.'
+  },
+  {
+    id: 'voltas',
+    name: 'Voltas',
+    ticker: 'VOLTAS',
+    category: 'Consumer & Retail',
+    returnPercent: 20,
+    openingBidPrice: 8000,
+    displayNews: 'Voltas reported record summer AC sales, but a report flags rising compressor component costs. Bulls cite demand, bears cite margin pressure.',
+    insiderNews: 'Compressor costs are hedged via an undisclosed long-term supplier deal. Summer demand strength is continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'bajaj-finserv',
+    name: 'Bajaj Finserv',
+    ticker: 'BAJAJFINSV',
+    category: 'Banking & NBFC',
+    returnPercent: -15,
+    openingBidPrice: 8000,
+    displayNews: 'Bajaj Finserv reported strong insurance premium growth, but a report flags rising claims ratios in its general insurance arm. Analysts are split on the net effect.',
+    insiderNews: 'Claims ratios are worse than disclosed and expected to hit underwriting profit meaningfully. Expect a negative correction.'
+  },
+  {
+    id: 'sbi-life',
+    name: 'SBI Life Insurance',
+    ticker: 'SBILIFE',
+    category: 'Banking & NBFC',
+    returnPercent: 25,
+    openingBidPrice: 8000,
+    displayNews: 'SBI Life reported record new business premium, but a report flags a proposed regulatory change to commission structures. Bulls and bears are evenly split.',
+    insiderNews: 'The regulatory change favors larger insurers like SBI Life, not against them, contrary to the public read. Expect a positive surprise.'
+  },
+  {
+    id: 'ashok-leyland',
+    name: 'Ashok Leyland',
+    ticker: 'ASHOKLEY',
+    category: 'Auto & EV',
+    returnPercent: -20,
+    openingBidPrice: 8000,
+    displayNews: 'Ashok Leyland reported strong truck order inflows, but a report flags rising steel and axle component costs. A brokerage likes the order book, another flags margin risk.',
+    insiderNews: 'Component costs are running higher than disclosed and will offset most of the order-book gain this quarter. Expect a negative correction.'
+  },
+  {
+    id: 'tvs-motor',
+    name: 'TVS Motor Company',
+    ticker: 'TVSMOTOR',
+    category: 'Auto & EV',
+    returnPercent: 30,
+    openingBidPrice: 8000,
+    displayNews: 'TVS Motor reported strong festive two-wheeler sales, but a report flags a supplier delay on a key electronic component. Analysts are split on the net impact.',
+    insiderNews: 'The supplier delay is already resolved via a backup vendor, undisclosed. Festive sales strength is continuing. Expect a positive surprise.'
+  },
+  // Page 14
+  {
+    id: 'apollo-hospitals',
+    name: 'Apollo Hospitals',
+    ticker: 'APOLLOHOSP',
+    category: 'Pharma & Healthcare',
+    returnPercent: -15,
+    openingBidPrice: 10000,
+    displayNews: 'Apollo Hospitals reported record patient volumes, but a report flags rising staffing costs across its hospital network. A brokerage likes volumes, another flags cost pressure.',
+    insiderNews: 'Staffing cost inflation is worse than disclosed and expected to compress margins meaningfully. Expect a negative correction.'
+  },
+  {
+    id: 'dr-reddys',
+    name: "Dr. Reddy's Laboratories",
+    ticker: 'DRREDDY',
+    category: 'Pharma & Healthcare',
+    returnPercent: 20,
+    openingBidPrice: 10000,
+    displayNews: "Dr. Reddy's reported a strong US generics quarter, but a report flags a facility inspection by a foreign regulator. Bulls and bears are evenly split.",
+    insiderNews: 'The inspection is a routine periodic visit with no adverse findings expected. US generics strength is continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'lupin',
+    name: 'Lupin Limited',
+    ticker: 'LUPIN',
+    category: 'Pharma & Healthcare',
+    returnPercent: -20,
+    openingBidPrice: 8000,
+    displayNews: 'Lupin reported a large new drug approval, but a report flags pricing pressure in its US generics portfolio. A brokerage likes the approval, another flags pricing risk.',
+    insiderNews: 'Pricing pressure is worse than disclosed across a bigger part of the portfolio than the approval offsets. Expect a negative correction.'
+  },
+  {
+    id: 'info-edge',
+    name: 'Info Edge (Naukri)',
+    ticker: 'NAUKRI',
+    category: 'Tech',
+    returnPercent: 35,
+    openingBidPrice: 8000,
+    displayNews: 'Info Edge reported strong billing growth on its recruitment platform, but a report flags rising customer acquisition costs. Analysts are split on the net effect.',
+    insiderNews: 'Acquisition costs are smaller than modeled due to an undisclosed organic-traffic shift. Billing growth strength is continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'nykaa',
+    name: 'Nykaa',
+    ticker: 'NYKAA',
+    category: 'Consumer & Retail',
+    returnPercent: -30,
+    openingBidPrice: 8000,
+    displayNews: 'Nykaa reported strong festive-season order growth, but a report flags rising customer-return rates on its fashion vertical. A brokerage likes growth, another flags margin risk.',
+    insiderNews: 'Return rates are worse than disclosed and are expected to erode margins on the fashion vertical significantly. Expect a negative correction.'
+  },
+  {
+    id: 'indigo',
+    name: 'InterGlobe Aviation (IndiGo)',
+    ticker: 'INDIGO',
+    category: 'Aviation & Logistics',
+    returnPercent: 25,
+    openingBidPrice: 12000,
+    displayNews: 'IndiGo reported record passenger volumes, but a report flags rising aviation turbine fuel costs. Bulls cite volumes, bears cite fuel-cost pressure.',
+    insiderNews: 'Fuel costs are partly hedged via an undisclosed contract, smaller impact than modeled. Passenger volume strength is continuing. Expect a positive surprise.'
+  },
+  {
+    id: 'varun-beverages',
+    name: 'Varun Beverages',
+    ticker: 'VBL',
+    category: 'FMCG & Consumer',
+    returnPercent: -15,
+    openingBidPrice: 8000,
+    displayNews: 'Varun Beverages reported strong summer sales volumes, but a report flags rising sugar and packaging costs. A brokerage likes volumes, another flags cost pressure.',
+    insiderNews: 'Sugar costs are running higher than disclosed and expected to offset most of the volume gain. Expect a negative correction.'
+  },
+  {
+    id: 'boeing',
+    name: 'Boeing',
+    ticker: 'BA',
+    category: 'Defense & Infra',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: 'Boeing announced a large new aircraft order, but a report flags a fresh quality-control issue on a key production line. Bulls cite the order, bears cite production risk.',
+    insiderNews: 'The quality-control issue is more serious than disclosed and expected to delay deliveries meaningfully. Expect a negative correction.'
+  },
+  {
+    id: 'intel',
+    name: 'Intel',
+    ticker: 'INTC',
+    category: 'Tech',
+    returnPercent: 30,
+    openingBidPrice: 10000,
+    displayNews: 'Intel unveiled a new chip manufacturing process, but a report flags delays at a key overseas fabrication plant. Analysts are split on the net impact.',
+    insiderNews: 'The fabrication delay is minor and already resolved via a backup facility, undisclosed. The new chip process is ahead of schedule. Expect a positive surprise.'
+  },
+  {
+    id: 'uber',
+    name: 'Uber Technologies',
+    ticker: 'UBER',
+    category: 'Tech',
+    returnPercent: -20,
+    openingBidPrice: 10000,
+    displayNews: 'Uber reported record ride volumes, but a report flags rising driver-incentive costs to retain supply. A brokerage likes volumes, another flags margin risk.',
+    insiderNews: 'Driver-incentive costs are running higher than disclosed and expected to compress margins meaningfully this quarter. Expect a negative correction.'
+  },
+  {
+    id: 'paypal',
+    name: 'PayPal Holdings',
+    ticker: 'PYPL',
+    category: 'Fintech & Exchanges',
+    returnPercent: 15,
+    openingBidPrice: 8000,
+    displayNews: 'PayPal reported strong transaction volume growth, but a report flags rising competition from newer payment apps. Bulls cite volumes, bears cite competitive risk.',
+    insiderNews: "Competitive pressure is smaller than modeled — PayPal's checkout share is holding steady, undisclosed. Volume growth strength is continuing. Expect a positive surprise."
+  },
+  // Page 15
+  {
+    id: 'visa',
+    name: 'Visa Inc.',
+    ticker: 'V',
+    category: 'Fintech & Exchanges',
+    returnPercent: -10,
+    openingBidPrice: 8000,
+    displayNews: 'Visa reported strong cross-border transaction growth, but a report flags rising regulatory scrutiny on interchange fees in several markets. Analysts are split on the net effect.',
+    insiderNews: 'Regulatory scrutiny is more advanced than disclosed and expected to force fee cuts sooner than the bullish case assumes. Expect a negative correction.'
   }
 ];
 

@@ -92,6 +92,51 @@ export const TeamDetailModal: React.FC<TeamDetailModalProps> = ({ teamId, onClos
             </div>
           </div>
 
+          {/* Rule 7 & Rule 8 Compliance Banners */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Rule 7 Card: Min 6, Max 9 stocks */}
+            <div className={`p-3.5 rounded-xl border flex items-center justify-between ${
+              valuation.isDisqualified
+                ? 'bg-red-950/40 border-red-800/80 text-red-300'
+                : 'bg-emerald-950/30 border-emerald-800/60 text-emerald-300'
+            }`}>
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider block font-mono">
+                  Rule 7: Portfolio Requirement (Min 6, Max 9 Stocks)
+                </span>
+                <span className="text-xs font-bold block">
+                  {valuation.distinctStocksCount} Distinct Stocks Held (Range: 6–9)
+                </span>
+                <span className="text-[10px] text-slate-400 block font-sans">
+                  {valuation.isDisqualified ? valuation.disqualificationReason : '✓ Compliant with 6–9 stock rule'}
+                </span>
+              </div>
+              <span className={`text-xs px-2.5 py-1 rounded-lg font-bold font-mono ${
+                valuation.isDisqualified ? 'bg-red-900 text-red-100' : 'bg-emerald-900/80 text-emerald-200'
+              }`}>
+                {valuation.isDisqualified ? 'DISQUALIFIED' : 'ELIGIBLE'}
+              </span>
+            </div>
+
+            {/* Rule 8 Card: No Limitation */}
+            <div className="p-3.5 rounded-xl border bg-purple-950/20 border-purple-800/50 text-purple-200 flex items-center justify-between">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider block font-mono text-purple-400">
+                  Rule 8: Insider Round Participation
+                </span>
+                <span className="text-xs font-bold block text-slate-100">
+                  {valuation.insiderWinsCount} Insider Rounds Won (No Win Limit)
+                </span>
+                <span className="text-[10px] text-slate-400 block font-sans">
+                  No win cap — unlocks confidential intelligence without automatic shares
+                </span>
+              </div>
+              <span className="text-xs px-2.5 py-1 rounded-lg font-bold font-mono bg-purple-900/80 text-purple-200">
+                ACTIVE
+              </span>
+            </div>
+          </div>
+
           {/* Holdings Breakdown Table */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">

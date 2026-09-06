@@ -59,12 +59,26 @@ export const InsiderRoundView: React.FC = () => {
   // General & Timer State
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'won' | 'pending'>('all');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string; lastTxId?: string } | null>(null);
   const [timerSeconds, setTimerSeconds] = useState<number>(30);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [isRectifyModalOpen, setIsRectifyModalOpen] = useState<boolean>(false);
 
-  const categories = ['All', 'Tech', 'Banking & NBFC', 'Energy & Commodities', 'Auto & EV', 'Defense & Infra', 'Pharma & Healthcare', 'Consumer & Retail', 'Fintech & Exchanges'];
+  const categories = [
+    'All', 
+    'Tech', 
+    'Banking & NBFC', 
+    'Energy & Commodities', 
+    'Auto & EV', 
+    'Defense & Infra', 
+    'Pharma & Healthcare', 
+    'Consumer & Retail', 
+    'Fintech & Exchanges',
+    'FMCG & Consumer',
+    'Telecom',
+    'Aviation & Logistics'
+  ];
 
   useEffect(() => {
     let interval: any = null;
@@ -135,17 +149,36 @@ export const InsiderRoundView: React.FC = () => {
   };
 
   const handleCopyIntel = () => {
-    const textToCopy = `[CONFIDENTIAL INSIDER INTEL] ${selectedStock.name} (${selectedStock.ticker})\nExpected Outcome: ${selectedStock.returnPercent >= 0 ? '+' : ''}${selectedStock.returnPercent}%\nIntel Clue: ${selectedStock.insiderClue}`;
+    const textToCopy = `[CONFIDENTIAL INSIDER INTEL] ${selectedStock.name} (${selectedStock.ticker})\nExpected Outcome: ${selectedStock.returnPercent >= 0 ? '+' : ''}${selectedStock.returnPercent}%\nIntel Narrative: ${selectedStock.insiderNews}`;
     navigator.clipboard.writeText(textToCopy);
     setCopiedIntel(true);
     setTimeout(() => setCopiedIntel(false), 3000);
   };
 
+  const wonStockIds = React.useMemo(() => {
+    return new Set(insiderTransactions.map(tx => tx.stockId));
+  }, [insiderTransactions]);
+
+  // Calculate insider round wins per team (no cap)
+  const teamWinsMap = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    insiderTransactions.forEach(tx => {
+      if (tx.winnerTeamId) {
+        map[tx.winnerTeamId] = (map[tx.winnerTeamId] || 0) + 1;
+      }
+    });
+    return map;
+  }, [insiderTransactions]);
+
   const filteredStocks = stocks.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           s.ticker.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCat = selectedCategory === 'All' || s.category === selectedCategory;
-    return matchesSearch && matchesCat;
+    const isWon = wonStockIds.has(s.id);
+    const matchesStatus = filterStatus === 'all' || 
+                          (filterStatus === 'won' && isWon) || 
+                          (filterStatus === 'pending' && !isWon);
+    return matchesSearch && matchesCat && matchesStatus;
   });
 
   const selectedTeamObj = teams.find(t => t.id === winnerTeamId);
@@ -171,7 +204,7 @@ export const InsiderRoundView: React.FC = () => {
             </button>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Surprise one-winner auction: The winning bid directly buys <strong className="text-slate-200">6 lots (120 shares) guaranteed</strong> AND unlocks the <strong className="text-purple-300">confidential inside information</strong>.
+            Surprise one-winner auction: The winning bid unlocks the <strong className="text-purple-300">confidential inside information</strong> revealing whether the stock will rise or fall. No automatic shares are allotted; there is no limitation on the number of insider rounds a team can win.
           </p>
         </div>
 
@@ -249,20 +282,75 @@ export const InsiderRoundView: React.FC = () => {
         <div className="lg:col-span-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Select Stock for Insider Round
+              Select Stock for Insider Round ({stocks.length})
             </h3>
-            <span className="text-[10px] text-purple-400 font-mono">6 Lots Package</span>
+            <span className="text-[10px] text-purple-400 font-mono">Exclusive Intel</span>
+          </div>
+
+          {/* Quick Direct Jump Dropdown */}
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+              Direct Jump (#1 to #{stocks.length})
+            </label>
+            <select
+              value={selectedStock.id}
+              onChange={(e) => handleSelectStock(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:border-purple-500 focus:outline-none truncate"
+            >
+              {stocks.map((st, i) => {
+                const hasWon = wonStockIds.has(st.id);
+                return (
+                  <option key={st.id} value={st.id}>
+                    #{i + 1} {st.ticker} - {st.name} {hasWon ? '★ (WON)' : ''}
+                  </option>
+                );
+              })}
+            </select>
           </div>
 
           <div className="relative">
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
             <input
               type="text"
-              placeholder="Search companies..."
+              placeholder="Search companies or ticker..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500"
             />
+          </div>
+
+          {/* Insider Status Tabs */}
+          <div className="grid grid-cols-3 gap-1 p-0.5 bg-slate-950 rounded-xl border border-slate-800 text-[11px] font-semibold">
+            <button
+              onClick={() => setFilterStatus('all')}
+              className={`py-1 rounded-lg transition text-center ${
+                filterStatus === 'all' 
+                  ? 'bg-slate-800 text-slate-100 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              All ({stocks.length})
+            </button>
+            <button
+              onClick={() => setFilterStatus('won')}
+              className={`py-1 rounded-lg transition text-center ${
+                filterStatus === 'won' 
+                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Won ({wonStockIds.size})
+            </button>
+            <button
+              onClick={() => setFilterStatus('pending')}
+              className={`py-1 rounded-lg transition text-center ${
+                filterStatus === 'pending' 
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Pending ({stocks.length - wonStockIds.size})
+            </button>
           </div>
 
           {/* Category Filter */}
@@ -277,15 +365,16 @@ export const InsiderRoundView: React.FC = () => {
                     : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
                 }`}
               >
-                {cat === 'All' ? 'All' : cat.split(' ')[0]}
+                {cat === 'All' ? 'All Sectors' : cat}
               </button>
             ))}
           </div>
 
-          <div className="max-h-[440px] overflow-y-auto space-y-1.5 pr-1">
+          <div className="max-h-[420px] overflow-y-auto space-y-1.5 pr-1">
             {filteredStocks.map((st) => {
               const isSelected = st.id === selectedStock.id;
-              const hasInsider = insiderTransactions.some(tx => tx.stockId === st.id);
+              const hasInsider = wonStockIds.has(st.id);
+              const globalIdx = stocks.findIndex(s => s.id === st.id);
 
               return (
                 <button
@@ -297,8 +386,11 @@ export const InsiderRoundView: React.FC = () => {
                       : 'bg-slate-950/60 border-slate-800/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
                   }`}
                 >
-                  <div className="truncate">
+                  <div className="truncate mr-2">
                     <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-slate-400 shrink-0">
+                        #{globalIdx + 1}
+                      </span>
                       <span className="text-xs font-bold block truncate text-slate-200">
                         {st.name}
                       </span>
@@ -331,7 +423,7 @@ export const InsiderRoundView: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
-                    Surprise Insider Round • 6 Lots Package
+                    Surprise Insider Round • Exclusive Intel Auction
                   </span>
                   <span className="text-[10px] text-slate-400 font-mono">
                     {selectedStock.ticker}
@@ -368,7 +460,7 @@ export const InsiderRoundView: React.FC = () => {
                     ✓ Insider Round Already Awarded
                   </span>
                   <span className="text-slate-300">
-                    Won by <strong>{existingWinner.name}</strong> for <strong>{formatINR(existingInsiderTx.winnerBid)}</strong> (Awarded 6 Lots).
+                    Won by <strong>{existingWinner.name}</strong> for <strong>{formatINR(existingInsiderTx.winnerBid)}</strong> (Confidential Intel Unlocked • No Shares Allotted).
                   </span>
                 </div>
                 <button
@@ -387,15 +479,15 @@ export const InsiderRoundView: React.FC = () => {
               Rule Book Section 4 Mandate:
             </span>
             <p className="leading-relaxed">
-              "The single highest bidder receives two things: <strong>6 lots of that stock guaranteed</strong> (this is exactly what their winning bid pays for) AND <strong>confidential inside information</strong> revealing whether the stock will rise or fall. The winning bid directly buys the 6 lots — there is no separate payment for info."
+              "The single highest bidder receives exclusive access to the <strong>confidential inside information</strong> revealing whether the stock will rise or fall. <strong>No shares/lots are allotted in the Insider Round</strong> — the winning bid unlocks the secret intelligence. There is <strong>no limitation</strong> on the number of insider rounds a team can win."
             </p>
           </div>
 
-          {/* Award 6-Lots Form */}
+          {/* Award Intel Form */}
           <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
             <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2 font-mono">
               <Gavel className="w-4 h-4 text-purple-400" />
-              SUBMIT WINNING BID & AWARD 6 LOTS
+              SUBMIT WINNING BID & UNLOCK INTEL
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -410,18 +502,21 @@ export const InsiderRoundView: React.FC = () => {
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500 font-sans"
                 >
                   <option value="">Select Team...</option>
-                  {teams.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} (Cash: {formatINR(t.cash)}, Owns: {t.holdings[selectedStock.id] || 0} lots)
-                    </option>
-                  ))}
+                  {teams.map((t) => {
+                    const wins = teamWinsMap[t.id] || 0;
+                    return (
+                      <option key={t.id} value={t.id}>
+                        {t.name} (Intel Wins: {wins}, Cash: {formatINR(t.cash)})
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
               {/* Winning Bid Input */}
               <div>
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                  Winning Bid Amount (Pays for 6 Lots)
+                  Winning Bid Amount (Pays for Secret Intel)
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-slate-500 font-mono text-xs">₹</span>
@@ -436,10 +531,45 @@ export const InsiderRoundView: React.FC = () => {
               </div>
             </div>
 
+            {/* Syndicate Insider Wins Tracker (No Limitation) */}
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-bold text-slate-300 font-mono flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-purple-400" />
+                  Syndicate Insider Wins Tracker (No Limitation)
+                </span>
+                <span className="text-slate-500 text-[10px]">
+                  Teams may win unlimited insider rounds
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                {teams.map(t => {
+                  const wins = teamWinsMap[t.id] || 0;
+                  return (
+                    <div 
+                      key={t.id}
+                      className={`p-2 rounded-lg border flex items-center justify-between ${
+                        wins > 0 
+                          ? 'bg-purple-950/30 border-purple-800/60 text-purple-200' 
+                          : 'bg-slate-900/60 border-slate-800/80 text-slate-400'
+                      }`}
+                    >
+                      <span className="truncate font-sans font-medium text-[11px] mr-1">{t.name}</span>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className="font-bold text-purple-300">
+                          {wins} {wins === 1 ? 'win' : 'wins'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Quick Bid Increment Buttons */}
             <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
               <span className="text-[11px] text-slate-500 uppercase font-bold">Quick Presets:</span>
-              {[30000, 40000, 50000, 60000, 75000, 100000].map((amt) => (
+              {[15000, 25000, 40000, 50000, 60000, 75000].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setWinningBid(amt)}
@@ -485,7 +615,7 @@ export const InsiderRoundView: React.FC = () => {
                 className="w-full py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-xl shadow-purple-600/20 font-mono"
               >
                 <Award className="w-5 h-5" />
-                AWARD 6 LOTS (120 SHARES) & UNLOCK CONFIDENTIAL INTEL
+                CONFIRM WINNING BID & UNLOCK CONFIDENTIAL INTEL
               </button>
             </div>
           </div>
@@ -537,7 +667,7 @@ export const InsiderRoundView: React.FC = () => {
 
                 <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 leading-relaxed font-sans">
                   <span className="text-purple-400 font-bold block mb-1">Secret Intelligence Narrative:</span>
-                  "{selectedStock.insiderClue}"
+                  "{selectedStock.insiderNews || (selectedStock as any).insiderClue}"
                 </div>
               </div>
             ) : (
@@ -582,7 +712,7 @@ export const InsiderRoundView: React.FC = () => {
                     <div key={tx.id} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2 text-xs">
                       <div className="text-slate-300 text-[11px]">
                         <span className="text-slate-500 font-mono mr-2">{new Date(tx.timestamp).toLocaleTimeString()}</span>
-                        <strong className="text-slate-100">{st?.name}</strong> • Winner: <strong className="text-purple-300">{winner?.name}</strong> • Bid: <strong className="text-amber-400">{formatINR(tx.winnerBid)}</strong> ({tx.winnerLots || 6} lots)
+                        <strong className="text-slate-100">{st?.name}</strong> • Winner: <strong className="text-purple-300">{winner?.name}</strong> • Bid: <strong className="text-amber-400">{formatINR(tx.winnerBid)}</strong> ({tx.winnerLots ? `${tx.winnerLots} lots` : 'Intel only'})
                       </div>
                       <button
                         onClick={() => handleUndoTx(tx.id)}

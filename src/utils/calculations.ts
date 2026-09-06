@@ -3,7 +3,8 @@ import { Team, Stock, TeamValuation, GameConfig } from '../types';
 export function calculateTeamValuation(
   team: Team,
   stocks: Stock[],
-  config: GameConfig
+  config: GameConfig,
+  insiderWinsCount: number = 0
 ): TeamValuation {
   const stockMap = new Map<string, Stock>(stocks.map(s => [s.id, s]));
 
@@ -75,6 +76,20 @@ export function calculateTeamValuation(
   const overallPnl = netWorth - startingCash;
   const roiPercent = startingCash > 0 ? (overallPnl / startingCash) * 100 : 0;
 
+  // Rule 7 (Portfolio Size Requirement):
+  // Every team must hold shares in at least 6 different stocks, and no more than 9 different stocks.
+  // Fewer than 6 or more than 9 -> Disqualified regardless of net worth!
+  const isUnderMin = distinctStocksCount < 6;
+  const isOverMax = distinctStocksCount > 9;
+  const isDisqualified = isUnderMin || isOverMax;
+  const portfolioStatus: 'compliant' | 'under' | 'over' = isUnderMin ? 'under' : isOverMax ? 'over' : 'compliant';
+  let disqualificationReason: string | undefined;
+  if (isUnderMin) {
+    disqualificationReason = `Holds ${distinctStocksCount} stock${distinctStocksCount === 1 ? '' : 's'} (Rule 7 requires at least 6)`;
+  } else if (isOverMax) {
+    disqualificationReason = `Holds ${distinctStocksCount} stocks (Rule 7 allows maximum 9)`;
+  }
+
   return {
     team,
     cashInHand: team.cash,
@@ -87,32 +102,49 @@ export function calculateTeamValuation(
     roiPercent,
     distinctStocksCount,
     totalLotsHeld,
-    rank: 0 // calculated in master leaderboard
+    rank: 0, // calculated in master leaderboard
+    isDisqualified,
+    disqualificationReason,
+    portfolioStatus,
+    insiderWinsCount
   };
 }
 
 export function calculateAllTeamsValuation(
   teams: Team[],
   stocks: Stock[],
-  config: GameConfig
+  config: GameConfig,
+  insiderWinsMap: Record<string, number> = {}
 ): TeamValuation[] {
-  const valuations = teams.map(team => calculateTeamValuation(team, stocks, config));
+  const valuations = teams.map(team => 
+    calculateTeamValuation(team, stocks, config, insiderWinsMap[team.id] || 0)
+  );
 
   // Sort according to Wolf of BIT Mesra winning & tie-breaker rules:
-  // 1. Highest Net Worth
-  // 2. Highest Cash in Hand (Tie-breaker 1)
-  // 3. Fewer Distinct Stocks Held (Tie-breaker 2)
-  // 4. Higher ROI %
+  // Rule 7 mandate: Disqualified teams (fewer than 6 or more than 9 stocks)
+  // cannot rank above teams that complied with portfolio requirements.
   valuations.sort((a, b) => {
+    // 1. Qualified vs Disqualified
+    if (a.isDisqualified !== b.isDisqualified) {
+      return a.isDisqualified ? 1 : -1;
+    }
+
+    // 2. Highest Net Worth
     if (Math.abs(b.netWorth - a.netWorth) > 0.01) {
       return b.netWorth - a.netWorth;
     }
+
+    // 3. Highest Cash in Hand (Tie-breaker 1)
     if (Math.abs(b.cashInHand - a.cashInHand) > 0.01) {
       return b.cashInHand - a.cashInHand;
     }
+
+    // 4. Fewer Distinct Stocks Held (Tie-breaker 2)
     if (a.distinctStocksCount !== b.distinctStocksCount) {
       return a.distinctStocksCount - b.distinctStocksCount; // fewer stocks wins tie
     }
+
+    // 5. Higher ROI %
     return b.roiPercent - a.roiPercent;
   });
 

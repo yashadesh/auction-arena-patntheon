@@ -101,14 +101,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
     ...insiderTransactions.map(tx => {
       const stock = stocks.find(s => s.id === tx.stockId);
       const winner = teams.find(t => t.id === tx.winnerTeamId);
-      const is6Lot = tx.type === '6_lots_bid' || tx.winnerLots === 6;
+      const hasLots = !!tx.winnerLots && tx.winnerLots > 0;
       return {
         id: tx.id,
         timestamp: tx.timestamp,
-        type: is6Lot ? 'Insider Round (6 Lots + Intel)' : 'Insider Auction',
+        type: hasLots ? 'Insider Round (Lots + Intel)' : 'Insider Round (Intel)',
         icon: TrendingUp,
         color: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
-        text: `${winner?.name || 'Winner'} won ${tx.winnerLots} lots (${tx.winnerLots * 20} sh) of ${stock?.name || 'Stock'} at ${formatINR(tx.winnerBid)}${is6Lot ? ' (includes confidential intel)' : ''}.`
+        text: hasLots 
+          ? `${winner?.name || 'Winner'} won ${tx.winnerLots} lots (${tx.winnerLots * 20} sh) of ${stock?.name || 'Stock'} at ${formatINR(tx.winnerBid)} (includes confidential intel).`
+          : `${winner?.name || 'Winner'} won confidential insider intel for ${stock?.name || 'Stock'} for ${formatINR(tx.winnerBid)} (no shares allotted).`
       };
     }),
     ...exchangeTransactions.map(tx => {
@@ -351,8 +353,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
                             {formatPercent(v.roiPercent)}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-center font-mono text-slate-400">
-                          {v.totalLotsHeld} ({v.distinctStocksCount} stocks)
+                        <td className="px-4 py-3 text-center font-mono">
+                          <div className="text-slate-300 font-bold">{v.totalLotsHeld} lots</div>
+                          <div className="flex items-center justify-center gap-1 mt-0.5">
+                            <span className={`text-[10px] px-1.5 py-0.2 rounded font-sans font-bold ${
+                              v.isDisqualified 
+                                ? 'bg-red-950/80 text-red-400 border border-red-800' 
+                                : 'bg-slate-800 text-slate-400'
+                            }`}>
+                              {v.distinctStocksCount} stocks {v.isDisqualified ? '⚠️ Disqualified' : '✓'}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <button
@@ -382,30 +393,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
               <div className="p-3 rounded-lg bg-slate-950 border border-slate-800/80">
                 <div className="flex items-center gap-2 font-bold text-amber-400 mb-1">
                   <Coins className="w-4 h-4" />
-                  1. Normal Round Allotment
+                  1. Normal Round (Rule 3)
                 </div>
                 <p className="text-slate-400 text-[11px] leading-relaxed">
-                  Reveal market clues. Teams can buy as many lots as desired with no lot limit @ opening bid price. Deduct cash & lock.
+                  Revealed clues shown. Starting bid buys 1 lot. Bidding higher buys more lots at once. Open to every team.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-950 border border-slate-800/80">
                 <div className="flex items-center gap-2 font-bold text-purple-400 mb-1">
                   <Eye className="w-4 h-4" />
-                  2. Insider News & 5L/3L Arena
+                  2. Insider Round (Rules 4 & 8)
                 </div>
                 <p className="text-slate-400 text-[11px] leading-relaxed">
-                  Lot 5 is won by highest bidder. Insider News bid amount is deducted from cash. Lot 3 price is deducted by host.
+                  1-winner auction. Winning bid buys guaranteed 6 lots + secret intel. Same stock immediately reopens for normal bidding. Max 4 wins/team.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-950 border border-slate-800/80">
-                <div className="flex items-center gap-2 font-bold text-blue-400 mb-1">
-                  <ArrowLeftRight className="w-4 h-4" />
-                  3. P2P Exchange Round
+                <div className="flex items-center gap-2 font-bold text-emerald-400 mb-1">
+                  <Award className="w-4 h-4" />
+                  3. Portfolio & Valuation (Rules 6 & 7)
                 </div>
                 <p className="text-slate-400 text-[11px] leading-relaxed">
-                  Teams trade 1 lot directly to highest bidder. Seller receives cash, buyer receives share lot.
+                  Must hold 6 to 9 distinct stocks (disqualified otherwise). Outcomes revealed simultaneously: Cash + Shares Value = Net Worth.
                 </p>
               </div>
             </div>

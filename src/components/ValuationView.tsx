@@ -201,6 +201,18 @@ Organized by: ${config.clubName}`;
                   {formatPercent(runnerUp.roiPercent)}
                 </span>
               </div>
+              <div className="mt-2 pt-1 border-t border-slate-800/50 flex items-center justify-between text-[10px] font-mono">
+                <span className="text-slate-400">Stocks: {runnerUp.distinctStocksCount}/6-9</span>
+                {runnerUp.isDisqualified ? (
+                  <span className="px-1.5 py-0.5 rounded bg-red-950 text-red-300 font-bold border border-red-800">
+                    Disqualified
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold border border-emerald-800">
+                    Eligible (6–9)
+                  </span>
+                )}
+              </div>
             </div>
           )}
 
@@ -232,6 +244,18 @@ Organized by: ${config.clubName}`;
                 {formatPercent(winner.roiPercent)} ROI
               </span>
             </div>
+            <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+              <span className="text-slate-300">Portfolio: <strong className="text-amber-300">{winner.distinctStocksCount}</strong> stocks ({winner.totalLotsHeld} lots)</span>
+              {winner.isDisqualified ? (
+                <span className="px-2 py-0.5 rounded-md bg-red-950 text-red-300 font-bold border border-red-800 text-[10px]">
+                  ⚠️ Disqualified (Rule 7)
+                </span>
+              ) : (
+                <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 font-bold border border-emerald-800 text-[10px]">
+                  ✓ Qualified Winner (6–9 Range)
+                </span>
+              )}
+            </div>
           </div>
 
           {/* 3rd Place */}
@@ -258,6 +282,18 @@ Organized by: ${config.clubName}`;
                 <span className={thirdPlace.overallPnl >= 0 ? 'text-emerald-400 font-mono font-bold' : 'text-red-400 font-mono font-bold'}>
                   {formatPercent(thirdPlace.roiPercent)}
                 </span>
+              </div>
+              <div className="mt-2 pt-1 border-t border-slate-800/50 flex items-center justify-between text-[10px] font-mono">
+                <span className="text-slate-400">Stocks: {thirdPlace.distinctStocksCount}/6-9</span>
+                {thirdPlace.isDisqualified ? (
+                  <span className="px-1.5 py-0.5 rounded bg-red-950 text-red-300 font-bold border border-red-800">
+                    Disqualified
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold border border-emerald-800">
+                    Eligible (6–9)
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -336,13 +372,13 @@ Organized by: ${config.clubName}`;
 
       {/* Master Calculations Leaderboard Table */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-400" />
             Master Calculation Leaderboard & Team Balance Sheets
           </h3>
-          <span className="text-xs text-slate-500">
-            Tie-breakers applied: (1) Higher Cash, (2) Fewer Stocks Held
+          <span className="text-xs text-amber-400/90 font-mono font-medium">
+            Rule 7: Min 6, Max 9 distinct stocks required • Disqualified ranked below eligible
           </span>
         </div>
 
@@ -352,7 +388,7 @@ Organized by: ${config.clubName}`;
               <thead className="bg-slate-950 text-slate-400 font-semibold border-b border-slate-800">
                 <tr>
                   <th className="px-4 py-3.5">Rank</th>
-                  <th className="px-4 py-3.5">Team Syndicate</th>
+                  <th className="px-4 py-3.5">Team Syndicate & Rule 7 (6–9)</th>
                   <th className="px-4 py-3.5 text-right">Cash in Hand</th>
                   <th className="px-4 py-3.5 text-right">Base Invested</th>
                   <th className="px-4 py-3.5 text-right">Portfolio Value</th>
@@ -400,6 +436,17 @@ Organized by: ${config.clubName}`;
                               style={{ backgroundColor: v.team.avatarColor }}
                             />
                             <span className="font-bold">{v.team.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1 font-mono text-[10px]">
+                            {v.isDisqualified ? (
+                              <span className="px-1.5 py-0.5 rounded bg-red-950 text-red-300 font-bold border border-red-800">
+                                ⚠️ Disqualified: {v.distinctStocksCount} stocks (6–9 req)
+                              </span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 font-bold border border-emerald-800/60">
+                                ✓ Eligible: {v.distinctStocksCount} stocks ({v.totalLotsHeld} lots)
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right font-mono text-slate-300">

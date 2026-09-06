@@ -292,11 +292,18 @@ export const ProjectorView: React.FC = () => {
                     </span>
 
                     <div>
-                      <span className="text-sm font-bold text-slate-100 block">
-                        {v.team.name}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-bold text-slate-100 block">
+                          {v.team.name}
+                        </span>
+                        {v.isDisqualified && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-950 text-red-400 border border-red-800 font-sans">
+                            DQ ({v.distinctStocksCount} stocks)
+                          </span>
+                        )}
+                      </div>
                       <span className="text-[10px] text-slate-400 font-mono">
-                        Cash: {formatINR(v.cashInHand)} • {v.totalLotsHeld} Lots
+                        Cash: {formatINR(v.cashInHand)} • {v.distinctStocksCount} Stk ({v.totalLotsHeld} Lots)
                       </span>
                     </div>
                   </div>
