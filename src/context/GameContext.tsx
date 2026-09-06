@@ -13,7 +13,7 @@ import {
 import { INITIAL_STOCKS, DEFAULT_TEAMS } from '../data/defaultStocks';
 import { calculateAllTeamsValuation } from '../utils/calculations';
 
-const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V100';
+const STORAGE_KEY = 'WOLF_BIT_MESRA_CALC_V101';
 
 const DEFAULT_CONFIG: GameConfig = {
   eventName: 'WOLF OF BIT MESRA',
@@ -29,19 +29,19 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [stocks, setStocks] = useState<Stock[]>(() => {
+    // Official 100 stocks from Table 1 are authoritative for return percentages
     const saved = localStorage.getItem(`${STORAGE_KEY}_STOCKS`);
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length === INITIAL_STOCKS.length) {
-          // Strictly map over the 100 official INITIAL_STOCKS to maintain exact order and count
           return INITIAL_STOCKS.map(initStock => {
             const savedStock = parsed.find((p: Stock) => p.id === initStock.id);
             if (savedStock) {
               return {
                 ...initStock,
                 openingBidPrice: typeof savedStock.openingBidPrice === 'number' ? savedStock.openingBidPrice : initStock.openingBidPrice,
-                returnPercent: typeof savedStock.returnPercent === 'number' ? savedStock.returnPercent : initStock.returnPercent,
+                returnPercent: initStock.returnPercent,
               };
             }
             return initStock;
@@ -53,7 +53,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [config, setConfig] = useState<GameConfig>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_CONFIG`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_CONFIG');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_CONFIG`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_CONFIG') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_CONFIG');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -64,7 +64,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [teams, setTeams] = useState<Team[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_TEAMS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_TEAMS');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_TEAMS`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_TEAMS') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_TEAMS');
     if (saved) {
       try { 
         const parsed = JSON.parse(saved);
@@ -87,7 +87,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [selectedStockId, setSelectedStockId] = useState<string>(INITIAL_STOCKS[0].id);
   const [revealedMultipliers, setRevealedMultipliers] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_REVEALED`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_REVEALED');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_REVEALED`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_REVEALED') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_REVEALED');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -95,7 +95,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [normalTransactions, setNormalTransactions] = useState<NormalRoundTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_NORMAL_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_NORMAL_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_NORMAL_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_NORMAL_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_NORMAL_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -103,7 +103,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [insiderTransactions, setInsiderTransactions] = useState<InsiderRoundTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -111,7 +111,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [insiderNewsTransactions, setInsiderNewsTransactions] = useState<InsiderNewsTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_NEWS_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_NEWS_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_INSIDER_NEWS_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_INSIDER_NEWS_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_INSIDER_NEWS_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -119,7 +119,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [exchangeTransactions, setExchangeTransactions] = useState<ExchangeTransaction[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_EXCHANGE_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_EXCHANGE_TX');
+    const saved = localStorage.getItem(`${STORAGE_KEY}_EXCHANGE_TX`) || localStorage.getItem('WOLF_BIT_MESRA_CALC_V100_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V7_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V4_EXCHANGE_TX') || localStorage.getItem('WOLF_BIT_MESRA_CALC_V3_EXCHANGE_TX');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }

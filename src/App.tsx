@@ -12,11 +12,13 @@ import { RulesView } from './components/RulesView';
 import { TeamManagerModal } from './components/TeamManagerModal';
 import { TeamDetailModal } from './components/TeamDetailModal';
 import { ConfigModal } from './components/ConfigModal';
+import { RectificationModal } from './components/RectificationModal';
 
 function MainLayout() {
   const { activeTab, stocks } = useGame();
   const [isTeamManagerOpen, setIsTeamManagerOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [isRectifyOpen, setIsRectifyOpen] = useState(false);
   const [selectedTeamDetailId, setSelectedTeamDetailId] = useState<string | null>(null);
 
   const isProjectorMode = activeTab === 'projector';
@@ -27,6 +29,7 @@ function MainLayout() {
       <Navbar
         onOpenTeamManager={() => setIsTeamManagerOpen(true)}
         onOpenConfig={() => setIsConfigOpen(true)}
+        onOpenRectify={() => setIsRectifyOpen(true)}
       />
 
       {/* Main View Container */}
@@ -68,6 +71,11 @@ function MainLayout() {
       <TeamDetailModal
         teamId={selectedTeamDetailId}
         onClose={() => setSelectedTeamDetailId(null)}
+      />
+
+      <RectificationModal
+        isOpen={isRectifyOpen}
+        onClose={() => setIsRectifyOpen(false)}
       />
     </div>
   );

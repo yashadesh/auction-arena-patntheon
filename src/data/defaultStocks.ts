@@ -9,8 +9,8 @@ export const INITIAL_STOCKS: Stock[] = [
     category: 'Energy & Commodities',
     returnPercent: 20,
     openingBidPrice: 8000,
-    displayNews: 'Realince is planning a big restructuring. One report says a part of the company might be sold off — a big win for investors. Another report says the company is short on cash right now. No one knows which one is true yet.',
-    insiderNews: "The sell-off is happening, and it's their most profitable part going to a new company. This stock is set to close strong this round will go in positive trend."
+    displayNews: 'Reliance is planning a big restructuring. One report says a part of the company might be sold off — a big win for investors. Another report says the company is short on cash right now. No one knows which one is true yet.',
+    insiderNews: "The sell-off is happening, and it's their most profitable part going to a new company. This stock is set to close strong this round and will go in a positive trend."
   },
   {
     id: 'tcs',
@@ -50,7 +50,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 25,
     openingBidPrice: 10000,
     displayNews: 'Infosys just won a massive multi-year contract — but on the same day, its CFO abruptly resigned "for personal reasons." A leaked internal memo (unconfirmed) hints at "employee restructuring" in the next quarter. Meanwhile, a rival firm claims Infosys underbid the new contract and will "struggle to deliver profitably." Analysts on TV are split three ways — some call it the deal of the year, some call the CFO exit a red flag, and some say ignore everything until the earnings call. The company has issued no clarification.',
-    insiderNews: 'The CFO exit is unrelated — she\'s joining a competitor, nothing internal. The "underbid" claim is a rival\'s PR spin; margins on the new deal are actually strong. The restructuring memo is real but small-scale, won\'t affect near-term earnings. Bottom line: this stock is set to close strong and good return .'
+    insiderNews: 'The CFO exit is unrelated — she\'s joining a competitor, nothing internal. The "underbid" claim is a rival\'s PR spin; margins on the new deal are actually strong. The restructuring memo is real but small-scale, won\'t affect near-term earnings. Bottom line: this stock is set to close strong and will give a good return.'
   },
   {
     id: 'tata-motors',
@@ -102,7 +102,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: -20,
     openingBidPrice: 10000,
     displayNews: 'Adani Enterprises unveiled a massive green energy investment plan, and a foreign fund just bought a fresh stake — both seen as strong confidence signals. But rating agencies are "reviewing" the group\'s debt levels, and a foreign media report questions its accounting practices, calling both "baseless" by the company.',
-    insiderNews: 'The hydrogen offtake story is being overstated — the counterparty has quietly paused negotiations pending a compliance review, and no binding agreement is close. Meanwhile, the leverage flag from the ratings note is more serious than the public write-up let on: a formal review of group debt levels is underway internally, and refinancing terms are expected to tighten. Expect a negative correction when Adani Enterprises re-enters the public board. Will give bearish rise.'
+    insiderNews: 'The hydrogen offtake story is being overstated — the counterparty has quietly paused negotiations pending a compliance review, and no binding agreement is close. Meanwhile, the leverage flag from the ratings note is more serious than the public write-up let on: a formal review of group debt levels is underway internally, and refinancing terms are expected to tighten. Expect a negative correction. Will give a bearish move.'
   },
   {
     id: 'adani-ports',
@@ -316,7 +316,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 35,
     openingBidPrice: 8000,
     displayNews: 'LIC shares fell on reports of declining new policy sales, with analysts warning of market share loss to private insurers. A regulator is reviewing its investment practices, and a brokerage downgraded the stock — though LIC insists a new policy lineup is already in the works.',
-    insiderNews: 'The sales dip is a temporary pause while LIC rolls out a new, higher-margin policy lineup — early internal numbers already outperform expectations. The regulatory review is routine and expected to clear without issue. The downgrade used outdated data'
+    insiderNews: 'The sales dip is a temporary pause while LIC rolls out a new, higher-margin policy lineup — early internal numbers already outperform expectations. The regulatory review is routine and expected to clear without issue. The downgrade used outdated data. EXPECTING GOOD RETURN -'
   },
   {
     id: 'cupid',
@@ -326,7 +326,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 60,
     openingBidPrice: 6000,
     displayNews: 'Cupid Ltd shares fell on reports of a slowdown in government tender orders, raising "order book uncertainty." A rival launched a cheaper competing product, and a brokerage downgraded the stock citing pricing pressure — though Cupid\'s export pipeline was rumored to be picking up.',
-    insiderNews: 'The tender slowdown is temporary — a new, much larger export order is about to be announced, more than making up for it. The rival\'s cheaper product already has quality issues surfacing in early reviews. The downgrade used outdated information.'
+    insiderNews: 'The tender slowdown is temporary — a new, much larger export order is about to be announced, more than making up for it. The rival\'s cheaper product already has quality issues surfacing in early reviews. The downgrade used outdated information. High trend volume expecting good returns'
   },
 
   // Page 5
@@ -348,7 +348,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 40,
     openingBidPrice: 6000,
     displayNews: 'Zomato reported strong order growth this quarter but flagged rising delivery costs and tougher competition from a rival\'s aggressive discounting. Its new quick-commerce push is reportedly gaining fast, though some worry it\'s burning cash with no clear profit timeline.',
-    insiderNews: 'The quick-commerce push is actually turning profitable faster than expected — a key regional market hit breakeven ahead of schedule. The rival\'s discounting is unsustainable and already being pulled back internally. Delivery costs are being offset by a new, not-yet-public packaging deal.'
+    insiderNews: 'The quick-commerce push is actually turning profitable faster than expected — a key regional market hit breakeven ahead of schedule. The rival\'s discounting is unsustainable and already being pulled back internally. Delivery costs are being offset by a new, not-yet-public packaging deal. READY FOR BULLISH GROWTH WITH GOOD RETURNS .'
   },
   {
     id: 'groww',
@@ -398,7 +398,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 45,
     openingBidPrice: 8000,
     displayNews: 'Paytm shares fell after a regulator flagged "compliance concerns" over its lending partnerships, raising "regulatory overhang" fears. A senior executive resigned, and a brokerage downgraded the stock, citing an uncertain path to profitability — though Paytm\'s core payments volumes kept climbing.',
-    insiderNews: 'The compliance flag is minor and already addressed informally with the regulator — no penalty is coming. The executive resignation is personal, unrelated to any internal issue. The company is actually closer to profitability than reported, with a real turnaround expected next quarter.'
+    insiderNews: 'The compliance flag is minor and already addressed informally with the regulator — no penalty is coming. The executive resignation is personal, unrelated to any internal issue. The company is actually closer to profitability than reported, with a real turnaround expected next quarter. READY FOR A BULLISH TREND WITH GOOD VOLLUME.'
   },
   {
     id: 'coinbase',
@@ -408,7 +408,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 40,
     openingBidPrice: 10000,
     displayNews: 'Coinbase shares fell as crypto prices turned volatile and a regulator opened a new inquiry into its practices. Analysts warned of regulatory risk and declining trading volumes, and a brokerage downgraded the stock, citing an uncertain "crypto winter" ahead — though on-chain data hinted at rising activity.',
-    insiderNews: 'The regulatory inquiry is routine and expected to close with no action. Trading volumes have actually picked up sharply in the last few days as prices stabilize — data the market hasn\'t seen yet. The "crypto winter" call is based on outdated sentiment.'
+    insiderNews: 'The regulatory inquiry is routine and expected to close with no action. Trading volumes have actually picked up sharply in the last few days as prices stabilize — data the market hasn\'t seen yet. The "crypto winter" call is based on outdated sentiment. READY FOR BIG PROFIT'
   },
 
   // Page 6
@@ -430,7 +430,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 50,
     openingBidPrice: 12000,
     displayNews: 'Netweb shares fell on reports of a delay in a major government supercomputing order, raising "execution risk" fears for this small-cap stock. A brokerage flagged high valuation concerns, and a competitor announced a rival product launch — though Netweb\'s order pipeline was rumored to be growing.',
-    insiderNews: 'The order delay is just a paperwork formality — actual delivery and revenue booking stay on schedule this quarter. The competitor\'s rival product is still in early testing, years from being a real threat. The valuation concern was based on old numbers before a new, not-yet-public private-sector deal.'
+    insiderNews: 'The order delay is just a paperwork formality — actual delivery and revenue booking stay on schedule this quarter. The competitor\'s rival product is still in early testing, years from being a real threat. The valuation concern was based on old numbers before a new, not-yet-public private-sector deal. READY FOR BIG PROFIT'
   },
   {
     id: 'jpmorgan',
@@ -440,7 +440,7 @@ export const INITIAL_STOCKS: Stock[] = [
     returnPercent: 20,
     openingBidPrice: 10000,
     displayNews: 'JP Morgan reported record quarterly profit, beating every estimate, and announced a major digital banking expansion, calling it "the future of the company." A brokerage raised its target price — though a few analysts noted an unusual one-time trading gain behind the profit beat.',
-    insiderNews: 'A large chunk of that record profit came from a one-time trading gain that won\'t repeat next quarter — core banking revenue actually grew slower than expected. The digital banking expansion is burning heavily on tech spend with no real payoff yet'
+    insiderNews: 'A large chunk of that record profit came from a one-time trading gain that won\'t repeat next quarter — core banking revenue actually grew slower than expected. The digital banking expansion is burning heavily on tech spend with no real payoff yet. READY FOR BIG PROFIT'
   },
   {
     id: 'goldman-sachs',

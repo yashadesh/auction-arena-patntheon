@@ -74,8 +74,8 @@ export const RulesView: React.FC = () => {
             onClick={() => setActiveTab('insider')}
             className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-slate-700 transition"
           >
-            <Eye className="w-4 h-4 text-amber-400" />
-            Insider Round Arena (6 Lots + Intel)
+            <Eye className="w-4 h-4 text-purple-400" />
+            The Insider Round (Secret Intel)
           </button>
           <button
             onClick={() => {

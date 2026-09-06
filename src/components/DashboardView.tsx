@@ -162,7 +162,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
               className="px-4 py-2 rounded-xl bg-purple-900/60 hover:bg-purple-800 text-purple-200 font-semibold text-xs flex items-center gap-2 border border-purple-700 transition"
             >
               <Eye className="w-4 h-4 text-purple-400" />
-              Insider Round (6 Lots + Intel)
+              The Insider Round (Secret Intel)
             </button>
             <button
               onClick={() => setActiveTab('exchange')}
@@ -403,10 +403,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectTeam }) =>
               <div className="p-3 rounded-lg bg-slate-950 border border-slate-800/80">
                 <div className="flex items-center gap-2 font-bold text-purple-400 mb-1">
                   <Eye className="w-4 h-4" />
-                  2. Insider Round (Rules 4 & 8)
+                  2. The Insider Round (Rules 4 & 8)
                 </div>
                 <p className="text-slate-400 text-[11px] leading-relaxed">
-                  1-winner auction. Winning bid buys guaranteed 6 lots + secret intel. Same stock immediately reopens for normal bidding. Max 4 wins/team.
+                  1-winner auction. Winning bid buys confidential inside intelligence (0 lots allotted). Same stock immediately reopens for normal bidding open to all teams. No limit on wins.
                 </p>
               </div>
 

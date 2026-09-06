@@ -23,7 +23,9 @@ import {
   CheckCircle2,
   Flame,
   Tv,
-  Coins
+  Coins,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 import { GavelButton } from './GavelButton';
@@ -39,7 +41,7 @@ export const InsiderRoundView: React.FC = () => {
     setSelectedStockId, 
     insiderTransactions,
     insiderNewsTransactions,
-    executeInsiderRound6Lots,
+    executeInsiderRoundIntel,
     revertInsiderTransaction,
     revertInsiderNewsTransaction,
     setActiveTab
@@ -47,10 +49,10 @@ export const InsiderRoundView: React.FC = () => {
 
   const selectedStock = stocks.find(s => s.id === selectedStockId) || stocks[0];
 
-  // 6-Lot Insider Round State
+  // Insider Round Confidential Intel State (0 Lots Allotted - Pure Intel Auction)
   const [winnerTeamId, setWinnerTeamId] = useState<string>('');
   const [winningBid, setWinningBid] = useState<number>(
-    (selectedStock.openingBidPrice || 12000) * 3
+    selectedStock.openingBidPrice || 10000
   );
   const [autoDeduct, setAutoDeduct] = useState<boolean>(true);
   const [showConfidentialIntel, setShowConfidentialIntel] = useState<boolean>(false);
@@ -102,7 +104,7 @@ export const InsiderRoundView: React.FC = () => {
     setSelectedStockId(stockId);
     const st = stocks.find(s => s.id === stockId);
     if (st) {
-      setWinningBid((st.openingBidPrice || 12000) * 3);
+      setWinningBid(st.openingBidPrice || 10000);
       setWinnerTeamId('');
       setShowConfidentialIntel(false);
       setStatusMessage(null);
@@ -113,7 +115,7 @@ export const InsiderRoundView: React.FC = () => {
   const existingInsiderTx = insiderTransactions.find(tx => tx.stockId === selectedStock.id);
   const existingWinner = existingInsiderTx ? teams.find(t => t.id === existingInsiderTx.winnerTeamId) : null;
 
-  const handleExecute6Lots = () => {
+  const handleExecuteIntelBid = () => {
     if (!winnerTeamId) {
       setStatusMessage({ type: 'error', text: 'Please select the winning team for the Insider Round.' });
       return;
@@ -123,7 +125,7 @@ export const InsiderRoundView: React.FC = () => {
       return;
     }
 
-    const res = executeInsiderRound6Lots(selectedStock.id, winnerTeamId, winningBid, autoDeduct);
+    const res = executeInsiderRoundIntel(selectedStock.id, winnerTeamId, winningBid, autoDeduct);
     if (res.success) {
       soundFX.playGavel();
       setShowConfidentialIntel(true);
@@ -158,6 +160,18 @@ export const InsiderRoundView: React.FC = () => {
   const wonStockIds = React.useMemo(() => {
     return new Set(insiderTransactions.map(tx => tx.stockId));
   }, [insiderTransactions]);
+
+  const currentIndex = stocks.findIndex(s => s.id === selectedStock.id);
+  const handlePrevStock = () => {
+    if (currentIndex > 0) {
+      handleSelectStock(stocks[currentIndex - 1].id);
+    }
+  };
+  const handleNextStock = () => {
+    if (currentIndex < stocks.length - 1) {
+      handleSelectStock(stocks[currentIndex + 1].id);
+    }
+  };
 
   // Calculate insider round wins per team (no cap)
   const teamWinsMap = React.useMemo(() => {
@@ -434,11 +448,34 @@ export const InsiderRoundView: React.FC = () => {
                 </h3>
               </div>
 
-              <div className="text-right">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Normal Starting Bid</span>
-                <span className="text-base font-black font-mono text-purple-400">
-                  ₹{selectedStock.openingBidPrice.toLocaleString('en-IN')} / lot
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Normal Starting Bid</span>
+                  <span className="text-base font-black font-mono text-purple-400">
+                    ₹{selectedStock.openingBidPrice.toLocaleString('en-IN')} / lot
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                  <button
+                    onClick={handlePrevStock}
+                    disabled={currentIndex === 0}
+                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-30 text-slate-300 transition"
+                    title="Previous Stock"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <span className="text-[11px] font-mono font-bold text-slate-400 px-1">
+                    #{currentIndex + 1}/{stocks.length}
+                  </span>
+                  <button
+                    onClick={handleNextStock}
+                    disabled={currentIndex >= stocks.length - 1}
+                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-30 text-slate-300 transition"
+                    title="Next Stock"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -569,7 +606,7 @@ export const InsiderRoundView: React.FC = () => {
             {/* Quick Bid Increment Buttons */}
             <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
               <span className="text-[11px] text-slate-500 uppercase font-bold">Quick Presets:</span>
-              {[15000, 25000, 40000, 50000, 60000, 75000].map((amt) => (
+              {[10000, 15000, 20000, 25000, 30000, 40000, 50000].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setWinningBid(amt)}
@@ -610,7 +647,7 @@ export const InsiderRoundView: React.FC = () => {
             {/* Execute Button */}
             <div className="pt-2">
               <button
-                onClick={handleExecute6Lots}
+                onClick={handleExecuteIntelBid}
                 disabled={!winnerTeamId || winningBid <= 0}
                 className="w-full py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-xl shadow-purple-600/20 font-mono"
               >

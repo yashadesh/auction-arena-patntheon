@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
+import { INITIAL_STOCKS } from '../data/defaultStocks';
 import { 
   X, 
   RotateCcw, 
@@ -16,14 +17,17 @@ import {
   Trash2,
   Edit3,
   SlidersHorizontal,
-  FileText
+  FileText,
+  TrendingUp,
+  TrendingDown,
+  RefreshCw
 } from 'lucide-react';
 import { formatINR } from '../utils/formatters';
 
 interface RectificationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialTab?: 'history' | 'lots' | 'cash';
+  initialTab?: 'history' | 'lots' | 'cash' | 'stocks';
   initialTeamId?: string;
   initialStockId?: string;
 }
@@ -49,10 +53,12 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
     revertExchangeTransaction,
     rectifyTeamHolding,
     rectifyTeamCash,
-    rectifyTeamPenaltyAndBonus
+    rectifyTeamPenaltyAndBonus,
+    updateStock,
+    syncOfficialStocks
   } = useGame();
 
-  const [activeTab, setActiveTab] = useState<'history' | 'lots' | 'cash'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'history' | 'lots' | 'cash' | 'stocks'>(initialTab);
   const [historyFilter, setHistoryFilter] = useState<'all' | 'normal' | 'insider' | 'news' | 'exchange'>('all');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -77,6 +83,13 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
     const t = teams.find(tm => tm.id === (initialTeamId || teams[0]?.id));
     return t ? t.bonus : 0;
   });
+
+  // Stock Returns Rectification State
+  const [stockSearch, setStockSearch] = useState('');
+  const [stockReturnFilter, setStockReturnFilter] = useState<'all' | 'positive' | 'negative'>('all');
+  const [editingStockId, setEditingStockId] = useState<string | null>(null);
+  const [stockEditReturn, setStockEditReturn] = useState<number>(0);
+  const [stockEditOpening, setStockEditOpening] = useState<number>(10000);
 
   // Sync state when team/stock selection changes in Lots tab
   const currentTeam = teams.find(t => t.id === selectedTeamId) || teams[0];
@@ -248,6 +261,18 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
           >
             <Coins className="w-4 h-4" />
             <span>3. Fix Team Cash & Penalties</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('stocks')}
+            className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition whitespace-nowrap ${
+              activeTab === 'stocks'
+                ? 'border-amber-400 text-amber-400 bg-amber-400/5'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span>4. Stock Returns & Pricing ({stocks.length})</span>
           </button>
         </div>
 
@@ -797,6 +822,270 @@ export const RectificationModal: React.FC<RectificationModalProps> = ({
                 <Check className="w-4 h-4 stroke-[3]" />
                 Save Cash & Penalty Rectification for {currentCashTeam?.name}
               </button>
+            </div>
+          )}
+
+          {/* TAB 4: RECTIFY STOCK RETURNS & PRICING (TABLE 1 DATA) */}
+          {activeTab === 'stocks' && (
+            <div className="space-y-4">
+              {/* Info & Sync Banner */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <TrendingUp className="w-4 h-4" />
+                    </span>
+                    <h3 className="text-sm font-bold text-slate-100 font-mono">
+                      TABLE 1 OFFICIAL RETURNS & OPENING BID CORRECTION
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Adjust any stock's final Return % or Opening Bid Price. Changes immediately recalculate portfolio valuations, net worths, and leaderboards.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (confirm('Reset all 100 stocks back to the exact official Table 1 dataset (returns and opening bids)?')) {
+                      syncOfficialStocks();
+                      setStatusMessage({ type: 'success', text: 'All 100 stocks successfully reset to the official Table 1 dataset!' });
+                      setTimeout(() => setStatusMessage(null), 3500);
+                    }
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
+                  title="Reset all 100 stocks back to official rulebook returns"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Restore Official Table 1</span>
+                </button>
+              </div>
+
+              {/* Filter & Search Bar */}
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    placeholder="Search by stock name, ticker, or sector..."
+                    value={stockSearch}
+                    onChange={(e) => setStockSearch(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                  <button
+                    onClick={() => setStockReturnFilter('all')}
+                    className={`px-3 py-1 rounded-lg transition ${
+                      stockReturnFilter === 'all'
+                        ? 'bg-amber-500 text-slate-950 font-bold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    All ({stocks.length})
+                  </button>
+                  <button
+                    onClick={() => setStockReturnFilter('positive')}
+                    className={`px-3 py-1 rounded-lg transition ${
+                      stockReturnFilter === 'positive'
+                        ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40'
+                        : 'text-slate-400 hover:text-emerald-400'
+                    }`}
+                  >
+                    Gainers (+)
+                  </button>
+                  <button
+                    onClick={() => setStockReturnFilter('negative')}
+                    className={`px-3 py-1 rounded-lg transition ${
+                      stockReturnFilter === 'negative'
+                        ? 'bg-red-500/20 text-red-300 font-bold border border-red-500/40'
+                        : 'text-slate-400 hover:text-red-400'
+                    }`}
+                  >
+                    Losers (-)
+                  </button>
+                </div>
+              </div>
+
+              {/* Stock Items List */}
+              <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+                {stocks
+                  .filter(s => {
+                    const matchQuery = s.name.toLowerCase().includes(stockSearch.toLowerCase()) ||
+                                       s.ticker.toLowerCase().includes(stockSearch.toLowerCase()) ||
+                                       s.category.toLowerCase().includes(stockSearch.toLowerCase());
+                    const matchFilter = stockReturnFilter === 'all' 
+                      ? true 
+                      : stockReturnFilter === 'positive' 
+                      ? s.returnPercent >= 0 
+                      : s.returnPercent < 0;
+                    return matchQuery && matchFilter;
+                  })
+                  .map(s => {
+                    const officialStock = INITIAL_STOCKS.find(orig => orig.ticker === s.ticker || orig.name.toLowerCase() === s.name.toLowerCase());
+                    const officialReturn = officialStock ? officialStock.returnPercent : s.returnPercent;
+                    const isModified = s.returnPercent !== officialReturn;
+                    const isEditing = editingStockId === s.id;
+
+                    return (
+                      <div
+                        key={s.id}
+                        className={`p-3 rounded-xl border transition flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+                          isModified
+                            ? 'bg-amber-950/20 border-amber-500/40'
+                            : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        {/* Stock Info */}
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs font-mono border ${
+                            s.returnPercent >= 0
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              : 'bg-red-500/10 text-red-400 border-red-500/30'
+                          }`}>
+                            {s.returnPercent >= 0 ? '+' : '-'}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-xs text-slate-100">{s.name}</span>
+                              <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-400">
+                                {s.ticker}
+                              </span>
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                {s.category}
+                              </span>
+                              {isModified && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                  MODIFIED
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono mt-0.5">
+                              <span>Official Sheet: <strong className={officialReturn >= 0 ? 'text-emerald-400' : 'text-red-400'}>{officialReturn > 0 ? `+${officialReturn}%` : `${officialReturn}%`}</strong></span>
+                              <span>•</span>
+                              <span>Opening Bid: {formatINR(s.openingBidPrice)}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Interactive Correction Controls */}
+                        <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
+                          {isEditing ? (
+                            <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-amber-500/50">
+                              <div className="flex flex-col">
+                                <span className="text-[9px] text-slate-400 font-bold uppercase">Return %</span>
+                                <input
+                                  type="number"
+                                  value={stockEditReturn}
+                                  onChange={(e) => setStockEditReturn(parseFloat(e.target.value) || 0)}
+                                  className="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-mono font-bold text-amber-300 focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+
+                              <div className="flex flex-col">
+                                <span className="text-[9px] text-slate-400 font-bold uppercase">Opening Bid (₹)</span>
+                                <input
+                                  type="number"
+                                  step={1000}
+                                  value={stockEditOpening}
+                                  onChange={(e) => setStockEditOpening(Math.max(1000, parseInt(e.target.value) || 1000))}
+                                  className="w-24 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-mono font-bold text-slate-200 focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+
+                              <button
+                                onClick={() => {
+                                  updateStock(s.id, {
+                                    returnPercent: stockEditReturn,
+                                    openingBidPrice: stockEditOpening
+                                  });
+                                  setEditingStockId(null);
+                                  setStatusMessage({ type: 'success', text: `Saved changes for ${s.name}: Return ${stockEditReturn > 0 ? '+' : ''}${stockEditReturn}%, Bid ₹${stockEditOpening.toLocaleString('en-IN')}` });
+                                  setTimeout(() => setStatusMessage(null), 3000);
+                                }}
+                                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingStockId(null)}
+                                className="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              {/* Quick Return Increment / Decrement */}
+                              <div className="flex items-center gap-1 bg-slate-950 px-2 py-1 rounded-xl border border-slate-800">
+                                <button
+                                  onClick={() => {
+                                    const next = s.returnPercent - 5;
+                                    updateStock(s.id, { returnPercent: next });
+                                    setStatusMessage({ type: 'success', text: `Updated ${s.name} return to ${next > 0 ? '+' : ''}${next}%` });
+                                    setTimeout(() => setStatusMessage(null), 2500);
+                                  }}
+                                  className="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-red-400 font-bold font-mono text-xs flex items-center justify-center border border-slate-800 transition"
+                                  title="Subtract 5% return"
+                                >
+                                  -5%
+                                </button>
+
+                                <span className={`px-2 text-xs font-bold font-mono ${
+                                  s.returnPercent >= 0 ? 'text-emerald-400' : 'text-red-400'
+                                }`}>
+                                  {s.returnPercent > 0 ? `+${s.returnPercent}%` : `${s.returnPercent}%`}
+                                </span>
+
+                                <button
+                                  onClick={() => {
+                                    const next = s.returnPercent + 5;
+                                    updateStock(s.id, { returnPercent: next });
+                                    setStatusMessage({ type: 'success', text: `Updated ${s.name} return to ${next > 0 ? '+' : ''}${next}%` });
+                                    setTimeout(() => setStatusMessage(null), 2500);
+                                  }}
+                                  className="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-emerald-400 font-bold font-mono text-xs flex items-center justify-center border border-slate-800 transition"
+                                  title="Add 5% return"
+                                >
+                                  +5%
+                                </button>
+                              </div>
+
+                              {/* Restore to Official Table 1 */}
+                              {isModified && (
+                                <button
+                                  onClick={() => {
+                                    updateStock(s.id, { returnPercent: officialReturn });
+                                    setStatusMessage({ type: 'success', text: `Restored ${s.name} to official Table 1 return (${officialReturn > 0 ? '+' : ''}${officialReturn}%)` });
+                                    setTimeout(() => setStatusMessage(null), 2500);
+                                  }}
+                                  className="px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold font-mono transition"
+                                  title={`Restore to ${officialReturn}%`}
+                                >
+                                  Reset ({officialReturn}%)
+                                </button>
+                              )}
+
+                              {/* Full Edit Modal Trigger */}
+                              <button
+                                onClick={() => {
+                                  setEditingStockId(s.id);
+                                  setStockEditReturn(s.returnPercent);
+                                  setStockEditOpening(s.openingBidPrice);
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 border border-slate-700 transition"
+                              >
+                                <Edit3 className="w-3 h-3 text-amber-400" />
+                                Edit
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           )}
 

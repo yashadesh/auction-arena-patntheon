@@ -26,9 +26,10 @@ import { SoundToggle } from './GavelButton';
 interface NavbarProps {
   onOpenTeamManager: () => void;
   onOpenConfig: () => void;
+  onOpenRectify?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig, onOpenRectify }) => {
   const { 
     config, 
     activeTab, 
@@ -59,7 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
   const navItems = [
     { id: 'dashboard', label: 'Command Center', icon: Layers, badge: null },
     { id: 'normal', label: 'Live Floor (Stock-by-Stock)', icon: Coins, badge: 'Sec 3' },
-    { id: 'insider', label: 'Insider Round (6 Lots + Intel)', icon: Eye, badge: 'Sec 4' },
+    { id: 'insider', label: 'The Insider Round (Secret Intel)', icon: Eye, badge: 'Sec 4' },
     { id: 'exchange', label: 'P2P Trading', icon: ArrowLeftRight, badge: null },
     { id: 'valuation', label: 'Final Valuation', icon: Award, badge: 'Sec 6' },
     { id: 'projector', label: 'Arena Projector', icon: Tv, badge: '30s' },
@@ -141,6 +142,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
             </button>
 
             <SoundToggle />
+
+            {onOpenRectify && (
+              <button
+                id="btn-nav-rectify"
+                onClick={onOpenRectify}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-950/50 hover:bg-red-900/60 text-red-300 border border-red-800/40 text-xs font-bold transition"
+                title="Fix transactions, adjust shares, cash, or Table 1 stock returns"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-red-400" />
+                <span>Fix Mistakes</span>
+              </button>
+            )}
 
             <button
               id="btn-team-manager"
@@ -388,10 +401,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTeamManager, onOpenConfig 
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-purple-400 font-mono">4. The Insider Round</span>
-                  <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 text-[10px] font-mono border border-purple-500/20">6 Lots + Intel</span>
+                  <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 text-[10px] font-mono border border-purple-500/20">Secret Intel</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed">
-                  Surprise 1-winner auction. Highest bid directly buys <strong>6 lots guaranteed + confidential inside information</strong>. Immediately after, the stock reopens for normal bidding open to all teams.
+                  Surprise 1-winner auction. Highest bid unlocks <strong>confidential inside information (no shares allotted)</strong>. Immediately after, the stock reopens for normal bidding open to all teams.
                 </p>
               </div>
 
